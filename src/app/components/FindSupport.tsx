@@ -246,6 +246,21 @@ export function FindSupport() {
                 )}
               </motion.div>
             ))}
+
+            {!loading && !loadError && filteredQuestions.length === 0 && (
+              <div className="bg-white border border-border/80 rounded-[16px] p-12 text-center">
+                <div className="w-20 h-20 bg-soft-sand/50 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Heart className="w-10 h-10 text-terracotta-deep" />
+                </div>
+                <h3 className="text-2xl font-bold mb-3">Вопросов пока нет</h3>
+                <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+                  Будьте первым, кто задаст вопрос в этой категории. Наши проводники ответят вам в ближайшее время.
+                </p>
+                <Button className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[12px] px-8">
+                  Задать вопрос
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Guides Sidebar */}

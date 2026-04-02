@@ -186,7 +186,7 @@ export function Events() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="bg-white rounded-[16px] border border-border hover:shadow-lg transition-all cursor-pointer group overflow-hidden"
+              className="bg-white rounded-[16px] border border-border hover:shadow-md transition-all cursor-pointer group overflow-hidden"
             >
               {/* Image Placeholder with gradient */}
               <div className={`h-40 bg-gradient-to-br ${
@@ -256,40 +256,41 @@ export function Events() {
           ))}
         </div>
 
-        {/* Stats */}
-        <div className="grid md:grid-cols-3 gap-6 my-12">
-          <div className="bg-white p-6 rounded-[16px] border border-border text-center">
-            <div className="text-3xl font-bold text-dusty-indigo mb-2">{events.length}</div>
-            <p className="text-muted-foreground">Событий на этой неделе</p>
-          </div>
-          <div className="bg-white p-6 rounded-[16px] border border-border text-center">
-            <div className="text-3xl font-bold text-terracotta-deep mb-2">
-              {events.reduce((sum, e) => sum + e.attendees, 0)}
-            </div>
-            <p className="text-muted-foreground">Участников</p>
-          </div>
-          <div className="bg-white p-6 rounded-[16px] border border-border text-center">
-            <div className="text-3xl font-bold text-warm-olive mb-2">
-              {events.filter(e => e.price === 'Бесплатно').length}
-            </div>
-            <p className="text-muted-foreground">Бесплатных событий</p>
-          </div>
-        </div>
-
         {/* Empty State */}
         {!loading && !loadError && filteredEvents.length === 0 && (
-          <div className="text-center py-16">
-            <div className="w-24 h-24 bg-soft-sand/30 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Calendar className="w-12 h-12 text-muted-foreground" />
+          <div className="bg-white border border-border/80 rounded-[16px] p-12 text-center my-8">
+            <div className="w-20 h-20 bg-soft-sand/50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Calendar className="w-10 h-10 text-dusty-indigo" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Стань первооткрывателем событий Relo</h3>
-            <p className="text-muted-foreground mb-6">
-              Создай своё событие и собери единомышленников
+            <h3 className="text-2xl font-bold mb-3">Событий пока нет</h3>
+            <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+              Самое время проявить инициативу. Создайте встречу, и к вам обязательно присоединятся.
             </p>
-            <Button className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[12px]">
+            <Button className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[12px] px-8">
               <Plus className="w-5 h-5 mr-2" />
               Создать событие
             </Button>
+          </div>
+        )}
+
+        {events.length > 0 && (
+          <div className="grid md:grid-cols-3 gap-6 my-12">
+            <div className="bg-white p-6 rounded-[16px] border border-border text-center">
+              <div className="text-3xl font-bold text-dusty-indigo mb-2">{events.length}</div>
+              <p className="text-muted-foreground">Событий на этой неделе</p>
+            </div>
+            <div className="bg-white p-6 rounded-[16px] border border-border text-center">
+              <div className="text-3xl font-bold text-terracotta-deep mb-2">
+                {events.reduce((sum, e) => sum + e.attendees, 0)}
+              </div>
+              <p className="text-muted-foreground">Участников</p>
+            </div>
+            <div className="bg-white p-6 rounded-[16px] border border-border text-center">
+              <div className="text-3xl font-bold text-warm-olive mb-2">
+                {events.filter(e => e.price === 'Бесплатно').length}
+              </div>
+              <p className="text-muted-foreground">Бесплатных событий</p>
+            </div>
           </div>
         )}
       </div>

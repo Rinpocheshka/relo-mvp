@@ -5,10 +5,10 @@ import { Button } from './ui/button';
 import { MessageCircle } from 'lucide-react';
 import { MessageHelper } from './MessageHelper';
 
-type Stage = 'planning' | 'new' | 'living' | 'helping' | 'leaving';
+type Stage = 'planning' | 'living' | 'helping' | 'leaving';
 
 export function HomePage() {
-  const [currentStage, setCurrentStage] = useState<Stage>('new');
+  const [currentStage, setCurrentStage] = useState<Stage>('living');
   const [onboardingData, setOnboardingData] = useState<any>(null);
   const [showMessageHelper, setShowMessageHelper] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<string>('');
@@ -26,8 +26,7 @@ export function HomePage() {
 
   const stages = [
     { id: 'planning' as Stage, label: 'Планирую переезд', icon: '🗺️' },
-    { id: 'new' as Stage, label: 'Только приехал', icon: '✈️' },
-    { id: 'living' as Stage, label: 'Живу', icon: '🏠' },
+    { id: 'living' as Stage, label: 'Осваиваюсь / Живу', icon: '🏠' },
     { id: 'helping' as Stage, label: 'Помогаю другим', icon: '🤝' },
     { id: 'leaving' as Stage, label: 'Уезжаю', icon: '👋' },
   ];
@@ -69,77 +68,40 @@ export function HomePage() {
         { name: 'Олег', status: 'Уже переехал', tag: 'Делится опытом' },
       ],
     },
-    new: {
-      greeting: 'Первые дни в новом городе — давай разберемся вместе',
-      subtitle: '',
-      steps: [
-        { text: 'Поменять валюту', link: '/support?article=currency' },
-        { text: 'Найти жилье', link: '/announcements?category=housing' },
-        { text: 'Решить что с детьми', link: '/support?article=kids' },
-        { text: 'Докупить необходимое', link: '/announcements?category=items' },
-        { text: 'Как тут жить', link: '/support?article=living' },
-      ],
-      sections: [
-        {
-          title: 'Те, кто тоже еще в шоке от города',
-          subtitle: 'Люди (ссылка на страницу с людьми с фильтром «только приехал»)',
-          link: '/people?filter=newcomers',
-        },
-        {
-          title: 'Самое актуальное на первое время',
-          subtitle: 'Объявления из категории жилье + 2 любые',
-          link: '/announcements',
-        },
-        {
-          title: 'Честные вопросы в первые дни',
-          subtitle: 'Найти опору',
-          link: '/support',
-        },
-        {
-          title: 'Где собирается русское комьюнити?',
-          subtitle: 'Афиша',
-          link: '/events',
-        },
-      ],
-      people: [
-        { name: 'Анна', status: 'Ищет жильё', tag: '2 недели в городе' },
-        { name: 'Иван', status: 'Уже нашёл', tag: 'Готов помочь' },
-      ],
-    },
     living: {
-      greeting: 'Ты уже здесь — можно делиться и находить новое',
+      greeting: 'Первые шаги и комфортная жизнь — давай обустраиваться вместе',
       subtitle: '',
       steps: [
+        { text: 'Жилье и базовая информация', link: '/announcements?category=housing' },
         { text: 'Куда сходить', link: '/events' },
-        { text: 'Найти друзей', link: '/people' },
-        { text: 'Занять детей', link: '/support?article=kids-activities' },
+        { text: 'Найти друзей и советы', link: '/people' },
         { text: 'Визаран и другие услуги', link: '/announcements?category=services' },
       ],
       sections: [
         {
-          title: 'Всегда есть куда хочется сходить',
-          subtitle: 'Афиша',
-          link: '/events',
-        },
-        {
-          title: 'Те, с кем уже можно подружиться',
-          subtitle: 'Люди',
+          title: 'Те, с кем можно подружиться или спросить совет',
+          subtitle: 'Люди (Новички и Проводники)',
           link: '/people',
         },
         {
-          title: 'Услуги, вещи и помощь от релокантов',
-          subtitle: 'Объявления товары и услуги',
+          title: 'Самое актуальное на первое время и для жизни',
+          subtitle: 'Объявления: услуги и жилье',
           link: '/announcements',
         },
         {
-          title: 'Полезные ответы от проводников города',
-          subtitle: 'Найти опору',
+          title: 'Честные вопросы и ответы на них',
+          subtitle: 'Найти опору (Справочник)',
           link: '/support',
+        },
+        {
+          title: 'Всегда есть куда сходить',
+          subtitle: 'Афиша',
+          link: '/events',
         },
       ],
       people: [
-        { name: 'Елена', status: 'Живёт 3 месяца', tag: 'Ищет друзей' },
-        { name: 'Дмитрий', status: 'Живёт год', tag: 'Организует встречи' },
+        { name: 'Елена', status: 'Осваивается', tag: 'Ищет друзей' },
+        { name: 'Дмитрий', status: 'Уже местный', tag: 'Организует встречи' },
       ],
     },
     helping: {
@@ -298,7 +260,7 @@ export function HomePage() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: i * 0.1 }}
-                          className="bg-white p-6 rounded-[16px] border border-border hover:shadow-md transition-shadow"
+                          className="bg-white p-6 rounded-[16px] border border-border transition-all hover:border-dusty-indigo/30"
                         >
                           <div className="flex items-start gap-4">
                             <div className="w-12 h-12 bg-dusty-indigo rounded-full flex-shrink-0"></div>
@@ -336,7 +298,7 @@ export function HomePage() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: i * 0.1 }}
-                          className="bg-white p-6 rounded-[16px] border border-border hover:shadow-md transition-shadow cursor-pointer h-full"
+                          className="bg-white p-6 rounded-[16px] border border-border transition-all hover:border-dusty-indigo/30 cursor-pointer h-full"
                         >
                           <span className="inline-block px-3 py-1 bg-warm-olive/20 text-warm-olive text-xs rounded-full mb-3">
                             {section.subtitle.split(' ')[0]}

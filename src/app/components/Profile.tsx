@@ -208,9 +208,15 @@ export function Profile() {
                        <Button className="bg-dusty-indigo text-white hover:bg-dusty-indigo/90" onClick={handleSave}><Save className="w-4 h-4 mr-2"/>Сохранить</Button>
                      </div>
                    </div>
-                   <input className="w-full p-3 border rounded-[12px]" placeholder="Ваше имя" value={editForm.display_name || ''} onChange={e => setEditForm({...editForm, display_name: e.target.value})} />
-                   <input className="w-full p-3 border rounded-[12px]" placeholder="Локация (напр. Дананг)" value={editForm.city || ''} onChange={e => setEditForm({...editForm, city: e.target.value})} />
-                   <input className="w-full p-3 border rounded-[12px]" placeholder="Ваш статус (напр. Живу 3 месяца)" value={editForm.stage || ''} onChange={e => setEditForm({...editForm, stage: e.target.value})} />
+                   <input className="w-full p-3 border border-border bg-input-background focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[12px]" placeholder="Ваше имя" value={editForm.display_name || ''} onChange={e => setEditForm({...editForm, display_name: e.target.value})} />
+                   <input className="w-full p-3 border border-border bg-input-background focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[12px]" placeholder="Локация (напр. Дананг)" value={editForm.city || ''} onChange={e => setEditForm({...editForm, city: e.target.value})} />
+                   <select className="w-full p-3 border border-border bg-input-background focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[12px]" value={editForm.stage || ''} onChange={e => setEditForm({...editForm, stage: e.target.value})}>
+                     <option value="" disabled>Выберите ваш статус</option>
+                     <option value="Планирую переезд">Планирую переезд</option>
+                     <option value="Осваиваюсь / Живу здесь">Осваиваюсь / Живу здесь</option>
+                     <option value="Помогаю другим">Помогаю другим</option>
+                     <option value="Уезжаю">Уезжаю</option>
+                   </select>
                 </div>
               )}
 
@@ -218,7 +224,7 @@ export function Profile() {
               {!isEditing ? (
                  <p className="text-foreground mb-4">{profile?.bio}</p>
               ) : (
-                 <textarea className="w-full mt-4 p-3 border rounded-[12px] h-24 resize-none" placeholder="Расскажите о себе (био)" value={editForm.bio || ''} onChange={e => setEditForm({...editForm, bio: e.target.value})} />
+                 <textarea className="w-full mt-4 p-3 border border-border bg-input-background focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[12px] h-24 resize-none" placeholder="Расскажите о себе (био)" value={editForm.bio || ''} onChange={e => setEditForm({...editForm, bio: e.target.value})} />
               )}
 
               {/* Interests */}
@@ -236,7 +242,7 @@ export function Profile() {
               ) : (
                 <div className="mt-4">
                   <p className="text-sm text-muted-foreground mb-2">Интересы (через запятую)</p>
-                  <input className="w-full p-3 border rounded-[12px]" placeholder="Например: Дизайн, Йога, Спорт" 
+                  <input className="w-full p-3 border border-border bg-input-background focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[12px]" placeholder="Например: Дизайн, Йога, Спорт" 
                     value={(editForm.interests || []).join(', ')} 
                     onChange={e => setEditForm({...editForm, interests: e.target.value.split(',').map(s=>s.trim()).filter(Boolean)})} 
                   />

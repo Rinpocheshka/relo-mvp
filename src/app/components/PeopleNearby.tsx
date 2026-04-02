@@ -25,7 +25,7 @@ export function PeopleNearby() {
   const [people, setPeople] = useState<Person[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const filters = ['Все', 'Новички', 'Проводники', 'Ищут друзей'];
+  const filters = ['Все', 'Местные / Осваиваются', 'Проводники', 'Ищут друзей'];
 
   useEffect(() => {
     if (!session) {
@@ -54,8 +54,8 @@ export function PeopleNearby() {
     ? people 
     : selectedFilter === 'Проводники'
     ? people.filter(p => p.is_guide)
-    : selectedFilter === 'Новички'
-    ? people.filter(p => p.stage?.includes('Только') || p.stage?.includes('приехал'))
+    : selectedFilter === 'Местные / Осваиваются'
+    ? people.filter(p => p.stage?.includes('Осваиваюсь') || p.stage?.includes('Живу'))
     : selectedFilter === 'Ищут друзей'
     ? people.filter(p => p.bio?.toLowerCase().includes('друз'))
     : people;
@@ -107,7 +107,7 @@ export function PeopleNearby() {
             <input
               type="text"
               placeholder="Поиск людей по интересам..."
-              className="w-full pl-12 pr-4 py-4 bg-white border border-border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20"
+              className="w-full pl-12 pr-4 py-4 bg-white border border-border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20 transition-all"
             />
           </div>
         </div>
@@ -147,10 +147,10 @@ export function PeopleNearby() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.2, delay: i * 0.05 }}
-                className={`bg-white p-6 rounded-[16px] border-2 transition-all hover:shadow-lg ${
+                className={`bg-white p-6 rounded-[16px] border transition-all hover:shadow-md ${
                   person.is_guide 
                     ? 'border-warm-olive/50 bg-gradient-to-br from-white to-warm-olive/5' 
-                    : 'border-border hover:border-dusty-indigo/30'
+                    : 'border-border/80 hover:border-dusty-indigo/30'
                 }`}
               >
                 {/* Header */}
