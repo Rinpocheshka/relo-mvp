@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
 import { X, ChevronRight } from 'lucide-react';
+import { AuthModal } from './AuthWidget';
 
 export function LandingPage() {
   const navigate = useNavigate();
@@ -15,20 +16,25 @@ export function LandingPage() {
     need: [] as string[],
     savePath: false,
   });
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   const startOnboarding = () => {
     setShowOnboarding(true);
     setOnboardingStep(0);
   };
-
   const handleOnboardingNext = () => {
     if (onboardingStep < 3) {
       setOnboardingStep(onboardingStep + 1);
     } else {
-      // Сохранить данные в localStorage и перейти на home
       localStorage.setItem('reloOnboarding', JSON.stringify(onboardingData));
       localStorage.setItem('reloStage', onboardingData.stage);
-      navigate('/home');
+      
+      if (onboardingData.savePath) {
+        setShowOnboarding(false);
+        setIsAuthOpen(true);
+      } else {
+        navigate('/home');
+      }
     }
   };
 
@@ -37,13 +43,19 @@ export function LandingPage() {
   };
 
   if (showOnboarding) {
-    return <OnboardingFlow 
-      step={onboardingStep} 
-      data={onboardingData} 
-      setData={setOnboardingData}
-      onNext={handleOnboardingNext}
-      onClose={skipOnboarding}
-    />;
+    return (
+      <>
+        <OnboardingFlow 
+          step={onboardingStep} 
+          data={onboardingData} 
+          setData={setOnboardingData}
+          onNext={handleOnboardingNext}
+          onBack={() => setOnboardingStep(Math.max(0, onboardingStep - 1))}
+          onClose={skipOnboarding}
+        />
+        <AuthModal open={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+      </>
+    );
   }
 
   return (
@@ -235,6 +247,7 @@ export function LandingPage() {
           </div>
         </div>
       </section>
+      <AuthModal open={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
     </div>
   );
 }
@@ -243,13 +256,15 @@ function OnboardingFlow({
   step, 
   data, 
   setData, 
-  onNext, 
+  onNext,
+  onBack,
   onClose 
 }: { 
   step: number;
   data: any;
   setData: (data: any) => void;
   onNext: () => void;
+  onBack: () => void;
   onClose: () => void;
 }) {
   const [selectedNeeds, setSelectedNeeds] = useState<string[]>(data.need || []);
@@ -266,9 +281,9 @@ function OnboardingFlow({
       title: 'Где ты сейчас?',
       options: [
         { label: 'Планирую переезд', value: 'planning', action: () => setData({ ...data, stage: 'planning' }) },
-        { label: 'Только приехал', value: 'new', action: () => setData({ ...data, stage: 'new' }) },
-        { label: 'Уже живу', value: 'living', action: () => setData({ ...data, stage: 'living' }) },
+        { label: 'Уже здесь', value: 'living', action: () => setData({ ...data, stage: 'living' }) },
         { label: 'Помогаю другим', value: 'helping', action: () => setData({ ...data, stage: 'helping' }) },
+        { label: 'Уезжаю', value: 'leaving', action: () => setData({ ...data, stage: 'leaving' }) },
       ],
     },
     {
@@ -295,11 +310,22 @@ function OnboardingFlow({
 
   return (
     <div className="fixed inset-0 bg-warm-milk z-50 flex items-center justify-center p-4">
+      {step > 0 && (
+        <button
+          onClick={onBack}
+          className="absolute top-4 left-4 p-2 hover:bg-black/5 rounded-[12px] flex items-center transition-colors text-muted-foreground hover:text-foreground"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 w-5 h-5"><path d="m15 18-6-6 6-6"/></svg>
+          <span className="text-sm font-medium">Назад</span>
+        </button>
+      )}
+
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 p-2 hover:bg-black/5 rounded-full transition-colors"
+        className="absolute top-4 right-4 p-2 hover:bg-black/5 rounded-[12px] flex items-center transition-colors text-muted-foreground hover:text-foreground"
       >
-        <X className="w-6 h-6" />
+        <span className="text-sm font-medium px-2">Закрыть</span>
+        <X className="w-5 h-5" />
       </button>
 
       <AnimatePresence mode="wait">

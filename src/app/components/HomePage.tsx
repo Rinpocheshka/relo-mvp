@@ -179,7 +179,7 @@ export function HomePage() {
     },
   };
 
-  const content = stageContent[currentStage];
+  const content = stageContent[currentStage] || stageContent['living'];
 
   return (
     <div className="min-h-screen bg-warm-milk">

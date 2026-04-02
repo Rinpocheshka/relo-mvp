@@ -50,107 +50,119 @@ export function AuthWidget() {
         variant="outline"
         size="sm"
         className="rounded-[12px]"
-        onClick={() => {
-          setOpen(true)
-          setStatus(null)
-        }}
+        onClick={() => setOpen(true)}
       >
         <LogIn className="w-4 h-4 mr-2" />
         Войти
       </Button>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-            onClick={() => setOpen(false)}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 16, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.98 }}
-              transition={{ duration: 0.2 }}
-              className="bg-white rounded-[16px] max-w-md w-full p-6"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="font-semibold text-xl mb-6 text-center">Создайте аккаунт или войдите</h3>
-              
-              <div className="flex flex-col gap-3 mb-6">
-                <Button 
-                  variant="outline" 
-                  className="rounded-[12px] h-12 text-[15px] font-medium border-border/60 shadow-sm"
-                  onClick={() => signInWithProvider('google')}
-                >
-                  <GoogleIcon />
-                  Продолжить с Google
-                </Button>
-                <Button 
-                  className="rounded-[12px] h-12 text-[15px] font-medium bg-black text-white hover:bg-black/90"
-                  onClick={() => signInWithProvider('apple')}
-                >
-                  <AppleIcon />
-                  Продолжить с Apple
-                </Button>
-              </div>
-
-              <div className="relative mb-6">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="bg-white px-3 text-muted-foreground">Или через email</span>
-                </div>
-              </div>
-
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full p-3 bg-input-background border border-border rounded-[12px] focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 mb-4"
-              />
-
-              {status && (
-                <div
-                  className={`text-sm mb-4 ${
-                    status.startsWith('Ошибка')
-                      ? 'text-red-600'
-                      : 'text-terracotta-deep'
-                  }`}
-                >
-                  {status}
-                </div>
-              )}
-
-              <div className="flex flex-col gap-3">
-                <Button
-                  className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[12px] w-full h-12"
-                  onClick={async () => {
-                    setStatus(null)
-                    const res = await signInWithOtp(email.trim())
-                    if (!res.ok) {
-                      setStatus(`Ошибка: ${res.error}`)
-                      return
-                    }
-                    setStatus('Код отправлен. Проверьте почту.')
-                    setTimeout(() => setOpen(false), 1200)
-                  }}
-                  disabled={!email.trim()}
-                >
-                  Получить код на почту
-                </Button>
-                <Button variant="ghost" className="rounded-[12px] text-muted-foreground hover:text-foreground" onClick={() => setOpen(false)}>
-                  Отмена
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <AuthModal open={open} onClose={() => setOpen(false)} />
     </>
+  )
+}
+
+interface AuthModalProps {
+  open: boolean
+  onClose: () => void
+}
+
+export function AuthModal({ open, onClose }: AuthModalProps) {
+  const { signInWithOtp, signInWithProvider } = useAuth()
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<string | null>(null)
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.98 }}
+            transition={{ duration: 0.2 }}
+            className="bg-white rounded-[16px] max-w-md w-full p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-semibold text-xl mb-6 text-center">Создайте аккаунт или войдите</h3>
+            
+            <div className="flex flex-col gap-3 mb-6">
+              <Button 
+                variant="outline" 
+                className="rounded-[12px] h-12 text-[15px] font-medium border-border/60 shadow-sm"
+                onClick={() => signInWithProvider('google')}
+              >
+                <GoogleIcon />
+                Продолжить с Google
+              </Button>
+              <Button 
+                className="rounded-[12px] h-12 text-[15px] font-medium bg-black text-white hover:bg-black/90"
+                onClick={() => signInWithProvider('apple')}
+              >
+                <AppleIcon />
+                Продолжить с Apple
+              </Button>
+            </div>
+
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-white px-3 text-muted-foreground">Или через email</span>
+              </div>
+            </div>
+
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full p-3 bg-white border border-border rounded-[12px] focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 mb-4"
+            />
+
+            {status && (
+              <div
+                className={`text-sm mb-4 ${
+                  status.startsWith('Ошибка')
+                    ? 'text-red-600'
+                    : 'text-terracotta-deep'
+                }`}
+              >
+                {status}
+              </div>
+            )}
+
+            <div className="flex flex-col gap-3">
+              <Button
+                className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[12px] w-full h-12"
+                onClick={async () => {
+                  setStatus(null)
+                  const res = await signInWithOtp(email.trim())
+                  if (!res.ok) {
+                    setStatus(`Ошибка: ${res.error}`)
+                    return
+                  }
+                  setStatus('Код отправлен. Проверьте почту.')
+                  setTimeout(onClose, 1200)
+                }}
+                disabled={!email.trim()}
+              >
+                Получить код на почту
+              </Button>
+              <Button variant="ghost" className="rounded-[12px] text-muted-foreground hover:text-foreground" onClick={onClose}>
+                Отмена
+              </Button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }
 

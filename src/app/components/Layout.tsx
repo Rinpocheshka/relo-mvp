@@ -194,23 +194,23 @@ export function Layout() {
           <div className="mt-12 text-center">
             <p className="text-sm font-medium mb-4">Давайте поговорим</p>
             <div className="flex justify-center gap-4 mb-8">
-              <a href="https://t.me/relo_me" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-soft-sand/30 hover:bg-terracotta-deep/10 rounded-full flex items-center justify-center transition-colors">
-                <span className="text-lg">📱</span>
+              <a href="https://t.me/relo_me" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-soft-sand/30 hover:bg-terracotta-deep/10 rounded-full flex items-center justify-center transition-colors text-dusty-indigo hover:text-terracotta-deep">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.888-.662 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
               </a>
-              <a href="https://wa.me/relome" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-soft-sand/30 hover:bg-terracotta-deep/10 rounded-full flex items-center justify-center transition-colors">
-                <span className="text-lg">💬</span>
+              <a href="https://wa.me/relome" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-soft-sand/30 hover:bg-terracotta-deep/10 rounded-full flex items-center justify-center transition-colors text-dusty-indigo hover:text-terracotta-deep">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12.01 2.014a10.01 10.01 0 0 0-8.5 15.28L2 22l4.87-1.25a9.96 9.96 0 0 0 5.14 1.41h.01a10.03 10.03 0 0 0 10-10.04 10.01 10.01 0 0 0-10.01-10.1zm0 18.23a8.21 8.21 0 0 1-4.18-1.14l-.3-.18-3.1.81.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24a8.24 8.24 0 0 1 8.23 8.24 8.24 8.24 0 0 1-8.26 8.24zm4.53-6.17c-.25-.13-1.47-.73-1.7-.81-.23-.08-.4-.13-.57.12-.17.25-.65.81-.79.98-.15.17-.3.19-.55.06a6.83 6.83 0 0 1-3.32-2.05c-.32-.37-.54-.83-.72-1.14-.17-.31-.02-.48.11-.6.11-.11.25-.3.37-.45.09-.13.13-.22.19-.37.06-.15.03-.28-.03-.41-.06-.13-.57-1.38-.78-1.89-.2-.5-.4-.43-.55-.43h-.47c-.17 0-.45.06-.68.32-.23.25-.87.85-.87 2.08s.89 2.42 1.01 2.58c.13.17 1.76 2.69 4.26 3.77 1.49.65 2.15.7 2.92.59.88-.13 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.19-.06-.1-.23-.16-.48-.28z"/></svg>
               </a>
-              <a href="mailto:hello@relo.me" className="w-10 h-10 bg-soft-sand/30 hover:bg-terracotta-deep/10 rounded-full flex items-center justify-center transition-colors">
-                <span className="text-lg">✉️</span>
+              <a href="mailto:hello@relo.me" className="w-10 h-10 bg-soft-sand/30 hover:bg-terracotta-deep/10 rounded-full flex items-center justify-center transition-colors text-dusty-indigo hover:text-terracotta-deep">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
               </a>
-              <a href="https://tiktok.com/@relome" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-soft-sand/30 hover:bg-terracotta-deep/10 rounded-full flex items-center justify-center transition-colors">
-                <span className="text-lg">🎵</span>
+              <a href="https://tiktok.com/@relome" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-soft-sand/30 hover:bg-terracotta-deep/10 rounded-full flex items-center justify-center transition-colors text-dusty-indigo hover:text-terracotta-deep">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.06-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93v7.24a8.1 8.1 0 0 1-5 7.42 8.13 8.13 0 0 1-9.98-3.9 8.01 8.01 0 0 1 1-8.52 8.1 8.1 0 0 1 6.57-2.6v4.13a4.01 4.01 0 0 0-2.31 7.23 4.06 4.06 0 0 0 4.1.6 4.01 4.01 0 0 0 2.22-3.66l.01-15.9Z"/></svg>
               </a>
-              <a href="https://instagram.com/relo.me" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-soft-sand/30 hover:bg-terracotta-deep/10 rounded-full flex items-center justify-center transition-colors">
-                <span className="text-lg">📷</span>
+              <a href="https://instagram.com/relo.me" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-soft-sand/30 hover:bg-terracotta-deep/10 rounded-full flex items-center justify-center transition-colors text-dusty-indigo hover:text-terracotta-deep">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
               </a>
-              <a href="https://facebook.com/relome" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-soft-sand/30 hover:bg-terracotta-deep/10 rounded-full flex items-center justify-center transition-colors">
-                <span className="text-lg">👥</span>
+              <a href="https://facebook.com/relome" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-soft-sand/30 hover:bg-terracotta-deep/10 rounded-full flex items-center justify-center transition-colors text-dusty-indigo hover:text-terracotta-deep">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
               </a>
             </div>
           </div>
