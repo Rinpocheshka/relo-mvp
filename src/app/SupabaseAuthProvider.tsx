@@ -6,6 +6,7 @@ type AuthContextValue = {
   user: User | null
   loading: boolean
   signInWithOtp: (email: string) => Promise<{ ok: true } | { ok: false; error: string }>
+  signInWithProvider: (provider: 'google' | 'apple') => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -49,7 +50,6 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          // В большинстве случаев Supabase использует redirect URL, чтобы корректно вернуть пользователя обратно.
           emailRedirectTo: window.location.origin,
         },
       })
@@ -62,6 +62,15 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
     }
   }
 
+  const signInWithProvider = async (provider: 'google' | 'apple') => {
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: window.location.origin,
+      },
+    })
+  }
+
   const signOut = async () => {
     await supabase.auth.signOut()
   }
@@ -72,6 +81,7 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
       user,
       loading,
       signInWithOtp,
+      signInWithProvider,
       signOut,
     }),
     [session, user, loading]
