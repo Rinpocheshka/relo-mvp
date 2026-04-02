@@ -137,7 +137,7 @@ export function Profile() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-[16px] border border-border p-8 mb-8"
+          className="bg-white rounded-[32px] border border-border/50 p-8 md:p-10 mb-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)]"
         >
           <div className="flex flex-col md:flex-row gap-6">
             {/* Avatar */}
@@ -183,16 +183,16 @@ export function Profile() {
                   <div className="flex gap-2">
                     {isOwnProfile ? (
                       <>
-                        <Button variant="outline" className="rounded-[12px]" onClick={() => setIsEditing(true)}>
+                        <Button variant="outline" className="rounded-full shadow-sm" onClick={() => setIsEditing(true)}>
                           <Edit className="w-4 h-4 mr-2" />
                           Редактировать
                         </Button>
-                        <Button variant="outline" className="rounded-[12px]">
+                        <Button variant="outline" className="rounded-full shadow-sm">
                           <Settings className="w-4 h-4" />
                         </Button>
                       </>
                     ) : (
-                      <Button className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[12px]">
+                      <Button className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-6">
                         <MessageCircle className="w-4 h-4 mr-2" />
                         Написать
                       </Button>
@@ -258,39 +258,39 @@ export function Profile() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white p-6 rounded-[16px] border border-border text-center"
+            className="bg-white p-8 rounded-[24px] border border-border/50 text-center shadow-[0_4px_24px_rgba(0,0,0,0.02)]"
           >
-            <div className="w-12 h-12 bg-terracotta-deep/10 rounded-full flex items-center justify-center mx-auto mb-3">
-              <MessageCircle className="w-6 h-6 text-terracotta-deep" />
+            <div className="w-14 h-14 bg-terracotta-deep/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <MessageCircle className="w-7 h-7 text-terracotta-deep" />
             </div>
-            <div className="text-3xl font-bold text-terracotta-deep mb-1">-</div>
-            <p className="text-sm text-muted-foreground">Объявлений (Скоро)</p>
+            <div className="text-4xl font-extrabold text-terracotta-deep mb-1">-</div>
+            <p className="text-sm font-medium text-muted-foreground">Объявлений</p>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white p-6 rounded-[16px] border border-border text-center"
+            className="bg-white p-8 rounded-[24px] border border-border/50 text-center shadow-[0_4px_24px_rgba(0,0,0,0.02)]"
           >
-            <div className="w-12 h-12 bg-dusty-indigo/10 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Calendar className="w-6 h-6 text-dusty-indigo" />
+            <div className="w-14 h-14 bg-dusty-indigo/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Calendar className="w-7 h-7 text-dusty-indigo" />
             </div>
-            <div className="text-3xl font-bold text-dusty-indigo mb-1">-</div>
-            <p className="text-sm text-muted-foreground">Событий (Скоро)</p>
+            <div className="text-4xl font-extrabold text-dusty-indigo mb-1">-</div>
+            <p className="text-sm font-medium text-muted-foreground">Событий</p>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white p-6 rounded-[16px] border border-border text-center"
+            className="bg-white p-8 rounded-[24px] border border-border/50 text-center shadow-[0_4px_24px_rgba(0,0,0,0.02)]"
           >
-            <div className="w-12 h-12 bg-warm-olive/10 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Heart className="w-6 h-6 text-warm-olive" />
+            <div className="w-14 h-14 bg-warm-olive/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Heart className="w-7 h-7 text-warm-olive" />
             </div>
-            <div className="text-3xl font-bold text-warm-olive mb-1">-</div>
-            <p className="text-sm text-muted-foreground">Рейтинг</p>
+            <div className="text-4xl font-extrabold text-warm-olive mb-1">-</div>
+            <p className="text-sm font-medium text-muted-foreground">Рейтинг</p>
           </motion.div>
         </div>
 
@@ -299,9 +299,9 @@ export function Profile() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white rounded-[16px] border border-border p-8"
+          className="bg-white rounded-[32px] border border-border/50 p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)]"
         >
-          <h2 className="text-2xl font-semibold mb-6">История активности</h2>
+          <h2 className="text-2xl font-bold mb-6">История активности</h2>
           <div className="space-y-4">
             {activities.map((activity, i) => (
               <motion.div

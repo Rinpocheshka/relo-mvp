@@ -191,10 +191,10 @@ export function HomePage() {
               <button
                 key={stage.id}
                 onClick={() => setCurrentStage(stage.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-[12px] whitespace-nowrap transition-all ${
+                className={`flex items-center gap-2 px-6 py-3 rounded-full whitespace-nowrap transition-all ${
                   currentStage === stage.id
-                    ? 'bg-terracotta-deep text-white'
-                    : 'bg-soft-sand/30 text-foreground hover:bg-soft-sand/50'
+                    ? 'bg-terracotta-deep text-white shadow-md font-medium'
+                    : 'bg-white shadow-sm border border-border text-foreground hover:bg-soft-sand/30'
                 }`}
               >
                 <span>{stage.icon}</span>
@@ -214,20 +214,20 @@ export function HomePage() {
           transition={{ duration: 0.4 }}
         >
           {/* Greeting */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-3">{content.greeting}</h1>
+          <div className="text-center mb-12 mt-8">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 leading-[1.15] tracking-tight">{content.greeting}</h1>
             {content.subtitle && (
-              <p className="text-lg text-muted-foreground">{content.subtitle}</p>
+              <p className="text-xl text-muted-foreground">{content.subtitle}</p>
             )}
           </div>
 
           {/* Steps */}
           <div className="mb-12">
-            <div className="bg-white p-6 rounded-[16px] border border-border">
+            <div className="bg-white p-6 rounded-[24px] border border-border/50 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
               <div className="flex flex-wrap gap-3 justify-center">
                 {content.steps.map((step, i) => (
                   <Link key={i} to={step.link}>
-                    <button className="px-4 py-2 bg-soft-sand/30 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-[12px] text-sm font-medium transition-all border border-transparent hover:border-terracotta-deep">
+                    <button className="px-5 py-2.5 bg-soft-sand/30 hover:bg-terracotta-deep/5 hover:text-terracotta-deep rounded-full text-[15px] font-medium transition-all text-muted-foreground hover:ring-1 hover:ring-terracotta-deep/20">
                       {step.text}
                     </button>
                   </Link>
@@ -260,21 +260,23 @@ export function HomePage() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: i * 0.1 }}
-                          className="bg-white p-6 rounded-[16px] border border-border transition-all hover:border-dusty-indigo/30"
+                          className="bg-white p-8 rounded-[32px] border border-border/30 shadow-[0_4px_24px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1"
                         >
                           <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 bg-dusty-indigo rounded-full flex-shrink-0"></div>
+                            <div className="w-14 h-14 bg-dusty-indigo/10 text-dusty-indigo rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
+                              {person.name.charAt(0)}
+                            </div>
                             <div className="flex-1">
-                              <h3 className="font-semibold mb-1">{person.name}</h3>
-                              <p className="text-sm text-muted-foreground mb-2">{person.status}</p>
-                              <span className="inline-block px-3 py-1 bg-soft-sand/30 text-xs rounded-full">
+                              <h3 className="font-semibold text-lg mb-1">{person.name}</h3>
+                              <p className="text-sm text-muted-foreground mb-3">{person.status}</p>
+                              <span className="inline-block px-4 py-1.5 bg-soft-sand/30 text-xs font-medium rounded-full">
                                 {person.tag}
                               </span>
                             </div>
                           </div>
                           <Button
                             size="sm"
-                            className="w-full mt-4 bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[12px]"
+                            className="w-full mt-6 bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full h-12"
                             onClick={() => {
                               setSelectedPerson(person.name);
                               setShowMessageHelper(true);
@@ -298,17 +300,19 @@ export function HomePage() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: i * 0.1 }}
-                          className="bg-white p-6 rounded-[16px] border border-border transition-all hover:border-dusty-indigo/30 cursor-pointer h-full"
+                          className="bg-white p-8 rounded-[24px] border border-border/50 shadow-[0_4px_24px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 cursor-pointer h-full flex flex-col justify-between"
                         >
-                          <span className="inline-block px-3 py-1 bg-warm-olive/20 text-warm-olive text-xs rounded-full mb-3">
-                            {section.subtitle.split(' ')[0]}
-                          </span>
-                          <h3 className="font-semibold mb-2">
-                            {section.subtitle.includes('Афиша') && 'Событие этой недели'}
-                            {section.subtitle.includes('Объявления') && 'Актуальное предложение'}
-                            {section.subtitle.includes('опору') && 'Популярный вопрос'}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">Нажмите для просмотра</p>
+                          <div>
+                            <span className="inline-block px-4 py-1.5 bg-warm-olive/10 text-warm-olive text-xs font-semibold uppercase tracking-wider rounded-full mb-4">
+                              {section.subtitle.split(' ')[0]}
+                            </span>
+                            <h3 className="text-xl font-semibold mb-3 leading-snug">
+                              {section.subtitle.includes('Афиша') && 'Событие этой недели'}
+                              {section.subtitle.includes('Объявления') && 'Актуальное предложение'}
+                              {section.subtitle.includes('опору') && 'Популярный вопрос'}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">Нажмите для просмотра</p>
+                          </div>
                         </motion.div>
                       </Link>
                     ))}

@@ -94,8 +94,8 @@ export function PeopleNearby() {
             <Users className="w-5 h-5 text-dusty-indigo" />
             <span className="text-dusty-indigo font-medium">Люди рядом</span>
           </div>
-          <h1 className="text-4xl font-bold mb-4">Здесь уже есть люди, которые проходят тот же путь</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 leading-[1.15] tracking-tight">Здесь уже есть люди, которые проходят тот же путь</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Познакомься с теми, кто сейчас в том же этапе или может помочь советом
           </p>
         </motion.div>
@@ -107,7 +107,7 @@ export function PeopleNearby() {
             <input
               type="text"
               placeholder="Поиск людей по интересам..."
-              className="w-full pl-12 pr-4 py-4 bg-white border border-border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20 transition-all"
+              className="w-full pl-12 pr-4 py-4 bg-white shadow-sm border border-border/50 rounded-full focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20 transition-all text-lg"
             />
           </div>
         </div>
@@ -119,10 +119,10 @@ export function PeopleNearby() {
               <button
                 key={filter}
                 onClick={() => setSelectedFilter(filter)}
-                className={`px-4 py-2 rounded-[12px] whitespace-nowrap transition-all ${
+                className={`px-5 py-2.5 rounded-full whitespace-nowrap transition-all font-medium ${
                   selectedFilter === filter
-                    ? 'bg-dusty-indigo text-white'
-                    : 'bg-white text-foreground hover:bg-soft-sand/30 border border-border'
+                    ? 'bg-dusty-indigo text-white shadow-md'
+                    : 'bg-white text-foreground hover:bg-soft-sand/30 border border-border/50 shadow-sm'
                 }`}
               >
                 {filter}
@@ -147,31 +147,31 @@ export function PeopleNearby() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.2, delay: i * 0.05 }}
-                className={`bg-white p-6 rounded-[16px] border transition-all hover:shadow-md ${
+                className={`bg-white p-8 rounded-[32px] border transition-all shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 ${
                   person.is_guide 
-                    ? 'border-warm-olive/50 bg-gradient-to-br from-white to-warm-olive/5' 
-                    : 'border-border/80 hover:border-dusty-indigo/30'
+                    ? 'border-warm-olive/30 bg-gradient-to-br from-white to-warm-olive/5' 
+                    : 'border-border/40'
                 }`}
               >
                 {/* Header */}
-                <div className="flex items-start gap-4 mb-4">
-                  <div className={`w-16 h-16 rounded-full flex-shrink-0 flex items-center justify-center text-white text-xl font-bold ${
-                    person.is_guide ? 'bg-warm-olive ring-2 ring-warm-olive/30' : 'bg-dusty-indigo'
+                <div className="flex items-start gap-4 mb-6">
+                  <div className={`w-16 h-16 rounded-full flex-shrink-0 flex items-center justify-center text-white text-2xl font-bold shadow-sm ${
+                    person.is_guide ? 'bg-warm-olive ring-4 ring-warm-olive/10' : 'bg-dusty-indigo/20 text-dusty-indigo ring-4 ring-dusty-indigo/10'
                   }`}>
                     {person.display_name?.charAt(0) || '?'}
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 pt-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold truncate">{person.display_name || 'Аноним'}</h3>
+                      <h3 className="font-semibold text-lg truncate">{person.display_name || 'Аноним'}</h3>
                       {person.is_guide && (
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 flex-shrink-0" />
+                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400 flex-shrink-0" />
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground">{person.stage}</p>
+                    <p className="text-sm font-medium text-muted-foreground">{person.stage}</p>
                     {person.is_guide && person.rating && (
                       <div className="flex items-center gap-1 mt-1">
                         <span className="text-sm font-medium">{person.rating}</span>
-                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
                       </div>
                     )}
                   </div>
@@ -213,13 +213,13 @@ export function PeopleNearby() {
 
                 {/* Action Button */}
                 <Button 
-                  className={`w-full rounded-[12px] ${
+                  className={`w-full rounded-full h-12 font-medium shadow-sm transition-all ${
                     person.is_guide
-                      ? 'bg-warm-olive hover:bg-warm-olive/90 text-white'
-                      : 'bg-dusty-indigo hover:bg-dusty-indigo/90 text-white'
+                      ? 'bg-warm-olive hover:bg-warm-olive/90 text-white hover:ring-2 hover:ring-offset-2 hover:ring-warm-olive/50'
+                      : 'bg-dusty-indigo hover:bg-dusty-indigo/90 text-white hover:ring-2 hover:ring-offset-2 hover:ring-dusty-indigo/50'
                   }`}
                 >
-                  <MessageCircle className="w-4 h-4 mr-2" />
+                  <MessageCircle className="w-5 h-5 mr-2" />
                   Написать
                 </Button>
               </motion.div>
@@ -228,14 +228,14 @@ export function PeopleNearby() {
         )}
 
         {/* CTA Section */}
-        <div className="mt-16 bg-gradient-to-br from-dusty-indigo to-terracotta-deep p-12 rounded-[16px] text-white text-center">
-          <h2 className="text-3xl font-bold mb-4">Присоединяйся к сообществу</h2>
-          <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
+        <div className="mt-16 bg-gradient-to-br from-dusty-indigo to-terracotta-deep p-16 rounded-[40px] text-white text-center shadow-xl">
+          <h2 className="text-4xl font-extrabold mb-4 leading-tight">Присоединяйся к сообществу</h2>
+          <p className="text-xl opacity-90 mb-10 max-w-2xl mx-auto font-medium">
             Создай профиль и находи людей, которые помогут тебе освоиться в новом городе
           </p>
           <Button 
             size="lg"
-            className="bg-white text-dusty-indigo hover:bg-white/90 rounded-[12px]"
+            className="bg-white text-dusty-indigo hover:bg-white/90 rounded-full h-14 px-8 text-lg font-bold shadow-lg"
           >
             Создать профиль
           </Button>

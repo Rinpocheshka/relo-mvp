@@ -42,9 +42,9 @@
   --chart-5: #D4A574;
   
   /* Border Radius */
-  --radius-card: 16px;
-  --radius-button: 12px;
-  --radius: 12px;
+  --radius-card: 24px;
+  --radius-button: 16px;
+  --radius: 16px;
   
   /* Sidebar */
   --sidebar: var(--warm-milk);

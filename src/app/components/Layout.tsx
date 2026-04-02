@@ -51,7 +51,7 @@ export function Layout() {
   return (
     <div className="min-h-screen bg-warm-milk">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-50 border-b border-border">
+      <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-border/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/home" className="flex items-center gap-2">
@@ -227,16 +227,16 @@ export function Layout() {
       </footer>
 
       {/* Mobile Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-border z-50 safe-area-bottom">
-        <div className="flex justify-around items-center h-16 px-2">
+      <nav className="md:hidden fixed bottom-4 left-4 right-4 bg-white/90 backdrop-blur-md shadow-lg border border-border/50 rounded-2xl z-50 p-1 safe-area-bottom">
+        <div className="flex justify-around items-center">
           {mobileNavItems.map((item) => {
             const Icon = item.icon;
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex flex-col items-center justify-center gap-1 px-2 py-2 flex-1 ${
-                  isActive(item.path) ? 'text-terracotta-deep' : 'text-muted-foreground'
+                className={`flex flex-col items-center justify-center gap-1 p-2 flex-1 rounded-[16px] transition-colors ${
+                  isActive(item.path) ? 'text-terracotta-deep bg-terracotta-deep/10' : 'text-muted-foreground hover:bg-soft-sand/20'
                 }`}
               >
                 <Icon className="w-5 h-5" />
