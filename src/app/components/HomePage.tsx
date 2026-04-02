@@ -26,7 +26,7 @@ export function HomePage() {
 
   const stages = [
     { id: 'planning' as Stage, label: 'Планирую переезд', icon: '🗺️' },
-    { id: 'living' as Stage, label: 'Осваиваюсь / Живу', icon: '🏠' },
+    { id: 'living' as Stage, label: 'Уже здесь', icon: '🏠' },
     { id: 'helping' as Stage, label: 'Помогаю другим', icon: '🤝' },
     { id: 'leaving' as Stage, label: 'Уезжаю', icon: '👋' },
   ];

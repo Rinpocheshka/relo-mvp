@@ -213,7 +213,7 @@ export function Profile() {
                    <select className="w-full p-3 border border-border bg-input-background focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[12px]" value={editForm.stage || ''} onChange={e => setEditForm({...editForm, stage: e.target.value})}>
                      <option value="" disabled>Выберите ваш статус</option>
                      <option value="Планирую переезд">Планирую переезд</option>
-                     <option value="Осваиваюсь / Живу здесь">Осваиваюсь / Живу здесь</option>
+                     <option value="Уже здесь">Уже здесь</option>
                      <option value="Помогаю другим">Помогаю другим</option>
                      <option value="Уезжаю">Уезжаю</option>
                    </select>

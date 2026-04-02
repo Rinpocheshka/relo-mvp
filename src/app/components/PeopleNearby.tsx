@@ -25,7 +25,7 @@ export function PeopleNearby() {
   const [people, setPeople] = useState<Person[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const filters = ['Все', 'Местные / Осваиваются', 'Проводники', 'Ищут друзей'];
+  const filters = ['Все', 'Уже здесь', 'Проводники', 'Ищут друзей'];
 
   useEffect(() => {
     if (!session) {
@@ -54,8 +54,8 @@ export function PeopleNearby() {
     ? people 
     : selectedFilter === 'Проводники'
     ? people.filter(p => p.is_guide)
-    : selectedFilter === 'Местные / Осваиваются'
-    ? people.filter(p => p.stage?.includes('Осваиваюсь') || p.stage?.includes('Живу'))
+    : selectedFilter === 'Уже здесь'
+    ? people.filter(p => p.stage?.includes('Осваиваюсь') || p.stage?.includes('Живу') || p.stage === 'Уже здесь')
     : selectedFilter === 'Ищут друзей'
     ? people.filter(p => p.bio?.toLowerCase().includes('друз'))
     : people;
