@@ -286,7 +286,7 @@ export function Profile() {
                     <div className="flex flex-wrap gap-2">
                       {isOwnProfile ? (
                         <Button 
-                          className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-md px-8 h-11 font-semibold transition-all active:scale-95"
+                          className="bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full shadow-md px-8 h-11 font-semibold transition-all active:scale-95 min-w-[200px]"
                           onClick={() => setIsEditing(true)}
                         >
                           <Edit className="w-4 h-4 mr-2" />
@@ -295,7 +295,7 @@ export function Profile() {
                       ) : (globalProfile?.role === 'admin' || user?.id === 'admin-id-fallback') ? (
                         <div className="flex gap-2">
                           <Button 
-                            className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-md px-8 h-11 font-semibold transition-all active:scale-95"
+                            className="bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full shadow-md px-8 h-11 font-semibold transition-all active:scale-95 min-w-[200px]"
                             onClick={() => setIsEditing(true)}
                           >
                             <Edit className="w-4 h-4 mr-2" />
@@ -328,8 +328,8 @@ export function Profile() {
                         >
                           <X className="w-5 h-5 text-muted-foreground" />
                         </Button>
-                        <Button 
-                          className="bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full px-8 h-11 shadow-md font-semibold transition-all active:scale-95" 
+                         <Button 
+                          className="bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full px-8 h-11 shadow-md font-semibold transition-all active:scale-95 min-w-[200px]" 
                           onClick={handleSave}
                         >
                           <Save className="w-4 h-4 mr-2"/>
