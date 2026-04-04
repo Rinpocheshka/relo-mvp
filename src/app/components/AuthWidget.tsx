@@ -78,15 +78,15 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-black/50 z-[100] grid place-items-center p-4 backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
-            initial={{ opacity: 0, y: 16, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.98 }}
-            transition={{ duration: 0.2 }}
-            className="bg-white rounded-[16px] max-w-md w-full p-6 shadow-2xl"
+            initial={{ opacity: 0, scale: 0.96, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 4 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+            className="bg-white rounded-[24px] max-w-md w-full p-8 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="font-semibold text-xl mb-6 text-center">Создайте аккаунт или войдите</h3>
