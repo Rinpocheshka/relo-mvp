@@ -62,6 +62,10 @@ export function Profile() {
       if (!error && data) {
         setProfile(data);
         setEditForm(data);
+      } else if (isOwnProfile) {
+        setProfile({} as UserData);
+        setEditForm({} as UserData);
+        setIsEditing(true);
       }
       setLoading(false);
     }
@@ -123,21 +127,6 @@ export function Profile() {
     return <div className="min-h-screen bg-warm-milk py-16 flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dusty-indigo"></div></div>;
   }
 
-  if (!profile && isOwnProfile && !isEditing) {
-    return (
-      <div className="min-h-screen bg-warm-milk py-16 flex items-center justify-center">
-        <div className="text-center max-w-lg px-4">
-          <h2 className="text-3xl font-bold mb-4">Добро пожаловать в Relo!</h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            Заполните свой профиль, чтобы начать общаться и находить полезные контакты.
-          </p>
-          <Button size="lg" onClick={() => setIsEditing(true)} className="bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-[12px]">
-            Создать профиль
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   if (!profile) {
     return <div className="min-h-screen bg-warm-milk py-16 flex justify-center"><p>Пользователь не найден</p></div>;
