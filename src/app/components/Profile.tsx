@@ -286,7 +286,7 @@ export function Profile() {
                     <div className="flex flex-wrap gap-2">
                       {isOwnProfile ? (
                         <Button 
-                          className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-6 h-11 font-medium"
+                          className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-md px-8 h-11 font-semibold transition-all active:scale-95"
                           onClick={() => setIsEditing(true)}
                         >
                           <Edit className="w-4 h-4 mr-2" />
@@ -295,13 +295,13 @@ export function Profile() {
                       ) : (globalProfile?.role === 'admin' || user?.id === 'admin-id-fallback') ? (
                         <div className="flex gap-2">
                           <Button 
-                            className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-6 h-11 font-medium"
+                            className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-md px-8 h-11 font-semibold transition-all active:scale-95"
                             onClick={() => setIsEditing(true)}
                           >
                             <Edit className="w-4 h-4 mr-2" />
                             Редактировать (Админ)
                           </Button>
-                          <Button className="bg-soft-sand hover:bg-soft-sand/80 text-foreground rounded-full shadow-sm px-6 h-11 font-medium">
+                          <Button className="bg-soft-sand hover:bg-soft-sand/80 text-foreground rounded-full shadow-sm px-8 h-11 font-medium transition-all active:scale-95">
                              <MessageCircle className="w-4 h-4 mr-2" />
                              Написать
                           </Button>

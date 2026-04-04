@@ -60,15 +60,10 @@ function HeaderAuth() {
               <ChevronDown className="w-3.5 h-3.5 text-muted-foreground hidden lg:block" />
             </button>
           </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[200px] rounded-[20px] p-2 mt-2 shadow-xl border-soft-sand/20">
+            <DropdownMenuContent align="end" className="w-[180px] rounded-[20px] p-2 mt-2 shadow-xl border-soft-sand/20">
               <DropdownMenuItem asChild className="rounded-[12px] cursor-pointer hover:bg-soft-sand/30 font-medium">
                 <Link to="/profile" className="flex items-center gap-2 w-full px-2 py-1.5">
                   <User className="w-4 h-4" /> Мой профиль
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="rounded-[12px] cursor-pointer hover:bg-soft-sand/30 font-medium">
-                <Link to="/profile?edit=true" className="flex items-center gap-2 w-full px-2 py-1.5">
-                  <Edit className="w-4 h-4" /> Редактировать профиль
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="my-1 bg-soft-sand/10" />
