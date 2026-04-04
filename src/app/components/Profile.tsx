@@ -294,7 +294,25 @@ export function Profile() {
                        <label className="text-sm font-medium text-muted-foreground ml-1">Город</label>
                        <div className="relative mt-1">
                          <MapPin className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                         <input className="w-full p-3 pl-10 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] shadow-sm" placeholder="Локация (напр. Дананг, Вьетнам)" value={editForm.city || ''} onChange={e => setEditForm({...editForm, city: e.target.value})} />
+                         <select className="w-full p-3 pl-10 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] shadow-sm appearance-none cursor-pointer" value={editForm.city || ''} onChange={e => setEditForm({...editForm, city: e.target.value})}>
+                           <option value="" disabled>Селект локации</option>
+                           <optgroup label="Вьетнам">
+                             <option value="Дананг, Вьетнам">Дананг</option>
+                             <option value="Нячанг, Вьетнам">Нячанг</option>
+                             <option value="Муйне, Вьетнам">Муйне</option>
+                             <option value="Хошимин, Вьетнам">Хошимин</option>
+                             <option value="Ханой, Вьетнам">Ханой</option>
+                           </optgroup>
+                           <optgroup label="Таиланд">
+                             <option value="Паттайя, Таиланд">Паттайя</option>
+                           </optgroup>
+                           <optgroup label="В пути">
+                             <option value="В дороге">В дороге</option>
+                           </optgroup>
+                         </select>
+                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground z-10">
+                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m6 9 6 6 6-6"/></svg>
+                         </div>
                        </div>
                      </div>
                    </div>
