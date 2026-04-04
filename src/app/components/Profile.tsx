@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { MapPin, Calendar, Star, MessageCircle, Settings, Edit, Award, Heart, Save, X } from 'lucide-react';
+import { MapPin, Calendar, Star, MessageCircle, Settings, Edit, Award, Heart, Save, X, Camera, Loader2, Send, Phone } from 'lucide-react';
 import { Button } from './ui/button';
 import { useParams } from 'react-router';
 import { supabase } from '../../lib/supabaseClient';
@@ -16,7 +16,20 @@ interface UserData {
   is_guide: boolean;
   rating?: number;
   created_at: string;
+  avatar_url?: string;
+  contact_telegram?: string;
+  contact_whatsapp?: string;
 }
+
+const PROFILE_TAGS = [
+  { value: 'solo', label: '🧍 Я один' },
+  { value: 'partner', label: '👫 С партнёром' },
+  { value: 'kids', label: '👨‍👩‍👧 С детьми' },
+  { value: 'pet', label: '🐾 С питомцем' },
+  { value: 'remote', label: '💻 Удалёнщик' },
+  { value: 'job', label: '💼 Ищу работу' },
+  { value: 'housing', label: '🏠 Ищу жильё' },
+];
 
 export function Profile() {
   const { id } = useParams();
@@ -26,6 +39,7 @@ export function Profile() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<Partial<UserData>>({});
+  const [uploading, setUploading] = useState(false);
 
   const isOwnProfile = !id || id === session?.user?.id;
   const targetId = isOwnProfile ? session?.user?.id : id;
@@ -56,7 +70,6 @@ export function Profile() {
   const handleSave = async () => {
     if (!session?.user?.id) return;
     
-    // Upsert profile data
     const { error } = await supabase
       .from('profiles')
       .upsert({ 
@@ -65,7 +78,10 @@ export function Profile() {
         stage: editForm.stage,
         city: editForm.city,
         bio: editForm.bio,
-        interests: editForm.interests || []
+        interests: editForm.interests || [],
+        avatar_url: editForm.avatar_url,
+        contact_telegram: editForm.contact_telegram,
+        contact_whatsapp: editForm.contact_whatsapp,
       });
 
     if (!error) {
@@ -75,6 +91,33 @@ export function Profile() {
       alert('Error updating profile: ' + error.message);
     }
   };
+
+  const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true);
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error('Вы не выбрали изображение');
+      }
+      
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${session?.user?.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      let { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      
+      setEditForm({ ...editForm, avatar_url: publicUrl });
+    } catch (error: any) {
+      alert(error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   if (loading) {
     return <div className="min-h-screen bg-warm-milk py-16 flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dusty-indigo"></div></div>;
   }
@@ -141,10 +184,20 @@ export function Profile() {
         >
           <div className="flex flex-col md:flex-row gap-6">
             {/* Avatar */}
-            <div className="flex flex-col items-center md:items-start">
-               {/* Use the display_name from editForm or profile state depending on edit mode, if none exists fallback to '?' */}
-              <div className="w-32 h-32 bg-gradient-to-br from-terracotta-deep to-dusty-indigo rounded-full mb-4 flex items-center justify-center text-white text-4xl font-bold uppercase overflow-hidden">
-                 {(isEditing ? editForm.display_name : profile?.display_name)?.charAt(0) || '?'}
+            <div className="flex flex-col items-center md:items-start group relative">
+              <div className="w-32 h-32 bg-gradient-to-br from-terracotta-deep to-dusty-indigo rounded-full mb-4 flex items-center justify-center text-white text-4xl font-bold uppercase overflow-hidden relative shadow-md">
+                {(isEditing ? editForm.avatar_url : profile?.avatar_url) ? (
+                  <img src={(isEditing ? editForm.avatar_url : profile?.avatar_url) || ''} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <span>{(isEditing ? editForm.display_name : profile?.display_name)?.charAt(0) || '?'}</span>
+                )}
+                {isEditing && (
+                  <label className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                    {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Camera className="w-6 h-6" />}
+                    <span className="text-[10px] font-medium mt-1">Изменить</span>
+                    <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={uploadAvatar} />
+                  </label>
+                )}
               </div>
               {!isEditing && profile?.is_guide && (
                 <div className="flex items-center gap-2 px-3 py-1 bg-warm-olive/10 text-warm-olive rounded-full">
@@ -157,95 +210,168 @@ export function Profile() {
             {/* Info */}
             <div className="flex-1">
               {!isEditing ? (
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
-                  <div>
-                    <h1 className="text-3xl font-bold mb-2">{profile?.display_name || 'Аноним'}</h1>
-                    <p className="text-lg text-muted-foreground mb-3">{profile?.stage}</p>
-                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        <span>{profile?.city}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        <span>На платформе с {new Date(profile?.created_at || '').toLocaleDateString('ru-RU')}</span>
-                      </div>
-                      {profile?.is_guide && (
+                <>
+                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+                    <div>
+                      <h1 className="text-3xl font-bold mb-2">{profile?.display_name || 'Аноним'}</h1>
+                      <p className="text-lg text-muted-foreground mb-3">{profile?.stage === 'living' ? 'Уже здесь' : 'Планирую переезд'}</p>
+                      
+                      <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
-                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                          <span className="font-medium">{profile?.rating || '5.0'}</span>
+                          <MapPin className="w-4 h-4" />
+                          <span>{profile?.city}</span>
                         </div>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          <span>На платформе с {new Date(profile?.created_at || '').toLocaleDateString('ru-RU')}</span>
+                        </div>
+                        {profile?.is_guide && (
+                          <div className="flex items-center gap-2">
+                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <span className="font-medium">{profile?.rating || '5.0'}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mt-4">
+                        {profile?.contact_telegram && (
+                          <a href={`https://t.me/${profile.contact_telegram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-dusty-indigo hover:text-dusty-indigo/80 font-medium bg-dusty-indigo/10 px-3 py-1.5 rounded-full transition-colors">
+                            <Send className="w-4 h-4" /> Telegram
+                          </a>
+                        )}
+                        {profile?.contact_whatsapp && (
+                          <a href={`https://wa.me/${profile.contact_whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-green-600 hover:text-green-700 font-medium bg-green-50 px-3 py-1.5 rounded-full transition-colors">
+                            <Phone className="w-4 h-4" /> WhatsApp
+                          </a>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      {isOwnProfile ? (
+                        <>
+                          <Button variant="outline" className="rounded-full shadow-sm" onClick={() => setIsEditing(true)}>
+                            <Edit className="w-4 h-4 mr-2" />
+                            Редактировать
+                          </Button>
+                          <Button variant="outline" className="rounded-full shadow-sm">
+                            <Settings className="w-4 h-4" />
+                          </Button>
+                        </>
+                      ) : (
+                        <Button className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-6">
+                           <MessageCircle className="w-4 h-4 mr-2" />
+                           Написать
+                        </Button>
                       )}
                     </div>
                   </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-2">
-                    {isOwnProfile ? (
-                      <>
-                        <Button variant="outline" className="rounded-full shadow-sm" onClick={() => setIsEditing(true)}>
-                          <Edit className="w-4 h-4 mr-2" />
-                          Редактировать
-                        </Button>
-                        <Button variant="outline" className="rounded-full shadow-sm">
-                          <Settings className="w-4 h-4" />
-                        </Button>
-                      </>
-                    ) : (
-                      <Button className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-6">
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        Написать
-                      </Button>
-                    )}
-                  </div>
-                </div>
+                </>
               ) : (
                 <div className="w-full flex flex-col gap-4">
-                   <div className="flex justify-between items-center">
+                   <div className="flex justify-between items-center mb-2">
                      <h2 className="text-2xl font-bold">Редактирование профиля</h2>
                      <div className="flex gap-2">
-                       <Button variant="outline" size="icon" onClick={() => setIsEditing(false)}><X className="w-4 h-4" /></Button>
-                       <Button className="bg-dusty-indigo text-white hover:bg-dusty-indigo/90" onClick={handleSave}><Save className="w-4 h-4 mr-2"/>Сохранить</Button>
+                       <Button variant="outline" size="icon" onClick={() => { setIsEditing(false); setEditForm(profile || {}); }}><X className="w-4 h-4" /></Button>
+                       <Button className="bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full px-5 shadow-sm font-medium" onClick={handleSave}><Save className="w-4 h-4 mr-2"/>Сохранить</Button>
                      </div>
                    </div>
-                   <input className="w-full p-3 border border-border bg-input-background focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[12px]" placeholder="Ваше имя" value={editForm.display_name || ''} onChange={e => setEditForm({...editForm, display_name: e.target.value})} />
-                   <input className="w-full p-3 border border-border bg-input-background focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[12px]" placeholder="Локация (напр. Дананг)" value={editForm.city || ''} onChange={e => setEditForm({...editForm, city: e.target.value})} />
-                   <select className="w-full p-3 border border-border bg-input-background focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[12px]" value={editForm.stage || ''} onChange={e => setEditForm({...editForm, stage: e.target.value})}>
-                     <option value="" disabled>Выберите ваш статус</option>
-                     <option value="Планирую переезд">Планирую переезд</option>
-                     <option value="Уже здесь">Уже здесь</option>
-                     <option value="Помогаю другим">Помогаю другим</option>
-                     <option value="Уезжаю">Уезжаю</option>
-                   </select>
+                   
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div>
+                       <label className="text-sm font-medium text-muted-foreground ml-1">Имя</label>
+                       <input className="w-full p-3 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] mt-1 shadow-sm" placeholder="Имя" value={editForm.display_name || ''} onChange={e => setEditForm({...editForm, display_name: e.target.value})} />
+                     </div>
+                     <div>
+                       <label className="text-sm font-medium text-muted-foreground ml-1">Роль в сообществе</label>
+                       <select className="w-full p-3 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] mt-1 shadow-sm" value={editForm.stage || ''} onChange={e => setEditForm({...editForm, stage: e.target.value})}>
+                         <option value="" disabled>Выберите ваш статус</option>
+                         <option value="planning">Планирую переезд</option>
+                         <option value="living">Уже здесь</option>
+                       </select>
+                     </div>
+                     <div className="md:col-span-2">
+                       <label className="text-sm font-medium text-muted-foreground ml-1">Город</label>
+                       <div className="relative mt-1">
+                         <MapPin className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                         <input className="w-full p-3 pl-10 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] shadow-sm" placeholder="Локация (напр. Дананг, Вьетнам)" value={editForm.city || ''} onChange={e => setEditForm({...editForm, city: e.target.value})} />
+                       </div>
+                     </div>
+                   </div>
+                   
+                   <div className="mt-2">
+                      <label className="text-sm font-medium text-muted-foreground ml-1">Контакты для связи</label>
+                      <div className="flex gap-4 mt-1">
+                        <div className="flex-1 relative">
+                           <Send className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-dusty-indigo/60" />
+                           <input className="w-full p-3 pl-10 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] shadow-sm" placeholder="Telegram @username" value={editForm.contact_telegram || ''} onChange={e => setEditForm({...editForm, contact_telegram: e.target.value})} />
+                        </div>
+                        <div className="flex-1 relative">
+                           <Phone className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-green-600/60" />
+                           <input className="w-full p-3 pl-10 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] shadow-sm" placeholder="WhatsApp" value={editForm.contact_whatsapp || ''} onChange={e => setEditForm({...editForm, contact_whatsapp: e.target.value})} />
+                        </div>
+                      </div>
+                   </div>
                 </div>
               )}
 
               {/* Bio */}
               {!isEditing ? (
-                 <p className="text-foreground mb-4">{profile?.bio}</p>
+                 <p className="text-foreground my-6 leading-relaxed bg-soft-sand/10 p-5 rounded-[20px]">{profile?.bio || <span className="text-muted-foreground italic">Расскажите немного о себе...</span>}</p>
               ) : (
-                 <textarea className="w-full mt-4 p-3 border border-border bg-input-background focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[12px] h-24 resize-none" placeholder="Расскажите о себе (био)" value={editForm.bio || ''} onChange={e => setEditForm({...editForm, bio: e.target.value})} />
+                 <div className="mt-4">
+                   <label className="text-sm font-medium text-muted-foreground ml-1">О себе</label>
+                   <textarea className="w-full mt-1 p-4 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] h-28 resize-none shadow-sm" placeholder="Расскажите о себе, чем занимаетесь и чем можете быть полезны" value={editForm.bio || ''} onChange={e => setEditForm({...editForm, bio: e.target.value})} />
+                 </div>
               )}
 
               {/* Interests */}
               {!isEditing ? (
-                <div className="flex flex-wrap gap-2">
-                  {(profile?.interests || []).map((interest) => (
-                    <span
-                      key={interest}
-                      className="px-3 py-1 bg-soft-sand/50 text-sm rounded-full"
-                    >
-                      {interest}
-                    </span>
-                  ))}
+                <div className="flex flex-col gap-2 mt-2">
+                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Интересы и потребности</span>
+                  <div className="flex flex-wrap gap-2">
+                    {(profile?.interests || []).length > 0 ? (
+                      (profile?.interests || []).map((interest) => {
+                        const lbl = PROFILE_TAGS.find(t => t.value === interest)?.label || interest;
+                        return (
+                          <span
+                            key={interest}
+                            className="px-3 py-1.5 bg-white border border-border/80 text-sm font-medium text-foreground rounded-full shadow-sm"
+                          >
+                            {lbl}
+                          </span>
+                        );
+                      })
+                    ) : (
+                      <span className="text-sm text-muted-foreground">Не указаны</span>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div className="mt-4">
-                  <p className="text-sm text-muted-foreground mb-2">Интересы (через запятую)</p>
-                  <input className="w-full p-3 border border-border bg-input-background focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[12px]" placeholder="Например: Дизайн, Йога, Спорт" 
-                    value={(editForm.interests || []).join(', ')} 
-                    onChange={e => setEditForm({...editForm, interests: e.target.value.split(',').map(s=>s.trim()).filter(Boolean)})} 
-                  />
+                  <label className="text-sm font-medium text-muted-foreground ml-1">Теги и интересы</label>
+                  <p className="text-[13px] text-muted-foreground mb-3 ml-1">Помогают другим находить вас по общим интересам</p>
+                  <div className="flex flex-wrap gap-2">
+                    {PROFILE_TAGS.map((tag) => {
+                      const selected = (editForm.interests || []).includes(tag.value);
+                      return (
+                        <button
+                          key={tag.value}
+                          type="button"
+                          onClick={() => {
+                            const newInterests = selected 
+                              ? (editForm.interests || []).filter(t => t !== tag.value) 
+                              : [...(editForm.interests || []), tag.value];
+                            setEditForm({ ...editForm, interests: newInterests });
+                          }}
+                          className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors shadow-sm ${selected ? 'bg-terracotta-deep text-white border-terracotta-deep' : 'bg-white text-foreground border-border hover:border-terracotta-deep/50'}`}
+                        >
+                          {tag.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
@@ -324,11 +450,9 @@ export function Profile() {
                 </div>
                 <div className="flex-1">
                   <p className="font-medium mb-1">{activity.title}</p>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span className="px-2 py-0.5 bg-soft-sand/30 rounded-full text-xs">
-                      {activity.category}
-                    </span>
-                    <span>·</span>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <span>{activity.category}</span>
+                    <span>•</span>
                     <span>{activity.date}</span>
                   </div>
                 </div>
@@ -336,34 +460,6 @@ export function Profile() {
             ))}
           </div>
         </motion.div>
-
-        {/* Become Guide CTA (if not a guide) */}
-        {!profile?.is_guide && isOwnProfile && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="mt-8 bg-gradient-to-br from-warm-olive to-terracotta-deep p-8 rounded-[16px] text-white"
-          >
-            <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                <Award className="w-8 h-8" />
-              </div>
-              <div className="flex-1 text-center md:text-left">
-                <h3 className="text-2xl font-bold mb-2">Стать проводником города</h3>
-                <p className="opacity-90">
-                  Получи статус проводника и помогай новичкам адаптироваться в городе
-                </p>
-              </div>
-              <Button 
-                size="lg"
-                className="bg-white text-warm-olive hover:bg-white/90 rounded-[12px] whitespace-nowrap"
-              >
-                Узнать больше
-              </Button>
-            </div>
-          </motion.div>
-        )}
       </div>
     </div>
   );

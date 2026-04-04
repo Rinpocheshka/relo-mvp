@@ -8,6 +8,7 @@ import { motion } from 'motion/react';
 import { Button } from './ui/button';
 import { AuthModal } from './AuthWidget';
 import { useAuth } from '../SupabaseAuthProvider';
+import { supabase } from '../../lib/supabaseClient';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -137,8 +138,40 @@ function MobileUserButton({ isActive }: { isActive: boolean }) {
 // ─── Main Layout ──────────────────────────────────────────────────────────────
 export function Layout() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
   const isLanding = location.pathname === '/';
   const [city, setCity] = useState<string>('Дананг');
+
+  useEffect(() => {
+    // 1. Redirect logged-in users from Landing to Home
+    if (!loading && user && location.pathname === '/') {
+      navigate('/home', { replace: true });
+    }
+
+    // 2. Sync onboarding data if exists
+    if (!loading && user) {
+      const stored = localStorage.getItem('reloOnboarding');
+      if (stored) {
+        try {
+          const data = JSON.parse(stored);
+          if (data && data.city) {
+            supabase.from('profiles').update({
+              city: data.city,
+              stage: data.stage,
+              interests: data.need || [],
+            }).eq('id', user.id).then(({ error }: { error: any }) => {
+              if (!error) {
+                localStorage.removeItem('reloOnboarding');
+              }
+            });
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+  }, [user, loading, location.pathname, navigate]);
 
   const navItems = [
     { path: '/home', icon: Home, label: 'Главная' },
