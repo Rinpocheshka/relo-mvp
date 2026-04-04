@@ -2,8 +2,22 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router';
 import { Button } from './ui/button';
-import { MessageCircle, ArrowRight, Star, Users, Megaphone, Calendar, Heart, MapPin, Plus } from 'lucide-react';
+import { MessageCircle, ArrowRight, Star, Users, Megaphone, Calendar, Heart, MapPin, Plus, Edit } from 'lucide-react';
 import { MessageHelper } from './MessageHelper';
+import { supabase } from '../../lib/supabaseClient';
+import { useAuth } from '../SupabaseAuthProvider';
+
+interface Person {
+  id: string;
+  display_name: string;
+  stage: string;
+  city: string;
+  bio: string;
+  interests: string[];
+  is_guide: boolean;
+  avatar_url?: string;
+  role?: string;
+}
 
 type Stage = 'planning' | 'living' | 'helping' | 'leaving';
 
@@ -19,28 +33,7 @@ const STAGE_LABEL_MAP: Record<string, Stage> = {
   'Уезжаю': 'leaving',
 };
 
-// ─── Mock people nearby ───────────────────────────────────────────────────────
-const NEARBY_PEOPLE: Record<Stage, Array<{ name: string; status: string; tag: string; isGuide?: boolean }>> = {
-  planning: [
-    { name: 'Мария', status: 'Планирует переезд', tag: 'Собирает документы' },
-    { name: 'Олег', status: 'Уже переехал · 6 мес.', tag: 'Делится опытом', isGuide: true },
-    { name: 'Таня', status: 'Планирует переезд', tag: 'Ищет информацию о школах' },
-  ],
-  living: [
-    { name: 'Елена', status: 'Уже здесь · 3 нед.', tag: 'Ищет друзей' },
-    { name: 'Дмитрий', status: 'Уже здесь · 1 год', tag: 'Организует встречи', isGuide: true },
-    { name: 'Катя', status: 'Уже здесь · 2 мес.', tag: 'IT · Фриланс' },
-  ],
-  helping: [
-    { name: 'Светлана', status: 'Только приехала', tag: 'Ищет жильё' },
-    { name: 'Максим', status: 'Новичок · 1 нед.', tag: 'Нужна помощь' },
-    { name: 'Аня', status: 'Только приехала', tag: 'С детьми' },
-  ],
-  leaving: [
-    { name: 'Артём', status: 'Тоже уезжает', tag: 'Продаёт вещи' },
-    { name: 'Ксения', status: 'Новичок', tag: 'Примет эстафету' },
-  ],
-};
+// ─── OLD Mock removed ──────────────────────
 
 // ─── Stage content ─────────────────────────────────────────────────────────────
 const stageContent = {
@@ -107,11 +100,15 @@ const stageContent = {
 };
 
 export function HomePage() {
+  const { session, user } = useAuth();
   const [currentStage, setCurrentStage] = useState<Stage>('living');
   const [showStageSelector, setShowStageSelector] = useState(false);
   const [showMessageHelper, setShowMessageHelper] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<string>('');
   const [city, setCity] = useState('Дананг');
+  const [nearbyPeople, setNearbyPeople] = useState<Person[]>([]);
+  const [peopleLoading, setPeopleLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState<Person | null>(null);
 
   useEffect(() => {
     try {
@@ -130,8 +127,74 @@ export function HomePage() {
     }
   }, []);
 
+  useEffect(() => {
+    async function fetchMainData() {
+      setPeopleLoading(true);
+      let currentCity = city;
+      let currentUser: Person | null = null;
+
+      // 1. Fetch current user's profile
+      if (session?.user?.id) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        if (profile) {
+          setUserProfile(profile);
+          currentUser = profile;
+          if (profile.city) {
+            setCity(profile.city);
+            currentCity = profile.city;
+          }
+        }
+      }
+
+      // 2. Fetch others with proximity logic
+      const { data: allProfiles, error } = await supabase
+        .from('profiles')
+        .select('*');
+      
+      if (!error && allProfiles) {
+        let results: Person[] = [];
+        const others = allProfiles.filter(p => p.id !== session?.user?.id);
+
+        if (others.length === 0 && currentUser) {
+          // If I'm alone, show me 3x
+          results = [currentUser, currentUser, currentUser];
+        } else {
+          // Fallback logic
+          const sameCity = others.filter(p => p.city === currentCity);
+          results = [...sameCity];
+
+          if (results.length < 3 && currentCity.includes(',')) {
+            const country = currentCity.split(',')[1]?.trim();
+            const sameCountry = others.filter(p => 
+              p.city?.includes(country) && !results.find(r => r.id === p.id)
+            );
+            results = [...results, ...sameCountry];
+          }
+
+          if (results.length < 3) {
+            const leftovers = others.filter(p => !results.find(r => r.id === p.id));
+            results = [...results, ...leftovers];
+          }
+          
+          results = results.slice(0, 3);
+          
+          // Final safety: if no one else exists and I'm even not in DB yet (not likely but safe)
+          if (results.length === 0 && currentUser) {
+            results = [currentUser, currentUser, currentUser];
+          }
+        }
+        setNearbyPeople(results);
+      }
+      setPeopleLoading(false);
+    }
+    fetchMainData();
+  }, [session, user]);
+
   const content = stageContent[currentStage];
-  const people = NEARBY_PEOPLE[currentStage];
 
   const stageLabels: Record<Stage, { label: string; icon: string }> = {
     planning: { label: 'Планирую переезд', icon: '🗺️' },
@@ -143,7 +206,6 @@ export function HomePage() {
   return (
     <div className="min-h-screen bg-warm-milk">
       <div className="max-w-5xl mx-auto px-4 py-8 pb-24 md:pb-8">
-
 
 
         <AnimatePresence mode="wait">
@@ -172,7 +234,7 @@ export function HomePage() {
               </div>
             </div>
 
-            {/* ── PEOPLE NEARBY (always first, always visible) ── */}
+            {/* ── PEOPLE NEARBY ── */}
             <section className="mb-12">
               <div className="flex items-center justify-between mb-5">
                 <div>
@@ -184,47 +246,71 @@ export function HomePage() {
                 </Link>
               </div>
 
-              {people.length > 0 ? (
+              {peopleLoading ? (
+                <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dusty-indigo"></div></div>
+              ) : nearbyPeople.length > 0 ? (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {people.map((person, i) => (
+                  {nearbyPeople.map((person, i) => (
                     <motion.div
-                      key={i}
+                      key={person.id + i}
                       initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.08 }}
-                      className={`bg-white p-6 rounded-[24px] border shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 ${
-                        person.isGuide
+                      className={`bg-white p-6 rounded-[24px] border shadow-sm transition-all relative overflow-hidden group hover:shadow-md hover:-translate-y-0.5 ${
+                        person.is_guide
                           ? 'border-warm-olive/30 bg-gradient-to-b from-white to-warm-olive/5'
                           : 'border-border/40'
                       }`}
                     >
-                      <div className="flex items-start gap-3 mb-4">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0 ${
-                          person.isGuide ? 'bg-warm-olive' : 'bg-dusty-indigo/80'
-                        }`}>
-                          {person.name.charAt(0)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-semibold">{person.name}</span>
-                            {person.isGuide && <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400 flex-shrink-0" />}
+                      <Link to={`/profile/${person.id}`} className="block">
+                        <div className="flex items-start gap-4 mb-4">
+                          {person.avatar_url ? (
+                            <img src={person.avatar_url} className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm flex-shrink-0" alt="" />
+                          ) : (
+                            <div className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0 shadow-sm ${
+                              person.is_guide ? 'bg-warm-olive' : 'bg-dusty-indigo/80'
+                            }`}>
+                              {(person.display_name || '?').charAt(0)}
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0 pr-6">
+                            <div className="flex items-center gap-1.5 mb-0.5">
+                              <span className="font-bold text-lg text-foreground truncate">{person.display_name || 'Без имени'}</span>
+                              {person.is_guide && <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 flex-shrink-0" />}
+                            </div>
+                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                              <MapPin className="w-3 h-3" />
+                              <span className="truncate">{person.city}</span>
+                            </div>
                           </div>
-                          <p className="text-sm text-muted-foreground">{person.status}</p>
                         </div>
-                      </div>
-                      <span className="inline-block px-3 py-1 bg-soft-sand/50 text-xs font-medium rounded-full mb-4">
-                        {person.tag}
-                      </span>
-                      <Button
-                        className="w-full bg-dusty-indigo/10 hover:bg-dusty-indigo text-dusty-indigo hover:text-white rounded-full h-10 text-sm font-medium transition-all"
-                        onClick={() => {
-                          setSelectedPerson(person.name);
-                          setShowMessageHelper(true);
-                        }}
-                      >
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        Написать
-                      </Button>
+
+                        <div className="flex flex-wrap gap-1.5 mb-4">
+                           <span className="px-2.5 py-1 bg-soft-sand/50 rounded-full text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                              {person.stage === 'planning' ? 'Планирует' : 
+                               person.stage === 'living' ? 'Живет здесь' : 
+                               person.stage === 'helping' ? 'Помогает' : 
+                               person.stage === 'leaving' ? 'Уезжает' : person.stage || 'Участник'}
+                           </span>
+                           {person.interests && person.interests.length > 0 && (
+                             <span className="px-2.5 py-1 bg-terracotta-deep/5 rounded-full text-[10px] font-semibold text-terracotta-deep uppercase tracking-wider">
+                               {person.interests[0]}
+                             </span>
+                           )}
+                        </div>
+
+                        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                          {person.bio || 'Привет! Я присоединился к Relo.me, чтобы находить новых друзей.'}
+                        </p>
+                      </Link>
+
+                      {userProfile?.role === 'admin' && (
+                        <Link to={`/profile/${person.id}`}>
+                           <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                              <Edit className="w-4 h-4 text-muted-foreground" />
+                           </Button>
+                        </Link>
+                      )}
                     </motion.div>
                   ))}
                 </div>
