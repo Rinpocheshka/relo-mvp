@@ -1,13 +1,25 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react'
 import { supabase, type Session, type User } from '../lib/supabaseClient'
+
+export interface Profile {
+  id: string
+  display_name: string | null
+  avatar_url: string | null
+  city: string | null
+  stage: string | null
+  role: string
+  last_seen: string | null
+}
 
 type AuthContextValue = {
   session: Session | null
   user: User | null
+  profile: Profile | null
   loading: boolean
   signInWithOtp: (email: string) => Promise<{ ok: true } | { ok: false; error: string }>
   signInWithProvider: (provider: 'google' | 'apple') => Promise<void>
   signOut: () => Promise<void>
+  refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -15,7 +27,29 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 export function SupabaseAuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [user, setUser] = useState<User | null>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
+
+  const fetchProfile = useCallback(async (userId: string) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+
+    if (error) {
+      console.error('Error fetching profile:', error)
+      return null
+    }
+    return data as Profile
+  }, [])
+
+  const refreshProfile = useCallback(async () => {
+    if (user?.id) {
+      const p = await fetchProfile(user.id)
+      setProfile(p)
+    }
+  }, [user?.id, fetchProfile])
 
   useEffect(() => {
     let isMounted = true
@@ -34,16 +68,50 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
       setSession(newSession)
       setUser(newSession?.user ?? null)
+      
+      if (newSession?.user) {
+        // Sync profile
+        const existingProfile = await fetchProfile(newSession.user.id)
+        
+        if (!existingProfile) {
+          // Create new profile with default name
+          const metadata = newSession.user.user_metadata
+          const fullName = metadata?.full_name || metadata?.name
+          const defaultName = fullName || `User #${newSession.user.id.slice(-4)}`
+          const avatarUrl = metadata?.avatar_url || null
+          
+          const { data: newProfile, error: createError } = await supabase
+            .from('profiles')
+            .insert([
+              { 
+                id: newSession.user.id,
+                display_name: defaultName,
+                avatar_url: avatarUrl,
+                role: 'user'
+              }
+            ])
+            .select()
+            .single()
+          
+          if (!createError && newProfile) {
+            setProfile(newProfile as Profile)
+          }
+        } else {
+          setProfile(existingProfile)
+        }
+      } else {
+        setProfile(null)
+      }
     })
 
     return () => {
       isMounted = false
       subscription.unsubscribe()
     }
-  }, []);
+  }, [fetchProfile]);
 
   // Presence Tracking: Update last_seen for current user
   useEffect(() => {
@@ -56,14 +124,11 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
         .eq('id', session.user.id);
     };
 
-    // Update on mount
     updateLastSeen();
 
-    // Update on refocus
     const handleFocus = () => updateLastSeen();
     window.addEventListener('focus', handleFocus);
     
-    // Periodic update (every 4 minutes) to keep "Green" status while active
     const interval = setInterval(updateLastSeen, 1000 * 60 * 4);
 
     return () => {
@@ -100,18 +165,21 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
 
   const signOut = async () => {
     await supabase.auth.signOut()
+    setProfile(null)
   }
 
   const value = useMemo<AuthContextValue>(
     () => ({
       session,
       user,
+      profile,
       loading,
       signInWithOtp,
       signInWithProvider,
       signOut,
+      refreshProfile,
     }),
-    [session, user, loading]
+    [session, user, profile, loading, refreshProfile]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

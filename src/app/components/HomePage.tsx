@@ -101,7 +101,7 @@ const stageContent = {
 };
 
 export function HomePage() {
-  const { session, user } = useAuth();
+  const { session, user, profile } = useAuth();
   const [currentStage, setCurrentStage] = useState<Stage>('living');
   const [showStageSelector, setShowStageSelector] = useState(false);
   const [showMessageHelper, setShowMessageHelper] = useState(false);
@@ -109,7 +109,6 @@ export function HomePage() {
   const [city, setCity] = useState('Дананг');
   const [nearbyPeople, setNearbyPeople] = useState<Person[]>([]);
   const [peopleLoading, setPeopleLoading] = useState(true);
-  const [userProfile, setUserProfile] = useState<Person | null>(null);
 
   useEffect(() => {
     try {
@@ -132,24 +131,6 @@ export function HomePage() {
     async function fetchMainData() {
       setPeopleLoading(true);
       let currentCity = city;
-      let currentUser: Person | null = null;
-
-      // 1. Fetch current user's profile
-      if (session?.user?.id) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        if (profile) {
-          setUserProfile(profile);
-          currentUser = profile;
-          if (profile.city) {
-            setCity(profile.city);
-            currentCity = profile.city;
-          }
-        }
-      }
 
       // 2. Fetch others with proximity logic
       const { data: allProfiles, error } = await supabase
@@ -159,6 +140,7 @@ export function HomePage() {
       if (!error && allProfiles) {
         let results: Person[] = [];
         const others = allProfiles.filter(p => p.id !== session?.user?.id);
+        const currentUser = allProfiles.find(p => p.id === session?.user?.id);
 
         if (others.length === 0 && currentUser) {
           // If I'm alone, show me 3x
@@ -333,7 +315,7 @@ export function HomePage() {
                         </p>
                       </Link>
 
-                      {userProfile?.role === 'admin' && (
+                      {profile?.role === 'admin' && (
                         <Link to={`/profile/${person.id}`}>
                            <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10">
                               <Edit className="w-4 h-4 text-muted-foreground" />

@@ -25,9 +25,9 @@ const TelegramIcon = () => (
 );
 
 // ─── Avatar ───────────────────────────────────────────────────────────────────
-function UserAvatar({ user }: { user: { email?: string | null; user_metadata?: { name?: string; avatar_url?: string } } }) {
-  const name = user.user_metadata?.name || user.email || 'U';
-  const avatarUrl = user.user_metadata?.avatar_url;
+function UserAvatar({ profile }: { profile: any }) {
+  const name = profile?.display_name || 'U';
+  const avatarUrl = profile?.avatar_url;
   const initial = name.charAt(0).toUpperCase();
 
   if (avatarUrl) {
@@ -42,20 +42,20 @@ function UserAvatar({ user }: { user: { email?: string | null; user_metadata?: {
 
 // ─── Header Auth Block ────────────────────────────────────────────────────────
 function HeaderAuth() {
-  const { user, loading, signOut } = useAuth();
+  const { user, profile, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [authOpen, setAuthOpen] = useState(false);
 
   if (loading) return <div className="w-20 h-9 bg-soft-sand/30 rounded-full animate-pulse" />;
 
   if (user) {
-    const displayName = user.user_metadata?.name || user.email?.split('@')[0] || 'Профиль';
+    const displayName = profile?.display_name || user.email?.split('@')[0] || 'Профиль';
     return (
       <>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-soft-sand/40 transition-colors">
-              <UserAvatar user={user} />
+              <UserAvatar profile={profile} />
               <span className="hidden lg:block text-sm font-medium max-w-[120px] truncate">{displayName}</span>
               <ChevronDown className="w-3.5 h-3.5 text-muted-foreground hidden lg:block" />
             </button>
@@ -96,7 +96,7 @@ function HeaderAuth() {
 
 // ─── Mobile Auth Button ───────────────────────────────────────────────────────
 function MobileUserButton({ isActive }: { isActive: boolean }) {
-  const { user, loading, signOut } = useAuth();
+  const { user, profile, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [authOpen, setAuthOpen] = useState(false);
 
@@ -110,7 +110,7 @@ function MobileUserButton({ isActive }: { isActive: boolean }) {
     return (
       <>
         <Link to="/profile" className={`flex flex-col items-center gap-1 p-2 flex-1 rounded-[14px] transition-colors ${isActive ? 'text-terracotta-deep bg-terracotta-deep/8' : 'text-muted-foreground'}`}>
-          <UserAvatar user={user} />
+          <UserAvatar profile={profile} />
           <span className="text-[10px] font-medium">Профиль</span>
         </Link>
       </>
