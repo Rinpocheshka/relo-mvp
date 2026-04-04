@@ -35,7 +35,7 @@ const PROFILE_TAGS = [
 
 export function Profile() {
   const { id } = useParams();
-  const { session, loading: authLoading } = useAuth();
+  const { session, user, profile: globalProfile, loading: authLoading, refreshProfile } = useAuth();
   
   const [profile, setProfile] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,7 +45,7 @@ export function Profile() {
   const [currentUserProfile, setCurrentUserProfile] = useState<UserData | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
-  const isOwnProfile = !id || id === session?.user?.id;
+  const isOwnProfile = !id || id === user?.id;
   const targetId = isOwnProfile ? session?.user?.id : id;
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export function Profile() {
       return;
     }
 
-    async function fetchProfile() {
+    async function fetchProfileData() {
       setLoading(true);
       
       // Fetch target profile
@@ -86,20 +86,10 @@ export function Profile() {
         setIsEditing(true);
       }
 
-      // If logged in, fetch current user's profile to check for Admin role
-      if (session?.user?.id) {
-        const { data: currentData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        if (currentData) setCurrentUserProfile(currentData);
-      }
-
       setLoading(false);
     }
-    fetchProfile();
-  }, [targetId, authLoading]);
+    fetchProfileData();
+  }, [targetId, authLoading, isOwnProfile]);
 
   const handleSave = async () => {
     if (!session?.user?.id) return;
@@ -121,6 +111,7 @@ export function Profile() {
     if (!error) {
       setProfile({ ...profile, ...editForm } as UserData);
       setIsEditing(false);
+      refreshProfile(); // Sync Header
     } else {
       alert('Error updating profile: ' + error.message);
     }
@@ -289,7 +280,7 @@ export function Profile() {
 
                     {/* Action Buttons */}
                     <div className="flex gap-2">
-                      {(isOwnProfile || currentUserProfile?.role === 'admin') ? (
+                      {isOwnProfile || globalProfile?.role === 'admin' ? (
                         <Button 
                           variant="ghost" 
                           size="icon" 
@@ -298,12 +289,12 @@ export function Profile() {
                         >
                           <Edit className="w-5 h-5 text-muted-foreground" />
                         </Button>
-                      ) : (
+                      ) : !authLoading && user ? (
                         <Button className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-6">
                            <MessageCircle className="w-4 h-4 mr-2" />
                            Написать
                         </Button>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 </>
