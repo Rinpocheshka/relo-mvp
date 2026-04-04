@@ -66,11 +66,7 @@ function HeaderAuth() {
                 <User className="w-4 h-4" /> Мой профиль
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild className="rounded-[10px] px-3 py-2">
-              <Link to="/profile/settings" className="flex items-center gap-2">
-                <Settings className="w-4 h-4" /> Настройки
-              </Link>
-            </DropdownMenuItem>
+
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="rounded-[10px] px-3 py-2 text-red-500 hover:text-red-600"

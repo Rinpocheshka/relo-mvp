@@ -182,7 +182,7 @@ export function Profile() {
                   <span>{(isEditing ? editForm.display_name : profile?.display_name)?.charAt(0) || '?'}</span>
                 )}
                 {isEditing && (
-                  <label className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                  <label className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white cursor-pointer hover:bg-black/50 transition-colors">
                     {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Camera className="w-6 h-6" />}
                     <span className="text-[10px] font-medium mt-1">Изменить</span>
                     <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={uploadAvatar} />
@@ -213,7 +213,7 @@ export function Profile() {
                         </div>
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4" />
-                          <span>На платформе с {new Date(profile?.created_at || '').toLocaleDateString('ru-RU')}</span>
+                          <span>На платформе с {new Date(profile?.created_at || session?.user?.created_at || Date.now()).toLocaleDateString('ru-RU')}</span>
                         </div>
                         {profile?.is_guide && (
                           <div className="flex items-center gap-2">
@@ -244,9 +244,6 @@ export function Profile() {
                           <Button variant="outline" className="rounded-full shadow-sm" onClick={() => setIsEditing(true)}>
                             <Edit className="w-4 h-4 mr-2" />
                             Редактировать
-                          </Button>
-                          <Button variant="outline" className="rounded-full shadow-sm">
-                            <Settings className="w-4 h-4" />
                           </Button>
                         </>
                       ) : (
