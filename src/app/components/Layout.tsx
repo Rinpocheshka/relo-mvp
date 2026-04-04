@@ -156,11 +156,12 @@ export function Layout() {
         try {
           const data = JSON.parse(stored);
           if (data && data.city) {
-            supabase.from('profiles').update({
+            supabase.from('profiles').upsert({
+              id: user.id,
               city: data.city,
               stage: data.stage,
               interests: data.need || [],
-            }).eq('id', user.id).then(({ error }: { error: any }) => {
+            }).then(({ error }: { error: any }) => {
               if (!error) {
                 localStorage.removeItem('reloOnboarding');
               }

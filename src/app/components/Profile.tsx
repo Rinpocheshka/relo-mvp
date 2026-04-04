@@ -33,7 +33,7 @@ const PROFILE_TAGS = [
 
 export function Profile() {
   const { id } = useParams();
-  const { session } = useAuth();
+  const { session, loading: authLoading } = useAuth();
   
   const [profile, setProfile] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,6 +45,7 @@ export function Profile() {
   const targetId = isOwnProfile ? session?.user?.id : id;
 
   useEffect(() => {
+    if (authLoading) return;
     if (!targetId) {
       setLoading(false);
       return;
@@ -65,7 +66,7 @@ export function Profile() {
       setLoading(false);
     }
     fetchProfile();
-  }, [targetId]);
+  }, [targetId, authLoading]);
 
   const handleSave = async () => {
     if (!session?.user?.id) return;
@@ -118,7 +119,7 @@ export function Profile() {
     }
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return <div className="min-h-screen bg-warm-milk py-16 flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dusty-indigo"></div></div>;
   }
 
