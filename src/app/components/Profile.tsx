@@ -123,7 +123,7 @@ export function Profile() {
     return <div className="min-h-screen bg-warm-milk py-16 flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dusty-indigo"></div></div>;
   }
 
-  if (!profile && isOwnProfile) {
+  if (!profile && isOwnProfile && !isEditing) {
     return (
       <div className="min-h-screen bg-warm-milk py-16 flex items-center justify-center">
         <div className="text-center max-w-lg px-4">

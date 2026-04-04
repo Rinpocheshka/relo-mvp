@@ -1,10 +1,12 @@
 import { createBrowserRouter } from 'react-router';
 import { Layout } from './components/Layout';
+import { GlobalErrorBoundary } from './components/GlobalErrorBoundary';
 
 export const router = createBrowserRouter([
   {
     path: '/',
     Component: Layout,
+    ErrorBoundary: GlobalErrorBoundary,
     children: [
       { index: true, lazy: () => import('./components/LandingPage').then(m => ({ Component: m.LandingPage })) },
       { path: 'home', lazy: () => import('./components/HomePage').then(m => ({ Component: m.HomePage })) },
