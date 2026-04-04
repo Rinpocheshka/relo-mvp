@@ -77,25 +77,37 @@ const SURVIVAL_CARDS_PLANNING: SurvivalCard[] = [
   {
     emoji: '🛂',
     title: 'Какую визу делать?',
-    short: 'Сроки, документы и E-visa',
-    detail: 'E-visa (электронная виза) на 90 дней делается онлайн за 2-3 рабочих дня. Это самый простой способ легально находиться в стране долго.',
+    short: 'Штамп по прилёту или E-visa',
+    detail: <>Граждане России могут въехать во Вьетнам бесплатно по штампу на 45 дней. Если планируете остаться дольше — можно оформить электронную визу (E-visa) на 90 дней онлайн. Сделать её можно самостоятельно на официальном сайте: <a href="https://evisa.gov.vn/" target="_blank" rel="noopener noreferrer" className="underline hover:text-dusty-indigo">evisa.gov.vn</a></>,
     color: 'bg-dusty-indigo/10 text-dusty-indigo',
     border: 'border-dusty-indigo/20',
   },
   {
     emoji: '🏠',
     title: 'Где искать жилье?',
-    short: 'Первые дни и долгосрок',
-    detail: 'Забронируйте Airbnb на первые 3 дня. Затем ищите постоянное жилье через группы в Facebook или Telegram.',
+    short: 'Отели на первое время и жилье на долгий срок',
+    detail: <>Постоянное жилье можно найти у нас на сайте, в тематических группах Facebook или на местном аналоге Авито <a href="https://www.nhatot.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-warm-olive">www.nhatot.com</a>.<br/><br/>А на первое время можно забронировать отель или апартаменты на любом из популярных сайтов.</>,
+    apps: [
+      { name: 'Booking', desc: 'Популярный сервис бронирования', color: 'bg-[#003580]', icon: 'B', link: { web: 'https://www.booking.com/' } },
+      { name: 'Agoda', desc: 'Много вариантов в Азии', color: 'bg-[#0E5196]', icon: 'A', link: { web: 'https://www.agoda.com/' } },
+      { name: 'Trip.com', desc: 'Можно оплатить картами РФ', color: 'bg-[#3264FF]', icon: 'T', link: { web: 'https://ru.trip.com/' } },
+      { name: 'Airbnb', desc: 'Аренда жилья у местных', color: 'bg-[#FF5A5F]', icon: 'ab', link: { web: 'https://www.airbnb.com/' } },
+    ],
     warning: 'Никогда не подписывайте долгосрочный контракт удаленно. Всегда проверяйте квартиру на плесень и шум лично.',
     color: 'bg-warm-olive/10 text-warm-olive',
     border: 'border-warm-olive/20',
   },
   {
-    emoji: '💬',
-    title: 'Вступить в комьюнити',
-    short: 'Чаты для новичков',
-    detail: 'Там ответят на любой вопрос за 5 минут. Напишите "Привет, я скоро буду", и вам сразу накидают полезных ссылок.',
+    emoji: '✈️',
+    title: 'Как добраться',
+    short: 'Поиск авиабилетов и маршрутов',
+    detail: 'Спланировать сложный маршрут и найти самые дешевые билеты помогут эти сервисы.',
+    apps: [
+      { name: 'Aviasales', desc: 'Ищет варианты из России', color: 'bg-[#1CAFE4]', icon: 'AS', link: { web: 'https://aviasales.tpo.lu/OaVNZVw2' } },
+      { name: 'Trip.com', desc: 'Можно оплатить картами РФ', color: 'bg-[#3264FF]', icon: 'T', link: { web: 'https://ru.trip.com/' } },
+      { name: 'Skyscanner', desc: 'Ищет дешевые билеты', color: 'bg-[#00A2EE]', icon: 'S', link: { web: 'https://www.skyscanner.net/' } },
+      { name: '12 Go', desc: 'Поезда, автобусы, паромы', color: 'bg-[#37b75f]', icon: '12', link: { web: 'https://12go.tpo.lu/Rg6rUhYY' } },
+    ],
     color: 'bg-terracotta-deep/10 text-terracotta-deep',
     border: 'border-terracotta-deep/20',
   },
@@ -618,22 +630,34 @@ function OnboardingFlow({
                     </motion.p>
                   )}
 
-                  {/* Ручной ввод */}
+                  {/* Ручной выбор */}
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
                     className="relative"
                   >
-                    <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="text"
-                      placeholder="Страна / город, например: Вьетнам, Дананг"
+                    <MapPin className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-10" />
+                    <select
                       value={manualInput}
                       onChange={(e) => setManualInput(e.target.value)}
-                      className="w-full bg-white border border-border rounded-2xl pl-12 pr-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-terracotta-deep/50 focus:ring-2 focus:ring-terracotta-deep/5 transition-all shadow-sm"
-                      onKeyDown={(e) => { if (e.key === 'Enter') handleManualSubmit(); }}
-                    />
+                      className="w-full bg-white border border-border rounded-2xl pl-12 pr-10 py-4 text-foreground focus:outline-none focus:border-terracotta-deep/50 focus:ring-2 focus:ring-terracotta-deep/5 transition-all shadow-sm appearance-none cursor-pointer relative z-0"
+                    >
+                      <option value="" disabled>Выберите город из списка...</option>
+                      <optgroup label="Вьетнам">
+                        <option value="Дананг, Вьетнам">Дананг</option>
+                        <option value="Нячанг, Вьетнам">Нячанг</option>
+                        <option value="Муйне, Вьетнам">Муйне</option>
+                        <option value="Хошимин, Вьетнам">Хошимин</option>
+                        <option value="Ханой, Вьетнам">Ханой</option>
+                      </optgroup>
+                      <optgroup label="Таиланд">
+                        <option value="Паттайя, Таиланд">Паттайя</option>
+                      </optgroup>
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground z-10">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="m6 9 6 6 6-6"/></svg>
+                    </div>
                   </motion.div>
 
                   {/* Кнопка подтверждения ручного ввода */}
@@ -646,7 +670,7 @@ function OnboardingFlow({
                         onClick={handleManualSubmit}
                         className="w-full bg-white border-2 border-terracotta-deep/60 text-terracotta-deep rounded-2xl px-6 py-3.5 font-semibold hover:bg-terracotta-deep/5 transition-all"
                       >
-                        Я в {manualInput.trim()} →
+                        Я в {manualInput.split(',')[0]} →
                       </motion.button>
                     )}
                   </AnimatePresence>
@@ -670,8 +694,8 @@ function OnboardingFlow({
             {step === 1 && (
               <div className="px-5 py-10 max-w-2xl mx-auto">
                 <div className="text-center mb-10">
-                  {userPath !== 'here' && (
-                    <p className="text-sm text-warm-olive font-medium mb-3">Отличный выбор! 🌿 Вот что важно узнать заранее</p>
+                  {userPath === 'here' && (
+                    <p className="text-sm text-warm-olive font-medium mb-3">Понимаем 🤍 Вот что нужно разобрать прямо сейчас</p>
                   )}
                   <h2 className="text-3xl font-extrabold tracking-tight mb-2">
                     {userPath === 'here'
