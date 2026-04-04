@@ -223,17 +223,7 @@ export function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               className="text-center mb-12"
             >
-              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 ${
-                currentStage === 'planning' ? 'bg-warm-olive/10 text-warm-olive' :
-                currentStage === 'living' ? 'bg-dusty-indigo/10 text-dusty-indigo' :
-                currentStage === 'helping' ? 'bg-terracotta-deep/10 text-terracotta-deep' :
-                'bg-soft-sand text-muted-foreground'
-              }`}>
-                <span className="text-lg">{stageLabels[currentStage].icon}</span>
-                <span className="font-bold text-sm uppercase tracking-wider">{stageLabels[currentStage].label}</span>
-              </div>
-              
-              <h1 className="text-3xl md:text-5xl font-extrabold text-foreground leading-[1.15] tracking-tight max-w-3xl mx-auto">
+              <h1 className="text-4xl font-bold mb-4">
                 {content.warmth}
               </h1>
             </motion.div>
