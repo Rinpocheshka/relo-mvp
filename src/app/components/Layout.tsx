@@ -137,7 +137,8 @@ export function Layout() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const isLanding = location.pathname === '/';
-  const [city, setCity] = useState<string>('Дананг');
+  const [city, setCity] = useState<string>('');
+  const [authOpen, setAuthOpen] = useState(false);
 
   useEffect(() => {
     // 1. Redirect logged-in users from Landing to Home
@@ -178,13 +179,32 @@ export function Layout() {
   ];
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('reloOnboarding');
-      if (!stored) return;
-      const data = JSON.parse(stored) as { city?: string };
-      if (data.city) setCity(data.city);
-    } catch { /* ignore */ }
-  }, []);
+    if (user) {
+      supabase.from('profiles').select('city').eq('id', user.id).single().then(({ data, error }) => {
+        if (!error && data?.city) {
+          setCity(data.city);
+        } else {
+          setCity('');
+        }
+      });
+    } else {
+      try {
+        const stored = localStorage.getItem('reloOnboarding');
+        if (stored) {
+          const data = JSON.parse(stored) as { city?: string };
+          if (data.city) {
+            setCity(data.city);
+          } else {
+            setCity('');
+          }
+        } else {
+          setCity('');
+        }
+      } catch {
+        setCity('');
+      }
+    }
+  }, [user]);
 
   const isActive = (path: string) => location.pathname.startsWith(path);
 
@@ -209,10 +229,17 @@ export function Layout() {
             </Link>
 
             {/* City pill */}
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-soft-sand/40 rounded-full border border-border/40 text-xs font-medium text-muted-foreground flex-shrink-0">
+            <button
+              onClick={() => {
+                if (!user) setAuthOpen(true);
+                else navigate('/profile');
+              }}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-soft-sand/40 hover:bg-soft-sand/60 transition-colors rounded-full border border-border/40 text-xs font-medium text-muted-foreground flex-shrink-0 cursor-pointer"
+            >
               <span className="text-terracotta-deep">📍</span>
-              {city}
-            </div>
+              {user ? (city || 'Не указано') : (city || 'Выберите место')}
+            </button>
+            {!user && <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />}
 
             {/* Desktop nav — centered */}
             <nav className="hidden md:flex items-center gap-0.5 mx-auto">

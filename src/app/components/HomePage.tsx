@@ -144,12 +144,8 @@ export function HomePage() {
     <div className="min-h-screen bg-warm-milk">
       <div className="max-w-5xl mx-auto px-4 py-8 pb-24 md:pb-8">
 
-        {/* ── City + Stage bar ── */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="w-4 h-4" />
-            <span className="font-medium text-foreground">{city}</span>
-          </div>
+        {/* ── Stage bar ── */}
+        <div className="flex items-center justify-end mb-8">
           <button
             onClick={() => setShowStageSelector(!showStageSelector)}
             className="flex items-center gap-2 px-4 py-2 bg-white border border-border/50 rounded-full text-sm font-medium shadow-sm hover:bg-soft-sand/30 transition-all"
