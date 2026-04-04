@@ -63,8 +63,20 @@ export function Profile() {
         setProfile(data);
         setEditForm(data);
       } else if (isOwnProfile) {
-        setProfile({} as UserData);
-        setEditForm({} as UserData);
+        let initialData: Partial<UserData> = {};
+        const stored = localStorage.getItem('reloOnboarding');
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            initialData = {
+              city: parsed.city,
+              stage: parsed.stage,
+              interests: parsed.need || [],
+            };
+          } catch (e) {}
+        }
+        setProfile(initialData as UserData);
+        setEditForm(initialData);
         setIsEditing(true);
       }
       setLoading(false);
