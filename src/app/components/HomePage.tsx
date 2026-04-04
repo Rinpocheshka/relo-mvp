@@ -154,8 +154,10 @@ export function HomePage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35 }}
           >
-
-
+            {/* ── Greeting Warmth ── */}
+            <div className="mb-10">
+              <p className="text-xl text-muted-foreground leading-relaxed">{content.warmth}</p>
+            </div>
             {/* ── Quick actions ── */}
             <div className="bg-white rounded-[24px] border border-border/40 shadow-sm p-5 mb-10">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Что важно сейчас</p>
