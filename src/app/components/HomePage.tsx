@@ -223,7 +223,21 @@ export function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               className="text-center mb-12"
             >
-              <h1 className="text-4xl font-bold mb-4">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="mb-8 relative inline-block"
+              >
+                <div className="absolute -inset-4 bg-terracotta-deep/5 rounded-full blur-2xl animate-pulse" />
+                <img 
+                  src="/assets/images/community-circle.jpg" 
+                  alt="Community Support" 
+                  className="w-48 h-48 md:w-64 md:h-64 object-cover rounded-full border-8 border-white shadow-2xl relative z-10 mx-auto"
+                />
+              </motion.div>
+
+              <h1 className="text-3xl md:text-5xl font-extrabold text-foreground leading-[1.15] tracking-tight max-w-3xl mx-auto">
                 {content.warmth}
               </h1>
             </motion.div>
@@ -329,14 +343,22 @@ export function HomePage() {
                   ))}
                 </div>
               ) : (
-                // Empty state
-                <div className="bg-white rounded-[24px] border border-border/40 p-10 text-center">
-                  <p className="text-4xl mb-4">👥</p>
-                  <h3 className="text-lg font-semibold mb-2">Кто-то уже готов написать тебе</h3>
-                  <p className="text-muted-foreground mb-6">Добавь профиль или открой страницу людей — начни разговор</p>
+                <div className="bg-white rounded-[32px] border border-border/40 p-12 text-center relative overflow-hidden group">
+                  <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-terracotta-deep/5 rounded-full blur-3xl transition-transform group-hover:scale-110 duration-1000" />
+                  
+                  <motion.img 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    src="/assets/images/community-puzzle.jpg" 
+                    className="w-32 h-32 object-contain mx-auto mb-6 rounded-2xl shadow-sm"
+                    alt="Finding your place"
+                  />
+                  
+                  <h3 className="text-xl font-bold mb-2">Кто-то уже готов написать тебе</h3>
+                  <p className="text-muted-foreground mb-8 max-w-md mx-auto">Добавь профиль или открой страницу людей — начни разговор первым.</p>
                   <Link to="/people">
-                    <Button className="bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-full px-6">
-                      Посмотреть всех <ArrowRight className="w-4 h-4 ml-2" />
+                    <Button className="bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-full px-8 h-12 font-semibold shadow-lg transition-all hover:-translate-y-0.5">
+                      Посмотреть всех <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
                   </Link>
                 </div>
