@@ -296,7 +296,9 @@ export function Profile() {
                          <MapPin className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                          <select className="w-full p-3 pl-10 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] shadow-sm appearance-none cursor-pointer" value={editForm.city || ''} onChange={e => setEditForm({...editForm, city: e.target.value})}>
                            <option value="" disabled>Селект локации</option>
+                           <option value="В дороге" className="font-bold">📍 В дороге</option>
                            <optgroup label="Вьетнам">
+                             <option value="Вьетнам">Вьетнам (вся страна)</option>
                              <option value="Дананг, Вьетнам">Дананг</option>
                              <option value="Нячанг, Вьетнам">Нячанг</option>
                              <option value="Муйне, Вьетнам">Муйне</option>
@@ -304,10 +306,8 @@ export function Profile() {
                              <option value="Ханой, Вьетнам">Ханой</option>
                            </optgroup>
                            <optgroup label="Таиланд">
+                             <option value="Таиланд">Таиланд (вся страна)</option>
                              <option value="Паттайя, Таиланд">Паттайя</option>
-                           </optgroup>
-                           <optgroup label="В пути">
-                             <option value="В дороге">В дороге</option>
                            </optgroup>
                          </select>
                          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground z-10">

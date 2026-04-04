@@ -644,7 +644,9 @@ function OnboardingFlow({
                       className="w-full bg-white border border-border rounded-2xl pl-12 pr-10 py-4 text-foreground focus:outline-none focus:border-terracotta-deep/50 focus:ring-2 focus:ring-terracotta-deep/5 transition-all shadow-sm appearance-none cursor-pointer relative z-0"
                     >
                       <option value="" disabled>Выберите город из списка...</option>
+                      <option value="В дороге" className="font-bold text-foreground italic">📍 В дороге</option>
                       <optgroup label="Вьетнам">
+                        <option value="Вьетнам">Вьетнам (вся страна)</option>
                         <option value="Дананг, Вьетнам">Дананг</option>
                         <option value="Нячанг, Вьетнам">Нячанг</option>
                         <option value="Муйне, Вьетнам">Муйне</option>
@@ -652,10 +654,8 @@ function OnboardingFlow({
                         <option value="Ханой, Вьетнам">Ханой</option>
                       </optgroup>
                       <optgroup label="Таиланд">
+                        <option value="Таиланд">Таиланд (вся страна)</option>
                         <option value="Паттайя, Таиланд">Паттайя</option>
-                      </optgroup>
-                      <optgroup label="В пути">
-                        <option value="В дороге">В дороге</option>
                       </optgroup>
                     </select>
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground z-10">
