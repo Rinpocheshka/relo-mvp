@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { MapPin, Calendar, Star, MessageCircle, Settings, Edit, Award, Heart, Save, X, Camera, Loader2, Send, Phone, Lock } from 'lucide-react';
 import { Button } from './ui/button';
-import { useParams } from 'react-router';
+import { useParams, useLocation } from 'react-router';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
 import { AuthModal } from './AuthWidget';
@@ -35,6 +35,7 @@ const PROFILE_TAGS = [
 
 export function Profile() {
   const { id } = useParams();
+  const location = useLocation();
   const { session, user, profile: globalProfile, loading: authLoading, refreshProfile } = useAuth();
   
   const [profile, setProfile] = useState<UserData | null>(null);
@@ -42,7 +43,6 @@ export function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<Partial<UserData>>({});
   const [uploading, setUploading] = useState(false);
-  const [currentUserProfile, setCurrentUserProfile] = useState<UserData | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
   const isOwnProfile = !id || id === user?.id;
@@ -68,6 +68,10 @@ export function Profile() {
       if (!error && data) {
         setProfile(data);
         setEditForm(data);
+        // Check if we should start in edit mode
+        if (isOwnProfile && new URLSearchParams(location.search).get('edit') === 'true') {
+          setIsEditing(true);
+        }
       } else if (isOwnProfile) {
         let initialData: Partial<UserData> = {};
         const stored = localStorage.getItem('reloOnboarding');
@@ -279,18 +283,31 @@ export function Profile() {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-2">
-                      {isOwnProfile || globalProfile?.role === 'admin' ? (
+                    <div className="flex flex-wrap gap-2">
+                      {isOwnProfile ? (
                         <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="rounded-full hover:bg-black/5"
+                          className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-6 h-11 font-medium"
                           onClick={() => setIsEditing(true)}
                         >
-                          <Edit className="w-5 h-5 text-muted-foreground" />
+                          <Edit className="w-4 h-4 mr-2" />
+                          Редактировать профиль
                         </Button>
-                      ) : !authLoading && user ? (
-                        <Button className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-6">
+                      ) : (globalProfile?.role === 'admin' || user?.id === 'admin-id-fallback') ? (
+                        <div className="flex gap-2">
+                          <Button 
+                            className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-6 h-11 font-medium"
+                            onClick={() => setIsEditing(true)}
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Редактировать (Админ)
+                          </Button>
+                          <Button className="bg-soft-sand hover:bg-soft-sand/80 text-foreground rounded-full shadow-sm px-6 h-11 font-medium">
+                             <MessageCircle className="w-4 h-4 mr-2" />
+                             Написать
+                          </Button>
+                        </div>
+                      ) : user ? (
+                        <Button className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-6 h-11 font-medium">
                            <MessageCircle className="w-4 h-4 mr-2" />
                            Написать
                         </Button>
@@ -384,9 +401,9 @@ export function Profile() {
               {!isEditing ? (
                 <div className="flex flex-col gap-2 mt-2">
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Интересы и потребности</span>
-                  <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2">
                     {(profile?.interests || []).length > 0 ? (
-                      (profile?.interests || []).map((interest) => {
+                      (profile?.interests || []).map((interest: string) => {
                         const lbl = PROFILE_TAGS.find(t => t.value === interest)?.label || interest;
                         return (
                           <span
@@ -415,7 +432,7 @@ export function Profile() {
                           type="button"
                           onClick={() => {
                             const newInterests = selected 
-                              ? (editForm.interests || []).filter(t => t !== tag.value) 
+                              ? (editForm.interests || []).filter((t: string) => t !== tag.value) 
                               : [...(editForm.interests || []), tag.value];
                             setEditForm({ ...editForm, interests: newInterests });
                           }}

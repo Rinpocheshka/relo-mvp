@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import {
   Home, Megaphone, Calendar, User, Users, Search, Plus,
-  LogOut, ChevronDown, Settings
+  LogOut, ChevronDown, Settings, Edit
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Button } from './ui/button';
@@ -60,21 +60,22 @@ function HeaderAuth() {
               <ChevronDown className="w-3.5 h-3.5 text-muted-foreground hidden lg:block" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52 rounded-[16px] shadow-xl border-border/50 p-1.5">
-            <DropdownMenuItem asChild className="rounded-[10px] px-3 py-2">
-              <Link to="/profile" className="flex items-center gap-2">
-                <User className="w-4 h-4" /> Мой профиль
-              </Link>
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="rounded-[10px] px-3 py-2 text-red-500 hover:text-red-600"
-              onClick={() => void signOut()}
-            >
-              <LogOut className="w-4 h-4 mr-2" /> Выйти
-            </DropdownMenuItem>
-          </DropdownMenuContent>
+            <DropdownMenuContent align="end" className="w-[200px] rounded-[20px] p-2 mt-2 shadow-xl border-soft-sand/20">
+              <DropdownMenuItem asChild className="rounded-[12px] cursor-pointer hover:bg-soft-sand/30 font-medium">
+                <Link to="/profile" className="flex items-center gap-2 w-full px-2 py-1.5">
+                  <User className="w-4 h-4" /> Мой профиль
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="rounded-[12px] cursor-pointer hover:bg-soft-sand/30 font-medium">
+                <Link to="/profile?edit=true" className="flex items-center gap-2 w-full px-2 py-1.5">
+                  <Edit className="w-4 h-4" /> Редактировать профиль
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="my-1 bg-soft-sand/10" />
+              <DropdownMenuItem onClick={signOut} className="rounded-[12px] cursor-pointer text-destructive focus:text-destructive hover:bg-red-50/50 flex items-center gap-2 px-3 py-1.5">
+                <LogOut className="w-4 h-4" /> Выйти
+              </DropdownMenuItem>
+            </DropdownMenuContent>
         </DropdownMenu>
       </>
     );

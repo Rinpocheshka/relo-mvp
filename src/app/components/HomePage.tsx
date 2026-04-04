@@ -315,9 +315,9 @@ export function HomePage() {
                         </p>
                       </Link>
 
-                      {profile?.role === 'admin' && (
-                        <Link to={`/profile/${person.id}`}>
-                           <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                      {(person.id === user?.id || profile?.role === 'admin') && (
+                        <Link to={person.id === user?.id ? "/profile?edit=true" : `/profile/${person.id}`}>
+                           <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-white/90 hover:bg-white border border-border/50 shadow-sm">
                               <Edit className="w-4 h-4 text-muted-foreground" />
                            </Button>
                         </Link>
