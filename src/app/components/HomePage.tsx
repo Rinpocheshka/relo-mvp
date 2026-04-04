@@ -223,45 +223,46 @@ export function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               className="text-center mb-12"
             >
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="mb-8 relative inline-block"
-              >
-                <div className="absolute -inset-4 bg-terracotta-deep/5 rounded-full blur-2xl animate-pulse" />
-                <img 
-                  src="/assets/images/community-circle.jpg" 
-                  alt="Community Support" 
-                  className="w-48 h-48 md:w-64 md:h-64 object-cover rounded-full border-8 border-white shadow-2xl relative z-10 mx-auto"
-                />
-              </motion.div>
-
-              <h1 className="text-3xl md:text-5xl font-extrabold text-foreground leading-[1.15] tracking-tight max-w-3xl mx-auto">
+              <h1 className="text-4xl font-bold mb-4">
                 {content.warmth}
               </h1>
             </motion.div>
             {/* ── Quick actions ── */}
-            <div className="bg-white rounded-[24px] border border-border/40 shadow-sm p-5 mb-10">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Что важно сейчас</p>
-              <div className="flex flex-wrap gap-2">
-                {content.quickLinks.map((link, i) => (
-                  <Link key={i} to={link.link}>
-                    <button className="px-5 py-2.5 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-full text-sm font-medium transition-all text-foreground">
-                      {link.text}
-                    </button>
-                  </Link>
-                ))}
+            <div className="bg-white rounded-[32px] border border-border/40 shadow-sm overflow-hidden mb-10">
+              <div className="flex flex-col md:flex-row">
+                <div className="p-6 md:p-8 flex-1">
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-6">Что важно сейчас</p>
+                  <div className="flex flex-wrap gap-3">
+                    {content.quickLinks.map((link, i) => (
+                      <Link key={i} to={link.link}>
+                        <button className="px-6 py-3 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-2xl text-sm font-semibold transition-all text-foreground border border-transparent hover:border-terracotta-deep/20">
+                          {link.text}
+                        </button>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+                <div className="hidden md:block w-1/3 relative bg-terracotta-deep/5">
+                  <img 
+                    src="/assets/images/community-circle.jpg" 
+                    className="absolute inset-0 w-full h-full object-cover" 
+                    alt="" 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-white via-white/20 to-transparent" />
+                </div>
               </div>
             </div>
 
             {/* ── PEOPLE NEARBY ── */}
             <section className="mb-12">
-              <div className="flex items-center justify-between mb-5">
-                <div>
-                  <h2 className="text-xl font-bold">Люди рядом</h2>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-warm-olive/10 flex items-center justify-center overflow-hidden">
+                    <img src="/assets/images/community-puzzle.jpg" className="w-full h-full object-cover scale-110" alt="" />
+                  </div>
+                  <h2 className="text-2xl font-bold">Люди рядом</h2>
                 </div>
-                <Link to="/people" className="flex items-center gap-1 text-sm font-medium text-terracotta-deep hover:text-terracotta-deep/80 transition-colors">
+                <Link to="/people" className="flex items-center gap-1.5 text-sm font-bold text-terracotta-deep hover:text-terracotta-deep/80 transition-colors">
                   Все люди <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -345,14 +346,6 @@ export function HomePage() {
               ) : (
                 <div className="bg-white rounded-[32px] border border-border/40 p-12 text-center relative overflow-hidden group">
                   <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-terracotta-deep/5 rounded-full blur-3xl transition-transform group-hover:scale-110 duration-1000" />
-                  
-                  <motion.img 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    src="/assets/images/community-puzzle.jpg" 
-                    className="w-32 h-32 object-contain mx-auto mb-6 rounded-2xl shadow-sm"
-                    alt="Finding your place"
-                  />
                   
                   <h3 className="text-xl font-bold mb-2">Кто-то уже готов написать тебе</h3>
                   <p className="text-muted-foreground mb-8 max-w-md mx-auto">Добавь профиль или открой страницу людей — начни разговор первым.</p>
