@@ -7,6 +7,8 @@ export interface Profile {
   avatar_url: string | null
   city: string | null
   stage: string | null
+  bio: string | null
+  interests: string[]
   role: string
   last_seen: string | null
 }
@@ -52,66 +54,63 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
   }, [user?.id, fetchProfile])
 
   useEffect(() => {
-    let isMounted = true
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
 
-    supabase.auth
-      .getSession()
-      .then(({ data }) => {
-        if (!isMounted) return
-        setSession(data.session ?? null)
-        setUser(data.session?.user ?? null)
-      })
-      .finally(() => {
-        if (!isMounted) return
-        setLoading(false)
-      })
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
-      setSession(newSession)
-      setUser(newSession?.user ?? null)
-      
-      if (newSession?.user) {
-        // Sync profile
-        const existingProfile = await fetchProfile(newSession.user.id)
-        
-        if (!existingProfile) {
-          // Create new profile with default name
-          const metadata = newSession.user.user_metadata
-          const fullName = metadata?.full_name || metadata?.name
-          const defaultName = fullName || `User #${newSession.user.id.slice(-4)}`
-          const avatarUrl = metadata?.avatar_url || null
-          
-          const { data: newProfile, error: createError } = await supabase
-            .from('profiles')
-            .insert([
-              { 
-                id: newSession.user.id,
-                display_name: defaultName,
-                avatar_url: avatarUrl,
-                role: 'user'
-              }
-            ])
-            .select()
-            .single()
-          
-          if (!createError && newProfile) {
-            setProfile(newProfile as Profile)
-          }
-        } else {
-          setProfile(existingProfile)
-        }
-      } else {
-        setProfile(null)
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+      setUser(session?.user ?? null)
     })
 
     return () => {
-      isMounted = false
       subscription.unsubscribe()
     }
-  }, [fetchProfile]);
+  }, [])
+
+  // Sync profile when user changes
+  useEffect(() => {
+    if (!user) {
+      setProfile(null)
+      return
+    }
+
+    const syncProfile = async () => {
+      const existing = await fetchProfile(user.id)
+      if (existing) {
+        setProfile(existing)
+      } else {
+        // Create profile if it doesn't exist
+        const metadata = user.user_metadata
+        const fullName = metadata?.full_name || metadata?.name
+        const defaultName = fullName || `User #${user.id.slice(-4)}`
+        const avatarUrl = metadata?.avatar_url || null
+        
+        try {
+          const { data: newProfile, error } = await supabase
+            .from('profiles')
+            .upsert({ 
+              id: user.id,
+              display_name: defaultName,
+              avatar_url: avatarUrl,
+              role: 'user'
+            }, { onConflict: 'id' })
+            .select()
+            .single()
+          
+          if (!error && newProfile) {
+            setProfile(newProfile as Profile)
+          }
+        } catch (e) {
+          console.error('Error creating profile:', e)
+        }
+      }
+    }
+
+    syncProfile()
+  }, [user, fetchProfile])
 
   // Presence Tracking: Update last_seen for current user
   useEffect(() => {
