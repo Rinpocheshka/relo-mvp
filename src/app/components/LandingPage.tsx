@@ -174,9 +174,9 @@ export function LandingPage() {
     );
   };
 
-  const saveAndFinish = () => {
+  const saveAndFinish = (cityToSave: string) => {
     localStorage.setItem('reloOnboarding', JSON.stringify({
-      city: 'Дананг',
+      city: cityToSave,
       stage: userPath === 'here' ? 'living' : 'planning',
       need: selectedTags,
       savePath: false,
@@ -215,12 +215,12 @@ export function LandingPage() {
           onNext={goToNextStep}
           onBack={goToPrevStep}
           onClose={skipToHome}
-          onFinish={() => {
-            saveAndFinish();
+          onFinish={(c) => {
+            saveAndFinish(c);
             setIsAuthOpen(true);
           }}
-          onSkipAuth={() => {
-            saveAndFinish();
+          onSkipAuth={(c) => {
+            saveAndFinish(c);
             navigate('/home');
           }}
         />
@@ -474,8 +474,8 @@ function OnboardingFlow({
   onNext: () => void;
   onBack: () => void;
   onClose: () => void;
-  onFinish: () => void;
-  onSkipAuth: () => void;
+  onFinish: (c: string) => void;
+  onSkipAuth: (c: string) => void;
 }) {
   const [locState, setLocState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [city, setCity] = useState<string>('');
@@ -888,13 +888,13 @@ function OnboardingFlow({
                   <div className="space-y-3">
                     <Button
                       size="lg"
-                      onClick={onFinish}
+                      onClick={() => onFinish(city)}
                       className="w-full bg-white text-terracotta-deep hover:bg-white/90 rounded-full h-14 font-bold text-base shadow-lg"
                     >
                       Создать профиль и сохранить →
                     </Button>
                     <button
-                      onClick={onSkipAuth}
+                      onClick={() => onSkipAuth(city)}
                       className="w-full text-center text-sm opacity-70 hover:opacity-100 py-2 transition-opacity"
                     >
                       Продолжить без сохранения
