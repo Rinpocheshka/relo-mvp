@@ -55,7 +55,7 @@ const stageContent = {
   },
   living: {
     greeting: 'Ты в Дананге 🌿\nЗдесь есть люди, которые проходят тот же путь.',
-    warmth: 'Первые дни в новом городе — давай разберёмся вместе. Здесь нормально писать первым.',
+    warmth: 'Первые дни в новом городе — давай разберёмся вместе.',
     quickLinks: [
       { text: '🏠 Жильё и сервисы', link: '/announcements?category=housing' },
       { text: '🎉 Куда сходить', link: '/events' },
@@ -217,10 +217,26 @@ export function HomePage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35 }}
           >
-            {/* ── Greeting Warmth ── */}
-            <div className="mb-10">
-              <p className="text-xl text-muted-foreground leading-relaxed">{content.warmth}</p>
-            </div>
+            {/* ── Greeting Header ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center mb-12"
+            >
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 ${
+                currentStage === 'planning' ? 'bg-warm-olive/10 text-warm-olive' :
+                currentStage === 'living' ? 'bg-dusty-indigo/10 text-dusty-indigo' :
+                currentStage === 'helping' ? 'bg-terracotta-deep/10 text-terracotta-deep' :
+                'bg-soft-sand text-muted-foreground'
+              }`}>
+                <span className="text-lg">{stageLabels[currentStage].icon}</span>
+                <span className="font-bold text-sm uppercase tracking-wider">{stageLabels[currentStage].label}</span>
+              </div>
+              
+              <h1 className="text-3xl md:text-5xl font-extrabold text-foreground leading-[1.15] tracking-tight max-w-3xl mx-auto">
+                {content.warmth}
+              </h1>
+            </motion.div>
             {/* ── Quick actions ── */}
             <div className="bg-white rounded-[24px] border border-border/40 shadow-sm p-5 mb-10">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Что важно сейчас</p>
@@ -239,8 +255,7 @@ export function HomePage() {
             <section className="mb-12">
               <div className="flex items-center justify-between mb-5">
                 <div>
-                  <h2 className="text-2xl font-bold">Люди рядом с тобой</h2>
-                  <p className="text-muted-foreground text-sm mt-1">Здесь нормально писать первым 👋</p>
+                  <h2 className="text-xl font-bold">Люди рядом</h2>
                 </div>
                 <Link to="/people" className="flex items-center gap-1 text-sm font-medium text-terracotta-deep hover:text-terracotta-deep/80 transition-colors">
                   Все люди <ArrowRight className="w-4 h-4" />
