@@ -319,10 +319,23 @@ export function Profile() {
                 <div className="w-full flex flex-col gap-4">
                    <div className="flex justify-between items-center mb-2">
                      <h2 className="text-2xl font-bold">Редактирование профиля</h2>
-                     <div className="flex gap-2">
-                       <Button variant="outline" size="icon" onClick={() => { setIsEditing(false); setEditForm(profile || {}); }}><X className="w-4 h-4" /></Button>
-                       <Button className="bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full px-5 shadow-sm font-medium" onClick={handleSave}><Save className="w-4 h-4 mr-2"/>Сохранить</Button>
-                     </div>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          className="rounded-full h-11 w-11 border-soft-sand/30 hover:bg-soft-sand/10"
+                          onClick={() => { setIsEditing(false); setEditForm(profile || {}); }}
+                        >
+                          <X className="w-5 h-5 text-muted-foreground" />
+                        </Button>
+                        <Button 
+                          className="bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full px-8 h-11 shadow-md font-semibold transition-all active:scale-95" 
+                          onClick={handleSave}
+                        >
+                          <Save className="w-4 h-4 mr-2"/>
+                          Сохранить
+                        </Button>
+                      </div>
                    </div>
                    
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
