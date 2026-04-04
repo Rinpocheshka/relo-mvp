@@ -144,48 +144,7 @@ export function HomePage() {
     <div className="min-h-screen bg-warm-milk">
       <div className="max-w-5xl mx-auto px-4 py-8 pb-24 md:pb-8">
 
-        {/* ── Stage bar ── */}
-        <div className="flex items-center justify-end mb-8">
-          <button
-            onClick={() => setShowStageSelector(!showStageSelector)}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-border/50 rounded-full text-sm font-medium shadow-sm hover:bg-soft-sand/30 transition-all"
-          >
-            <span>{stageLabels[currentStage].icon}</span>
-            <span>{stageLabels[currentStage].label}</span>
-            <span className="text-muted-foreground text-xs">· изменить</span>
-          </button>
-        </div>
 
-        {/* Stage selector dropdown */}
-        <AnimatePresence>
-          {showStageSelector && (
-            <motion.div
-              initial={{ opacity: 0, y: -8, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -8, scale: 0.97 }}
-              className="bg-white rounded-[24px] border border-border/50 shadow-lg p-4 mb-6 grid grid-cols-2 gap-2"
-            >
-              {(Object.entries(stageLabels) as [Stage, { label: string; icon: string }][]).map(([id, { label, icon }]) => (
-                <button
-                  key={id}
-                  onClick={() => {
-                    setCurrentStage(id);
-                    localStorage.setItem('reloStage', id);
-                    setShowStageSelector(false);
-                  }}
-                  className={`flex items-center gap-2 px-4 py-3 rounded-[16px] text-sm font-medium text-left transition-all ${
-                    currentStage === id
-                      ? 'bg-terracotta-deep text-white'
-                      : 'hover:bg-soft-sand/30 text-foreground'
-                  }`}
-                >
-                  <span>{icon}</span>
-                  <span>{label}</span>
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         <AnimatePresence mode="wait">
           <motion.div
@@ -195,13 +154,7 @@ export function HomePage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35 }}
           >
-            {/* ── Greeting ── */}
-            <div className="mb-10">
-              <h1 className="text-4xl md:text-5xl font-extrabold leading-[1.15] tracking-tight mb-3 whitespace-pre-line">
-                {content.greeting}
-              </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed">{content.warmth}</p>
-            </div>
+
 
             {/* ── Quick actions ── */}
             <div className="bg-white rounded-[24px] border border-border/40 shadow-sm p-5 mb-10">
