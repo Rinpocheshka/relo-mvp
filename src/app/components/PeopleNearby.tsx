@@ -13,6 +13,8 @@ interface Person {
   interests: string[];
   is_guide: boolean;
   rating?: number;
+  last_seen?: string;
+  avatar_url?: string;
 }
 
 import { useEffect } from 'react';
@@ -194,12 +196,24 @@ export function PeopleNearby() {
                     : 'border-border/40'
                 }`}
               >
-                {/* Header */}
+                {/* Header with Status Dot */}
                 <div className="flex items-start gap-4 mb-6">
-                  <div className={`w-16 h-16 rounded-full flex-shrink-0 flex items-center justify-center text-white text-2xl font-bold shadow-sm ${
-                    person.is_guide ? 'bg-warm-olive ring-4 ring-warm-olive/10' : 'bg-dusty-indigo/20 text-dusty-indigo ring-4 ring-dusty-indigo/10'
-                  }`}>
-                    {person.display_name?.charAt(0) || '?'}
+                  <div className="relative">
+                    {person.avatar_url ? (
+                      <img src={person.avatar_url} className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-sm" alt="" />
+                    ) : (
+                      <div className={`w-16 h-16 rounded-full flex-shrink-0 flex items-center justify-center text-white text-2xl font-bold shadow-sm ${
+                        person.is_guide ? 'bg-warm-olive' : 'bg-dusty-indigo/20 text-dusty-indigo'
+                      }`}>
+                        {person.display_name?.charAt(0) || '?'}
+                      </div>
+                    )}
+                    {/* Online Status Dot */}
+                    <div className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white ${
+                      person.last_seen && (new Date().getTime() - new Date(person.last_seen).getTime() < 5 * 60 * 1000)
+                        ? 'bg-green-500' 
+                        : 'bg-amber-400'
+                    }`} title={person.last_seen && (new Date().getTime() - new Date(person.last_seen).getTime() < 5 * 60 * 1000) ? 'В сети' : 'Был недавно'} />
                   </div>
                   <div className="flex-1 min-w-0 pt-1">
                     <div className="flex items-center gap-2 mb-1">
@@ -208,13 +222,12 @@ export function PeopleNearby() {
                         <Star className="w-5 h-5 fill-yellow-400 text-yellow-400 flex-shrink-0" />
                       )}
                     </div>
-                    <p className="text-sm font-medium text-muted-foreground">{person.stage}</p>
-                    {person.is_guide && person.rating && (
-                      <div className="flex items-center gap-1 mt-1">
-                        <span className="text-sm font-medium">{person.rating}</span>
-                        <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                      </div>
-                    )}
+                    <p className="text-sm font-medium text-muted-foreground">
+                       {person.stage === 'planning' ? 'Планирует' : 
+                        person.stage === 'living' ? 'Живет здесь' : 
+                        person.stage === 'helping' ? 'Помогает' : 
+                        person.stage === 'leaving' ? 'Уезжает' : person.stage || 'Участник'}
+                    </p>
                   </div>
                 </div>
 

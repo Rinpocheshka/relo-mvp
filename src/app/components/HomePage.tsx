@@ -17,6 +17,7 @@ interface Person {
   is_guide: boolean;
   avatar_url?: string;
   role?: string;
+  last_seen?: string;
 }
 
 type Stage = 'planning' | 'living' | 'helping' | 'leaving';
@@ -264,15 +265,23 @@ export function HomePage() {
                     >
                       <Link to={`/profile/${person.id}`} className="block">
                         <div className="flex items-start gap-4 mb-4">
-                          {person.avatar_url ? (
-                            <img src={person.avatar_url} className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm flex-shrink-0" alt="" />
-                          ) : (
-                            <div className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0 shadow-sm ${
-                              person.is_guide ? 'bg-warm-olive' : 'bg-dusty-indigo/80'
-                            }`}>
-                              {(person.display_name || '?').charAt(0)}
-                            </div>
-                          )}
+                          <div className="relative flex-shrink-0">
+                            {person.avatar_url ? (
+                              <img src={person.avatar_url} className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm" alt="" />
+                            ) : (
+                              <div className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-sm ${
+                                person.is_guide ? 'bg-warm-olive' : 'bg-dusty-indigo/80'
+                              }`}>
+                                {(person.display_name || '?').charAt(0)}
+                              </div>
+                            )}
+                            {/* Online Status Dot */}
+                            <div className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white ${
+                              person.last_seen && (new Date().getTime() - new Date(person.last_seen).getTime() < 5 * 60 * 1000)
+                                ? 'bg-green-500' 
+                                : 'bg-amber-400'
+                            }`} />
+                          </div>
                           <div className="flex-1 min-w-0 pr-6">
                             <div className="flex items-center gap-1.5 mb-0.5">
                               <span className="font-bold text-lg text-foreground truncate">{person.display_name || 'Без имени'}</span>

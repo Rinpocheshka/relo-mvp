@@ -43,7 +43,34 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
       isMounted = false
       subscription.unsubscribe()
     }
-  }, [])
+  }, []);
+
+  // Presence Tracking: Update last_seen for current user
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    const updateLastSeen = async () => {
+      await supabase
+        .from('profiles')
+        .update({ last_seen: new Date().toISOString() })
+        .eq('id', session.user.id);
+    };
+
+    // Update on mount
+    updateLastSeen();
+
+    // Update on refocus
+    const handleFocus = () => updateLastSeen();
+    window.addEventListener('focus', handleFocus);
+    
+    // Periodic update (every 4 minutes) to keep "Green" status while active
+    const interval = setInterval(updateLastSeen, 1000 * 60 * 4);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      clearInterval(interval);
+    };
+  }, [session?.user?.id]);
 
   const signInWithOtp = async (email: string) => {
     try {
