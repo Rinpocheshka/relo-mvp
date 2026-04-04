@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { MapPin, Calendar, Star, MessageCircle, Settings, Edit, Award, Heart, Save, X, Camera, Loader2, Send, Phone } from 'lucide-react';
+import { MapPin, Calendar, Star, MessageCircle, Settings, Edit, Award, Heart, Save, X, Camera, Loader2, Send, Phone, Lock } from 'lucide-react';
 import { Button } from './ui/button';
 import { useParams } from 'react-router';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
+import { AuthModal } from './AuthWidget';
 
 interface UserData {
   id: string;
@@ -19,6 +20,7 @@ interface UserData {
   avatar_url?: string;
   contact_telegram?: string;
   contact_whatsapp?: string;
+  role?: string;
 }
 
 const PROFILE_TAGS = [
@@ -40,6 +42,8 @@ export function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<Partial<UserData>>({});
   const [uploading, setUploading] = useState(false);
+  const [currentUserProfile, setCurrentUserProfile] = useState<UserData | null>(null);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
   const isOwnProfile = !id || id === session?.user?.id;
   const targetId = isOwnProfile ? session?.user?.id : id;
@@ -53,6 +57,8 @@ export function Profile() {
 
     async function fetchProfile() {
       setLoading(true);
+      
+      // Fetch target profile
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -79,6 +85,17 @@ export function Profile() {
         setEditForm(initialData);
         setIsEditing(true);
       }
+
+      // If logged in, fetch current user's profile to check for Admin role
+      if (session?.user?.id) {
+        const { data: currentData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        if (currentData) setCurrentUserProfile(currentData);
+      }
+
       setLoading(false);
     }
     fetchProfile();
@@ -90,8 +107,8 @@ export function Profile() {
     const { error } = await supabase
       .from('profiles')
       .upsert({ 
-        id: session.user.id, 
-        display_name: editForm.display_name,
+        id: targetId, // Use targetId to allow Admins to save edits to other profiles
+        display_name: editForm.display_name?.slice(0, 20), // Enforce 20 char limit on save
         stage: editForm.stage,
         city: editForm.city,
         bio: editForm.bio,
@@ -139,6 +156,27 @@ export function Profile() {
     return <div className="min-h-screen bg-warm-milk py-16 flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dusty-indigo"></div></div>;
   }
 
+
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-warm-milk py-16 flex flex-col items-center justify-center px-4 text-center">
+        <div className="w-20 h-20 bg-terracotta-deep/10 rounded-full flex items-center justify-center mb-6">
+          <Lock className="w-10 h-10 text-terracotta-deep" />
+        </div>
+        <h2 className="text-2xl font-bold mb-2">Профиль защищен</h2>
+        <p className="text-muted-foreground mb-8 max-w-sm">
+          Зарегистрируйтесь или войдите, чтобы знакомиться с другими участниками сообщества.
+        </p>
+        <Button 
+          onClick={() => setAuthModalOpen(true)}
+          className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full px-8 h-12 text-base font-medium shadow-lg"
+        >
+          Зарегистрироваться
+        </Button>
+        <AuthModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+      </div>
+    );
+  }
 
   if (!profile) {
     return <div className="min-h-screen bg-warm-milk py-16 flex justify-center"><p>Пользователь не найден</p></div>;
@@ -251,13 +289,15 @@ export function Profile() {
 
                     {/* Action Buttons */}
                     <div className="flex gap-2">
-                      {isOwnProfile ? (
-                        <>
-                          <Button variant="outline" className="rounded-full shadow-sm" onClick={() => setIsEditing(true)}>
-                            <Edit className="w-4 h-4 mr-2" />
-                            Редактировать
-                          </Button>
-                        </>
+                      {(isOwnProfile || currentUserProfile?.role === 'admin') ? (
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="rounded-full hover:bg-black/5"
+                          onClick={() => setIsEditing(true)}
+                        >
+                          <Edit className="w-5 h-5 text-muted-foreground" />
+                        </Button>
                       ) : (
                         <Button className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-6">
                            <MessageCircle className="w-4 h-4 mr-2" />
@@ -279,8 +319,14 @@ export function Profile() {
                    
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      <div>
-                       <label className="text-sm font-medium text-muted-foreground ml-1">Имя</label>
-                       <input className="w-full p-3 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] mt-1 shadow-sm" placeholder="Имя" value={editForm.display_name || ''} onChange={e => setEditForm({...editForm, display_name: e.target.value})} />
+                       <label className="text-sm font-medium text-muted-foreground ml-1">Имя (макс. 20 симв.)</label>
+                       <input 
+                         className="w-full p-3 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] mt-1 shadow-sm" 
+                         placeholder="Имя" 
+                         maxLength={20}
+                         value={editForm.display_name || ''} 
+                         onChange={e => setEditForm({...editForm, display_name: e.target.value.slice(0, 20)})} 
+                       />
                      </div>
                      <div>
                        <label className="text-sm font-medium text-muted-foreground ml-1">Роль в сообществе</label>

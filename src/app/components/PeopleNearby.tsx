@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Users, Search, MessageCircle, MapPin, Clock, Star } from 'lucide-react';
+import { Users, Search, MessageCircle, MapPin, Clock, Star, Lock } from 'lucide-react';
 import { Button } from './ui/button';
+import { AuthModal } from './AuthWidget';
 
 interface Person {
   id: string; // Updated to UUID string
@@ -24,6 +25,7 @@ export function PeopleNearby() {
   const [selectedFilter, setSelectedFilter] = useState('Все');
   const [people, setPeople] = useState<Person[]>([]);
   const [loading, setLoading] = useState(true);
+  const [authOpen, setAuthOpen] = useState(false);
 
   const filters = ['Все', 'Уже здесь', 'Проводники', 'Ищут друзей'];
 
@@ -132,9 +134,48 @@ export function PeopleNearby() {
         </div>
 
         {/* People Grid */}
-        {loading ? (
-          <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dusty-indigo"></div></div>
-        ) : filteredPeople.length === 0 ? (
+       {loading ? (
+    <div className="min-h-screen bg-warm-milk py-16 flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dusty-indigo"></div></div>
+  ) : !session ? (
+    <div className="min-h-screen bg-warm-milk py-8 px-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12 py-12 bg-white/50 backdrop-blur-sm rounded-[32px] border border-white/20 shadow-xl relative overflow-hidden">
+            <div className="relative z-10">
+              <div className="w-16 h-16 bg-terracotta-deep/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Lock className="w-8 h-8 text-terracotta-deep" />
+              </div>
+              <h1 className="text-3xl font-extrabold text-foreground mb-4">Люди рядом</h1>
+              <p className="text-muted-foreground text-lg mb-8 max-w-lg mx-auto">
+                Присоединяйтесь к сообществу, чтобы видеть анкеты релокантов в вашем городе и находить новых друзей.
+              </p>
+              <Button 
+                onClick={() => setAuthOpen(true)}
+                className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full px-8 h-12 text-base font-medium shadow-lg"
+              >
+                Создать профиль
+              </Button>
+            </div>
+
+            {/* Background blurred cards decorative effect */}
+            <div className="absolute inset-x-0 -bottom-10 flex justify-center gap-4 opacity-20 pointer-events-none px-4">
+               {[
+                 { name: 'Александр', city: 'Дананг', stage: 'Уже здесь' },
+                 { name: 'Елена', city: 'Нячанг', stage: 'Планирует' },
+                 { name: 'Михаил', city: 'Хошимин', stage: 'Уже здесь' },
+               ].map((p, i) => (
+                 <div key={i} className="bg-white p-6 rounded-[24px] border border-border w-64 blur-[2px] transform rotate-2">
+                    <div className="w-12 h-12 bg-gray-200 rounded-full mb-4"></div>
+                    <div className="h-4 w-24 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-3 w-32 bg-gray-100 rounded"></div>
+                 </div>
+               ))}
+            </div>
+          </div>
+          
+          <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+        </div>
+      </div>
+  ) : filteredPeople.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-[16px] border border-border">
             <p className="text-muted-foreground">Пока нет пользователей, подходящих под критерии поиска.</p>
           </div>
