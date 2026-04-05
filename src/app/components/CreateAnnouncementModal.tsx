@@ -4,6 +4,8 @@ import { X, Megaphone, Loader2, CheckCircle2, ImagePlus, Trash2 } from 'lucide-r
 import { Button } from './ui/button';
 import { useAuth } from '../SupabaseAuthProvider';
 import { supabase } from '@/lib/supabaseClient';
+declare const heic2any: any;
+
 
 interface Props {
   isOpen: boolean;
@@ -49,6 +51,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
   const { user, profile } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
+  const [processingFiles, setProcessingFiles] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -64,38 +67,74 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
 
   const [selectedAttachments, setSelectedAttachments] = useState<{file: File, preview: string}[]>([]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (selectedAttachments.length + files.length > 5) {
       setError('Максимум 5 фотографий');
       return;
     }
 
-    const newAttachments = files.map(file => ({
-      file,
-      preview: URL.createObjectURL(file)
-    }));
-
-    setSelectedAttachments(prev => [...prev, ...newAttachments]);
+    setProcessingFiles(true);
     setError(null);
-    if (e.target) e.target.value = '';
+
+    try {
+      for (const file of files) {
+        let fileToProcess = file;
+        
+        // Check for HEIC/HEIF
+        const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
+        
+        if (isHeic) {
+          try {
+            const convertedBlob = await heic2any({
+              blob: file,
+              toType: 'image/jpeg',
+              quality: 0.8
+            });
+            
+            // heic2any can return an array if multiple images are in the HEIC
+            const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+            
+            fileToProcess = new File([blob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), {
+              type: 'image/jpeg'
+            });
+          } catch (err) {
+            console.error('HEIC conversion failed:', err);
+            setError(`Не удалось конвертировать ${file.name}. Попробуйте использовать JPG.`);
+            continue;
+          }
+        }
+
+        const reader = new FileReader();
+        const promise = new Promise<void>((resolve) => {
+          reader.onloadend = () => {
+            setSelectedAttachments(prev => [...prev, {
+              file: fileToProcess,
+              preview: reader.result as string
+            }]);
+            resolve();
+          };
+        });
+        reader.readAsDataURL(fileToProcess);
+        await promise;
+      }
+    } catch (err) {
+      setError('Ошибка при обработке файлов');
+    } finally {
+      setProcessingFiles(false);
+      if (e.target) e.target.value = '';
+    }
   };
 
   const removeImage = (index: number) => {
     setSelectedAttachments(prev => {
       const updated = [...prev];
-      URL.revokeObjectURL(updated[index].preview);
       updated.splice(index, 1);
       return updated;
     });
   };
 
-  // Cleanup all URLs on unmount
-  useEffect(() => {
-    return () => {
-      selectedAttachments.forEach(a => URL.revokeObjectURL(a.preview));
-    };
-  }, []);
+  // No special cleanup needed for Base64 strings in state
 
   const uploadImages = async (): Promise<string[]> => {
     const urls: string[] = [];
@@ -285,11 +324,18 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                       {selectedAttachments.length < 5 && (
                         <button
                           type="button"
+                          disabled={processingFiles}
                           onClick={() => fileInputRef.current?.click()}
-                          className="aspect-square rounded-xl border-2 border-dashed border-border hover:border-terracotta-deep/50 hover:bg-soft-sand/20 transition-all flex flex-col items-center justify-center gap-1 text-muted-foreground"
+                          className="aspect-square rounded-xl border-2 border-dashed border-border hover:border-terracotta-deep/50 hover:bg-soft-sand/20 transition-all flex flex-col items-center justify-center gap-1 text-muted-foreground disabled:opacity-50"
                         >
-                          <ImagePlus className="w-6 h-6" />
-                          <span className="text-[10px] font-medium">Добавить</span>
+                          {processingFiles ? (
+                            <Loader2 className="w-6 h-6 animate-spin" />
+                          ) : (
+                            <ImagePlus className="w-6 h-6" />
+                          )}
+                          <span className="text-[10px] font-medium">
+                            {processingFiles ? 'Обработка...' : 'Добавить'}
+                          </span>
                         </button>
                       )}
                     </div>
