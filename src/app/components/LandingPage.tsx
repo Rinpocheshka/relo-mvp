@@ -252,14 +252,14 @@ export function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="px-4 pt-20 pb-10">
+      <section className="px-4 pt-12 pb-6 md:pt-20 md:pb-10">
         <div className="max-w-3xl mx-auto text-center">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <h1 className="text-5xl md:text-6xl font-extrabold leading-[1.1] tracking-tight mb-6">
+            <h1 className="text-4xl md:text-6xl font-extrabold leading-[1.15] tracking-tight mb-4 md:mb-6">
               В любой точке мира -{' '}
               <span className="text-terracotta-deep">как дома</span>
             </h1>
-            <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
               Relo.me — система для удобной жизни релокантов<br />
               Удобно когда жильё, события, вещи и поддержка в одном месте.
             </p>
@@ -269,9 +269,9 @@ export function LandingPage() {
 
 
       {/* Live stats */}
-      <section className="px-4 py-8">
+      <section className="px-4 py-6 md:py-8">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-white rounded-[32px] border border-border/40 shadow-sm px-8 py-6 flex flex-wrap gap-6 items-center justify-around">
+          <div className="bg-white rounded-[32px] border border-border/40 shadow-sm px-6 py-8 md:px-8 md:py-6 grid grid-cols-2 md:flex md:flex-wrap gap-8 md:gap-6 items-center justify-around">
             {[
               { num: '140+', label: 'участников', color: 'text-terracotta-deep' },
               { num: '15', label: 'Ищут жильё', color: 'text-dusty-indigo' },
@@ -279,8 +279,10 @@ export function LandingPage() {
               { num: '30+', label: 'объявлений за месяц', color: 'text-terracotta-deep' },
             ].map((s, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="text-center">
-                <div className={`text-3xl font-extrabold ${s.color}`}>{s.num}</div>
-                <p className="text-sm text-muted-foreground mt-1">{s.label}</p>
+                <div className="text-2xl md:text-3xl font-extrabold mb-1 whitespace-nowrap">
+                   <span className={s.color}>{s.num}</span>
+                </div>
+                <p className="text-[12px] md:text-sm text-muted-foreground uppercase tracking-wide font-medium">{s.label}</p>
               </motion.div>
             ))}
           </div>
@@ -288,20 +290,20 @@ export function LandingPage() {
       </section>
 
       {/* HOOK */}
-      <section className="px-4 py-16">
+      <section className="px-4 py-10 md:py-16">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">Жизнь релоканта<br />часто выглядит так</h2>
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">Жизнь релоканта<br className="md:hidden" /> часто выглядит так</h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-4 md:gap-6">
             {[
               { emoji: '😮‍💨', text: 'Открываешь десятки чатов — и не понимаешь, кому можно доверять' },
               { emoji: '⏳', text: 'Тратишь часы на поиски простых вещей: жильё, обменники, школы' },
               { emoji: '🤷', text: 'Не знаешь, с чего начать и что делать дальше' },
             ].map((p, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="bg-white p-8 rounded-[24px] border border-border/40 shadow-sm">
-                <span className="text-4xl mb-4 block">{p.emoji}</span>
-                <p className="text-lg text-foreground leading-relaxed">{p.text}</p>
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="bg-white p-6 md:p-8 rounded-[24px] border border-border/40 shadow-sm hover:shadow-md transition-shadow">
+                <span className="text-3xl md:text-4xl mb-3 md:mb-4 block">{p.emoji}</span>
+                <p className="text-base md:text-lg text-foreground/90 leading-relaxed">{p.text}</p>
               </motion.div>
             ))}
           </div>
@@ -309,37 +311,37 @@ export function LandingPage() {
       </section>
 
       {/* Features block */}
-      <section className="px-4 py-16">
+      <section className="px-4 py-10 md:py-16">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">Мы собрали всё в одном месте</h2>
-            <p className="text-xl text-muted-foreground">чтобы пройти этот путь проще</p>
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-2 md:mb-3 leading-tight">Мы собрали всё в одном месте</h2>
+            <p className="text-lg md:text-xl text-muted-foreground">чтобы пройти этот путь проще</p>
           </div>
-          <div className="grid md:grid-cols-2 gap-5">
+          <div className="grid md:grid-cols-2 gap-4 md:gap-5">
             {[
               {
                 icon: '🗂️',
                 title: 'Актуальные объявления и события',
                 desc: 'Можно выбрать по категориям, фильтрам и всё — актуальное',
-                accent: 'bg-terracotta-deep/8 border-terracotta-deep/15',
+                accent: 'bg-terracotta-deep/5 border-terracotta-deep/10',
               },
               {
                 icon: '🤝',
                 title: 'Люди, которым можно доверять',
                 desc: 'Ты видишь путь, который уже прошёл человек, а не только его ник',
-                accent: 'bg-dusty-indigo/8 border-dusty-indigo/15',
+                accent: 'bg-dusty-indigo/5 border-dusty-indigo/10',
               },
               {
                 icon: '💬',
                 title: 'Все ответы в одном месте',
                 desc: 'Кто прошёл путь — делится опытом, помогает другим',
-                accent: 'bg-warm-olive/8 border-warm-olive/15',
+                accent: 'bg-warm-olive/5 border-warm-olive/10',
               },
               {
                 icon: '🗺️',
                 title: 'Понятно куда дальше',
                 desc: 'Внутри уже есть шаги на каждый этап релокации',
-                accent: 'bg-rose-50 border-rose-100',
+                accent: 'bg-rose-50/50 border-rose-100/50',
               },
             ].map((f, i) => (
               <motion.div
@@ -348,12 +350,12 @@ export function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08 }}
-                className={`rounded-[28px] border p-7 flex gap-5 items-start ${f.accent}`}
+                className={`rounded-[28px] border p-5 md:p-7 flex gap-4 md:gap-5 items-start ${f.accent}`}
               >
-                <div className="text-4xl flex-shrink-0 mt-0.5">{f.icon}</div>
+                <div className="text-3xl md:text-4xl flex-shrink-0 mt-0.5">{f.icon}</div>
                 <div>
-                  <div className="font-bold text-lg mb-1.5">{f.title}</div>
-                  <p className="text-muted-foreground leading-relaxed">{f.desc}</p>
+                  <div className="font-bold text-base md:text-lg mb-1">{f.title}</div>
+                  <p className="text-[14px] md:text-base text-muted-foreground leading-relaxed">{f.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -362,20 +364,30 @@ export function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="px-4 py-16">
+      <section className="px-4 py-10 md:py-16 mb-6">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-gradient-to-br from-dusty-indigo to-terracotta-deep rounded-[40px] p-12 md:p-16 text-white text-center shadow-xl">
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-10 leading-tight">
-              Узнаешь себя?<br />Начни — и получи помощь<br />прямо сейчас
-            </h2>
-            <div className="flex gap-4 justify-center flex-wrap">
-              <Button size="lg" onClick={startOnboarding} className="bg-white text-terracotta-deep hover:bg-white/90 rounded-full h-14 px-10 text-base font-bold shadow-lg">
-                Начать свой путь →
-              </Button>
-              <Button size="lg" variant="outline" onClick={skipToHome} className="border-white/40 text-white !text-white bg-transparent hover:bg-white/10 rounded-full h-14 px-10 text-base font-medium">
-                Просто посмотреть
-              </Button>
-            </div>
+          <div className="bg-gradient-to-br from-dusty-indigo/90 to-terracotta-deep rounded-[32px] md:rounded-[40px] p-8 md:p-16 text-white text-center shadow-xl relative overflow-hidden">
+            <motion.div 
+               initial={{ opacity: 0, scale: 0.95 }}
+               whileInView={{ opacity: 1, scale: 1 }}
+               viewport={{ once: true }}
+               className="relative z-10"
+            >
+              <h2 className="text-3xl md:text-5xl font-extrabold mb-8 md:mb-10 leading-tight">
+                Узнаешь себя?<br />Начни — и получи помощь<br />прямо сейчас
+              </h2>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button size="lg" onClick={startOnboarding} className="bg-white text-terracotta-deep hover:bg-white/90 rounded-full h-14 md:h-14 px-8 md:px-10 text-base font-bold shadow-lg w-full sm:w-auto transition-transform active:scale-95">
+                  Начать свой путь →
+                </Button>
+                <Button size="lg" variant="outline" onClick={skipToHome} className="border-white/40 text-white !text-white bg-transparent hover:bg-white/10 rounded-full h-14 md:h-14 px-8 md:px-10 text-base font-medium w-full sm:w-auto">
+                  Просто посмотреть
+                </Button>
+              </div>
+            </motion.div>
+            {/* Subtle background decoration */}
+            <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/3 w-64 h-64 bg-black/10 rounded-full blur-3xl pointer-events-none"></div>
           </div>
         </div>
       </section>
@@ -709,9 +721,6 @@ function OnboardingFlow({
             {step === 2 && !shouldSkipSurvival && (
               <div className="px-4 sm:px-5 py-6 sm:py-10 max-w-2xl mx-auto">
                 <div className="text-center mb-8 sm:mb-10">
-                  <p className="text-xs sm:text-sm text-warm-olive font-medium mb-1.5 sm:mb-3">
-                    {showArrivalKit ? 'Понимаем 🤍 Вот что нужно разобрать прямо сейчас' : 'Готовимся! 🌿 Вот база для старта'}
-                  </p>
                   <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
                     {showArrivalKit
                       ? <>Добро пожаловать{country ? <> в {country}!</> : '!'}</>
