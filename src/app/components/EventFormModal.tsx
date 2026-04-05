@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Calendar, MapPin, Clock, Users, Upload, Image as ImageIcon, AlertCircle, Trash2, Wallet } from 'lucide-react';
+import { X, Calendar, MapPin, Clock, Users, Upload, Image as ImageIcon, AlertCircle, Trash2, Wallet, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
+
+declare const heic2any: any;
 
 interface EventFormModalProps {
   isOpen: boolean;
@@ -14,10 +16,12 @@ interface EventFormModalProps {
 
 export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: EventFormModalProps) {
   const { user, profile } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [images, setImages] = useState<string[]>([]);
-  const [uploading, setUploading] = useState(false);
+  const [processingFiles, setProcessingFiles] = useState(false);
+  const [selectedAttachments, setSelectedAttachments] = useState<{file: File, preview: string}[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -48,7 +52,8 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
         price_text: eventToEdit.price_text || 'Бесплатно',
         max_attendees: eventToEdit.max_attendees?.toString() || '',
       });
-      setImages(eventToEdit.images || []);
+      setExistingImages(eventToEdit.images || []);
+      setSelectedAttachments([]);
     } else {
       setFormData({
         title: '',
@@ -59,46 +64,94 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
         price_text: 'Бесплатно',
         max_attendees: '',
       });
-      setImages([]);
+      setExistingImages([]);
+      setSelectedAttachments([]);
     }
   }, [eventToEdit, isOpen]);
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0 || !user) return;
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []).slice(0, 1);
+    if (files.length === 0) return;
+    
+    // Clear previous if only 1 allowed
+    setSelectedAttachments([]);
+    setExistingImages([]);
 
-    setUploading(true);
-    const newImages = [...images];
+    setProcessingFiles(true);
+    setError(null);
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
+    try {
+      for (const file of files) {
+        let fileToProcess = file;
+        const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
+        
+        if (isHeic) {
+          try {
+            const convertedBlob = await heic2any({
+              blob: file,
+              toType: 'image/jpeg',
+              quality: 0.8
+            });
+            const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+            fileToProcess = new File([blob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), {
+              type: 'image/jpeg'
+            });
+          } catch (err) {
+            console.error('HEIC conversion failed:', err);
+            continue;
+          }
+        }
 
-      try {
-        const { error: uploadError } = await supabase.storage
-          .from('events')
-          .upload(filePath, file);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('events')
-          .getPublicUrl(filePath);
-
-        newImages.push(publicUrl);
-      } catch (err) {
-        console.error('Error uploading image:', err);
+        const reader = new FileReader();
+        const promise = new Promise<void>((resolve) => {
+          reader.onloadend = () => {
+            setSelectedAttachments(prev => [...prev, {
+              file: fileToProcess,
+              preview: reader.result as string
+            }]);
+            resolve();
+          };
+        });
+        reader.readAsDataURL(fileToProcess);
+        await promise;
       }
+    } catch (err) {
+      setError('Ошибка при обработке файлов');
+    } finally {
+      setProcessingFiles(false);
+      if (e.target) e.target.value = '';
     }
-
-    setImages(newImages);
-    setUploading(false);
   };
 
-  const removeImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
+  const removeSelectedImage = (index: number) => {
+    setSelectedAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = (index: number) => {
+    setExistingImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const uploadImages = async (): Promise<string[]> => {
+    const urls: string[] = [];
+    for (const item of selectedAttachments) {
+      const file = item.file;
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user?.id}/${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('events')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('events')
+        .getPublicUrl(filePath);
+
+      urls.push(publicUrl);
+    }
+    return urls;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -107,17 +160,23 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
     setLoading(true);
     setError(null);
 
-    const payload = {
-      ...formData,
-      organizer_id: user.id,
-      organizer_name: profile?.display_name || user.email?.split('@')[0],
-      city: profile?.city || 'Не указано',
-      images,
-      max_attendees: formData.max_attendees ? parseInt(formData.max_attendees) : null,
-      starts_at: new Date(formData.starts_at).toISOString(),
-    };
-
     try {
+      // 1. Upload new images if any
+      const newImageUrls = selectedAttachments.length > 0 ? await uploadImages() : [];
+      const finalImages = [...existingImages, ...newImageUrls];
+
+      // 2. Prepare payload
+      const payload = {
+        ...formData,
+        organizer_id: user.id,
+        organizer_name: profile?.display_name || user.email?.split('@')[0],
+        city: profile?.city || 'Не указано',
+        images: finalImages,
+        max_attendees: formData.max_attendees ? parseInt(formData.max_attendees) : null,
+        starts_at: new Date(formData.starts_at).toISOString(),
+      };
+
+      // 3. Upsert
       let result;
       if (eventToEdit) {
         result = await supabase
@@ -300,29 +359,50 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 px-1">Фотографии</label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {images.map((url, i) => (
-                    <div key={i} className="relative aspect-square rounded-2xl overflow-hidden group border border-border/30">
+                  {/* Existing Images */}
+                  {existingImages.map((url, i) => (
+                    <div key={`exist-${i}`} className="relative aspect-square rounded-2xl overflow-hidden group border border-border/30">
                       <img src={url} alt="event" className="w-full h-full object-cover" />
                       <button
                         type="button"
-                        onClick={() => removeImage(i)}
+                        onClick={() => removeExistingImage(i)}
                         className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
                     </div>
                   ))}
-                  <label className="aspect-square rounded-2xl border-2 border-dashed border-border/50 flex flex-col items-center justify-center cursor-pointer hover:bg-soft-sand/20 transition-all hover:border-terracotta-deep/30 group">
-                    <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageUpload} />
-                    {uploading ? (
-                      <div className="w-6 h-6 border-2 border-terracotta-deep border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <>
-                        <Upload className="w-6 h-6 text-muted-foreground group-hover:text-terracotta-deep transition-colors mb-2" />
-                        <span className="text-[10px] font-bold text-muted-foreground group-hover:text-terracotta-deep uppercase tracking-tighter">Добавить</span>
-                      </>
-                    )}
-                  </label>
+
+                  {/* New Selected Previews */}
+                  {selectedAttachments.map((item, i) => (
+                    <div key={`new-${i}`} className="relative aspect-square rounded-2xl overflow-hidden group border border-dashed border-terracotta-deep/30">
+                      <img src={item.preview} alt="new-event" className="w-full h-full object-cover opacity-60" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                         <Loader2 className="w-5 h-5 text-terracotta-deep animate-spin" />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeSelectedImage(i)}
+                        className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {(existingImages.length + selectedAttachments.length < 1) && (
+                    <label className="aspect-square rounded-2xl border-2 border-dashed border-border/50 flex flex-col items-center justify-center cursor-pointer hover:bg-soft-sand/20 transition-all hover:border-terracotta-deep/30 group">
+                      <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} ref={fileInputRef} />
+                      {processingFiles ? (
+                        <Loader2 className="w-6 h-6 text-terracotta-deep animate-spin" />
+                      ) : (
+                        <>
+                          <Upload className="w-6 h-6 text-muted-foreground group-hover:text-terracotta-deep transition-colors mb-2" />
+                          <span className="text-[10px] font-bold text-muted-foreground group-hover:text-terracotta-deep uppercase tracking-tighter">Добавить</span>
+                        </>
+                      )}
+                    </label>
+                  )}
                 </div>
               </div>
             </div>
@@ -340,10 +420,15 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={loading || uploading}
+              disabled={loading || processingFiles}
               className="flex-[2] h-14 rounded-2xl bg-terracotta-deep hover:bg-terracotta-deep/90 text-white font-bold text-lg shadow-lg shadow-terracotta-deep/10"
             >
-              {loading ? 'Сохранение...' : (eventToEdit ? 'Сохранить изменения' : 'Создать событие')}
+              {loading ? (
+                <div className="flex items-center gap-2">
+                   <Loader2 className="w-5 h-5 animate-spin" />
+                   Загрузка...
+                </div>
+              ) : (eventToEdit ? 'Сохранить изменения' : 'Создать событие')}
             </Button>
           </div>
         </motion.div>
