@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import {
   Home, Megaphone, Calendar, User, Users, Search, Plus,
-  LogOut, ChevronDown, Settings, Edit
+  LogOut, ChevronDown, Settings, Edit, Heart
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Button } from './ui/button';
@@ -171,6 +171,7 @@ export function Layout() {
     { path: '/home', icon: Home, label: 'Главная' },
     { path: '/announcements', icon: Megaphone, label: 'Объявления' },
     { path: '/events', icon: Calendar, label: 'Афиша' },
+    { path: '/support', icon: Heart, label: 'Найти опору' },
     { path: '/people', icon: Users, label: 'Люди' },
   ];
 
