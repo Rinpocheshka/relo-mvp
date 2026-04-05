@@ -30,6 +30,7 @@ const PROFILE_TAGS = [
   { value: 'pet', label: '🐾 С питомцем' },
   { value: 'remote', label: '💻 Удалёнщик' },
   { value: 'job', label: '💼 Ищу работу' },
+  { value: 'musician', label: '🎸 Музыкант' },
   { value: 'housing', label: '🏠 Ищу жильё' },
 ];
 
