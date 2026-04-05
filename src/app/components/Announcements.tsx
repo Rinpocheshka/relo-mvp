@@ -17,9 +17,10 @@ interface Announcement {
   description: string;
   author: string;
   price?: string;
+  price_numeric?: number;
   location: string;
   date: string;
-  image?: string;
+  images: string[];
 }
 
 export function Announcements() {
@@ -29,6 +30,9 @@ export function Announcements() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState<'newest' | 'price_asc' | 'price_desc'>('newest');
+  const PAGE_SIZE = 50;
   const [housingFilters, setHousingFilters] = useState({
     format: [] as string[],
     size: [] as string[],
@@ -77,10 +81,25 @@ export function Announcements() {
     setLoading(true);
     setLoadError(null);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('announcements')
-        .select('id,title,category,subcategory,description,author_name,price_text,location_text,created_at')
-        .order('created_at', { ascending: false });
+        .select('*', { count: 'exact' });
+
+      // Apply sorting
+      if (sortBy === 'newest') {
+        query = query.order('created_at', { ascending: false });
+      } else if (sortBy === 'price_asc') {
+        query = query.order('price_numeric', { ascending: true, nullsFirst: false });
+      } else if (sortBy === 'price_desc') {
+        query = query.order('price_numeric', { ascending: false, nullsFirst: false });
+      }
+
+      // Apply pagination
+      const from = (page - 1) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+      query = query.range(from, to);
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -92,8 +111,10 @@ export function Announcements() {
         description: (row.description ?? '') as string,
         author: (row.author_name ?? 'Пользователь') as string,
         price: (row.price_text ?? undefined) as string | undefined,
+        price_numeric: row.price_numeric as number | undefined,
         location: (row.location_text ?? '') as string,
         date: row.created_at ? formatRelativeRu(new Date(row.created_at as string)) : '',
+        images: (row.images ?? []) as string[],
       }));
       setAnnouncements(mapped);
     } catch (e) {
@@ -106,7 +127,7 @@ export function Announcements() {
 
   useEffect(() => {
     void fetchData();
-  }, []);
+  }, [page, sortBy]);
 
   const filteredAnnouncements = useMemo(() => {
     if (selectedCategory === 'Все') return announcements;
@@ -309,24 +330,37 @@ export function Announcements() {
           </div>
         )}
 
-        {/* Search & Add Button */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Поиск объявлений..."
-              className="w-full pl-12 pr-4 py-4 bg-white border border-border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20"
-            />
+        {/* Sorting & Search & Add Button */}
+        <div className="flex flex-col gap-4 mb-8">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Поиск объявлений..."
+                className="w-full pl-12 pr-4 py-4 bg-white border border-border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 shadow-sm"
+              />
+            </div>
+            <div className="flex gap-2">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="px-4 py-4 bg-white border border-border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm font-medium shadow-sm cursor-pointer min-w-[160px]"
+              >
+                <option value="newest">Сначала новые</option>
+                <option value="price_asc">Дешевле</option>
+                <option value="price_desc">Дороже</option>
+              </select>
+              <Button
+                size="lg"
+                onClick={() => user ? setIsCreateModalOpen(true) : setIsAuthModalOpen(true)}
+                className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[58px] px-8 shadow-md shadow-terracotta-deep/20 transition-all active:scale-[0.98]"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Разместить
+              </Button>
+            </div>
           </div>
-          <Button
-            size="lg"
-            onClick={() => user ? setIsCreateModalOpen(true) : setIsAuthModalOpen(true)}
-            className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[12px] whitespace-nowrap"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Добавить объявление
-          </Button>
         </div>
 
         {/* Announcements Grid */}
@@ -346,11 +380,33 @@ export function Announcements() {
               key={announcement.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="bg-white rounded-[16px] border border-border hover:shadow-lg transition-all cursor-pointer overflow-hidden group"
+              transition={{ delay: i * 0.05 }}
+              className="bg-white rounded-[24px] border border-border hover:shadow-xl transition-all cursor-pointer overflow-hidden group flex flex-col h-full"
             >
-              {/* Image Placeholder */}
-              <div className="h-48 bg-gradient-to-br from-soft-sand/30 to-dusty-indigo/20 group-hover:scale-105 transition-transform"></div>
+              {/* Image */}
+              <div className="h-56 bg-soft-sand/10 relative overflow-hidden">
+                {announcement.images && announcement.images.length > 0 ? (
+                  <img 
+                    src={announcement.images[0]} 
+                    alt={announcement.title} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-soft-sand/30 to-dusty-indigo/20">
+                    <Megaphone className="w-10 h-10 text-muted-foreground/30" />
+                  </div>
+                )}
+                <div className="absolute top-4 left-4">
+                  <span className={`px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase rounded-full shadow-sm backdrop-blur-md ${
+                    announcement.category === 'Жильё' ? 'bg-terracotta-deep/90 text-white' :
+                    announcement.category === 'Вещи' ? 'bg-dusty-indigo/90 text-white' :
+                    announcement.category === 'Услуги' ? 'bg-warm-olive/90 text-white' :
+                    'bg-green-600/90 text-white'
+                  }`}>
+                    {announcement.category}
+                  </span>
+                </div>
+              </div>
 
               {/* Content */}
               <div className="p-6">
@@ -386,6 +442,37 @@ export function Announcements() {
             </motion.div>
           ))}
         </div>
+
+        {/* Pagination Controls */}
+        {!loading && announcements.length > 0 && (
+          <div className="mt-12 flex items-center justify-center gap-4">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setPage(p => Math.max(1, p - 1));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              disabled={page === 1}
+              className="rounded-[16px] px-6 h-12 bg-white"
+            >
+              ← Назад
+            </Button>
+            <span className="text-sm font-medium text-muted-foreground bg-white px-4 py-2 rounded-full border border-border shadow-sm">
+              Страница {page}
+            </span>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setPage(p => p + 1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              disabled={announcements.length < PAGE_SIZE}
+              className="rounded-[16px] px-6 h-12 bg-white"
+            >
+              Вперед →
+            </Button>
+          </div>
+        )}
 
         {/* Empty State */}
         {!loading && !loadError && filteredAnnouncements.length === 0 && (

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Megaphone, Loader2, CheckCircle2 } from 'lucide-react';
+import { X, Megaphone, Loader2, CheckCircle2, ImagePlus, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '../SupabaseAuthProvider';
 import { supabase } from '@/lib/supabaseClient';
@@ -47,6 +47,7 @@ const SUBCATEGORIES: Record<string, string[]> = {
 
 export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
   const { user, profile } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,9 +57,61 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
     category: 'Жильё',
     subcategory: '',
     price_text: '',
+    price_numeric: '',
     location_text: '',
     description: '',
   });
+
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (selectedFiles.length + files.length > 5) {
+      setError('Максимум 5 фотографий');
+      return;
+    }
+
+    const newFiles = [...selectedFiles, ...files];
+    setSelectedFiles(newFiles);
+
+    const newPreviews = files.map(file => URL.createObjectURL(file));
+    setPreviews([...previews, ...newPreviews]);
+    setError(null);
+  };
+
+  const removeImage = (index: number) => {
+    const newFiles = [...selectedFiles];
+    newFiles.splice(index, 1);
+    setSelectedFiles(newFiles);
+
+    const newPreviews = [...previews];
+    URL.revokeObjectURL(newPreviews[index]);
+    newPreviews.splice(index, 1);
+    setPreviews(newPreviews);
+  };
+
+  const uploadImages = async (): Promise<string[]> => {
+    const urls: string[] = [];
+    for (const file of selectedFiles) {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user?.id}/${Math.random()}.${fileExt}`;
+      const filePath = `announcements/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('announcements')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('announcements')
+        .getPublicUrl(filePath);
+
+      urls.push(publicUrl);
+    }
+    return urls;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,6 +121,11 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
     setError(null);
 
     try {
+      let imageUrls: string[] = [];
+      if (selectedFiles.length > 0) {
+        imageUrls = await uploadImages();
+      }
+
       const { error: insertError } = await supabase
         .from('announcements')
         .insert({
@@ -75,12 +133,14 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
           category: form.category,
           subcategory: form.subcategory || null,
           price_text: form.price_text,
+          price_numeric: form.price_numeric ? parseFloat(form.price_numeric) : null,
           location_text: form.location_text,
           description: form.description,
           author_id: user.id,
           author_name: profile.display_name || 'Пользователь',
-          city: profile.city || 'Дананг', // Default to current city or Danang
-          status: 'active'
+          city: profile.city || 'Дананг',
+          status: 'active',
+          images: imageUrls
         });
 
       if (insertError) throw insertError;
@@ -96,9 +156,12 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
           category: 'Жильё',
           subcategory: '',
           price_text: '',
+          price_numeric: '',
           location_text: '',
           description: '',
         });
+        setSelectedFiles([]);
+        setPreviews([]);
       }, 2000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Произошла ошибка при публикации');
@@ -194,6 +257,43 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                     </div>
                   )}
 
+                  {/* Image Upload */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold ml-1">Фотографии (до 5)</label>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                      {previews.map((preview, index) => (
+                        <div key={preview} className="relative aspect-square rounded-xl overflow-hidden group border border-border">
+                          <img src={preview} alt="preview" className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Trash2 className="w-5 h-5 text-white" />
+                          </button>
+                        </div>
+                      ))}
+                      {selectedFiles.length < 5 && (
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="aspect-square rounded-xl border-2 border-dashed border-border hover:border-terracotta-deep/50 hover:bg-soft-sand/20 transition-all flex flex-col items-center justify-center gap-1 text-muted-foreground"
+                        >
+                          <ImagePlus className="w-6 h-6" />
+                          <span className="text-[10px] font-medium">Добавить</span>
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      className="hidden"
+                      accept="image/*"
+                      multiple
+                    />
+                  </div>
+
                   {/* Title */}
                   <div className="space-y-2">
                     <label className="text-sm font-semibold ml-1">Заголовок</label>
@@ -208,9 +308,9 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-4">
-                    {/* Price */}
+                    {/* Price Text */}
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold ml-1">Цена (необязательно)</label>
+                      <label className="text-sm font-semibold ml-1">Цена текстом</label>
                       <input
                         type="text"
                         placeholder="Напр: $500 / мес"
@@ -219,7 +319,21 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                         className="w-full p-4 bg-soft-sand/20 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm"
                       />
                     </div>
-                    {/* Location */}
+                    {/* Price Numeric */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold ml-1">Цена для фильтров ($)</label>
+                      <input
+                        type="number"
+                        placeholder="Напр: 500"
+                        value={form.price_numeric}
+                        onChange={(e) => setForm({ ...form, price_numeric: e.target.value })}
+                        className="w-full p-4 bg-soft-sand/20 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Location & Description */}
+                  <div className="space-y-6">
                     <div className="space-y-2">
                       <label className="text-sm font-semibold ml-1">Район / Место</label>
                       <input
@@ -231,19 +345,18 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                         className="w-full p-4 bg-soft-sand/20 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm"
                       />
                     </div>
-                  </div>
 
-                  {/* Description */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold ml-1">Описание</label>
-                    <textarea
-                      required
-                      rows={5}
-                      placeholder="Расскажите подробнее о вашем предложении..."
-                      value={form.description}
-                      onChange={(e) => setForm({ ...form, description: e.target.value })}
-                      className="w-full p-4 bg-soft-sand/20 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm resize-none"
-                    />
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold ml-1">Описание</label>
+                      <textarea
+                        required
+                        rows={5}
+                        placeholder="Расскажите подробнее о вашем предложении..."
+                        value={form.description}
+                        onChange={(e) => setForm({ ...form, description: e.target.value })}
+                        className="w-full p-4 bg-soft-sand/20 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm resize-none"
+                      />
+                    </div>
                   </div>
 
                   {error && (
