@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, MapPin, Calendar, User, CornerUpRight } from 'lucide-react';
+import { X, MapPin, Calendar, User, CornerUpRight, Trash2, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
+import { useAuth } from '../SupabaseAuthProvider';
+import { supabase } from '@/lib/supabaseClient';
 
 interface Announcement {
   id: string;
@@ -14,6 +16,7 @@ interface Announcement {
   location: string;
   date: string;
   images: string[];
+  author_id: string;
 }
 
 interface Props {
@@ -23,12 +26,39 @@ interface Props {
 }
 
 export function AnnouncementDetailsModal({ announcement, isOpen, onClose }: Props) {
+  const { user, profile } = useAuth();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const canDelete = user && (user.id === announcement?.author_id || profile?.role === 'admin');
 
   // Reset active image when announcement changes
   useEffect(() => {
     setActiveImageIndex(0);
+    setIsDeleting(false);
   }, [announcement?.id]);
+
+  const handleDelete = async () => {
+    if (!announcement || !canDelete) return;
+    if (!confirm('Вы уверены, что хотите удалить это объявление?')) return;
+
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase
+        .from('announcements')
+        .delete()
+        .eq('id', announcement.id);
+
+      if (error) throw error;
+      onClose();
+      window.location.reload(); // Simple refresh to update the list
+    } catch (err) {
+      alert('Ошибка при удалении');
+      console.error(err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   if (!announcement) return null;
 
@@ -122,7 +152,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose }: Prop
                       {announcement.price && (
                         <div className="bg-terracotta-deep/10 px-4 py-2 rounded-2xl shrink-0">
                           <span className="text-xl font-black text-terracotta-deep whitespace-nowrap">
-                            {/^\d+$/.test(announcement.price) ? `$${announcement.price}` : announcement.price}
+                            {announcement.price}
                           </span>
                         </div>
                       )}
@@ -156,6 +186,18 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose }: Prop
                     <Button className="w-full bg-foreground hover:bg-foreground/90 text-white rounded-2xl h-14 font-black text-lg shadow-xl shadow-foreground/10 transition-all active:scale-[0.98]">
                       Написать автору
                     </Button>
+                    
+                    {canDelete && (
+                      <button
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        className="w-full mt-4 flex items-center justify-center gap-2 text-red-600 hover:text-red-700 font-bold py-3 transition-colors disabled:opacity-50"
+                      >
+                        {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                        Удалить объявление
+                      </button>
+                    )}
+
                     <p className="text-center text-[10px] text-muted-foreground mt-4 uppercase tracking-widest font-bold">
                       Скажите, что нашли это объявление на Relo.me 🤍
                     </p>

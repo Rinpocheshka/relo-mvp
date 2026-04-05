@@ -22,6 +22,7 @@ interface Announcement {
   location: string;
   date: string;
   images: string[];
+  author_id: string;
 }
 
 export function Announcements() {
@@ -118,6 +119,7 @@ export function Announcements() {
         location: (row.location_text ?? '') as string,
         date: row.created_at ? formatRelativeRu(new Date(row.created_at as string)) : '',
         images: (row.images ?? []) as string[],
+        author_id: row.author_id as string,
       }));
       setAnnouncements(mapped);
     } catch (e) {
