@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
-import { X, ArrowRight, MapPin, ChevronDown, ChevronUp, CheckCircle2, Search, Loader2 } from 'lucide-react';
+import { X, ArrowRight, MapPin, ChevronDown, ChevronUp, CheckCircle2, Search } from 'lucide-react';
 import { AuthModal } from './AuthWidget';
 import { AlertCircle, Download, CheckCircle, Navigation } from 'lucide-react';
 
@@ -486,7 +486,6 @@ function OnboardingFlow({
   onFinish: (c: string) => void;
   onSkipAuth: (c: string) => void;
 }) {
-  const [locState, setLocState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [city, setCity] = useState<string>('');
   const [country, setCountry] = useState<string>('');
   const [manualInput, setManualInput] = useState<string>('');
@@ -502,35 +501,6 @@ function OnboardingFlow({
       onNext();
     }
   }, [step, shouldSkipSurvival, onNext]);
-
-  const handleAutoLocation = () => {
-    setLocState('loading');
-    if (!navigator.geolocation) {
-      setLocState('error');
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&accept-language=ru`);
-          const data = await res.json();
-          const foundCity = data.address?.city || data.address?.town || data.address?.village || data.address?.state || 'Неизвестный город';
-          const foundCountry = data.address?.country || '';
-          setCity(`${foundCity}${foundCountry ? ', ' + foundCountry : ''}`);
-          setCountry(foundCountry);
-          setLocState('success');
-          setTimeout(() => { onNext(); }, 1500);
-        } catch (e) {
-          setLocState('error');
-        }
-      },
-      (_err) => {
-        setLocState('error');
-      },
-      { timeout: 8000 }
-    );
-  };
 
   const handleManualSubmit = () => {
     const val = manualInput.trim();
@@ -631,44 +601,6 @@ function OnboardingFlow({
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-8 tracking-tight text-foreground">Место уже известно?</h2>
 
                 <div className="w-full max-w-sm space-y-3 mb-8">
-                  {/* Геопозиция кнопка */}
-                  {locState !== 'error' && (
-                    <motion.button
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 }}
-                      onClick={handleAutoLocation}
-                      disabled={locState === 'loading' || locState === 'success'}
-                      className={`w-full text-white rounded-2xl px-6 py-4 flex items-center justify-center gap-3 transition-all font-semibold shadow-sm ${locState === 'success' ? 'bg-green-600' : 'bg-terracotta-deep hover:bg-terracotta-deep/90 shadow-terracotta-deep/20 shadow-lg'}`}
-                    >
-                      {locState === 'idle' && (
-                        <>
-                          <MapPin className="w-5 h-5" />
-                          Определить автоматически
-                        </>
-                      )}
-                      {locState === 'loading' && (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Определяем...
-                        </>
-                      )}
-                      {locState === 'success' && (
-                        <>
-                          <CheckCircle2 className="w-5 h-5" />
-                          {city}
-                        </>
-                      )}
-                    </motion.button>
-                  )}
-
-                  {/* Сообщение об ошибке геолокации */}
-                  {locState === 'error' && (
-                    <p className="text-sm text-muted-foreground bg-amber-50 border border-amber-200/60 rounded-2xl px-4 py-3">
-                      Не удалось определить — выберите город вручную 👇
-                    </p>
-                  )}
-
                   {/* Ручной выбор */}
                   <div className="relative">
                     <MapPin className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-10" />
