@@ -247,7 +247,7 @@ export function Layout() {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    className={`relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                       active
                         ? 'bg-terracotta-deep/10 text-terracotta-deep'
                         : 'text-muted-foreground hover:text-foreground hover:bg-soft-sand/40'
@@ -268,29 +268,12 @@ export function Layout() {
             </nav>
 
             {/* Right side */}
-            <div className="hidden md:flex items-center gap-2 flex-shrink-0 ml-auto md:ml-0">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Поиск..."
-                  className="w-44 lg:w-56 pl-9 pr-4 py-2 bg-soft-sand/30 border border-border/40 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 focus:bg-white transition-all placeholder:text-muted-foreground/60"
-                />
-              </div>
-
+            <div className="hidden md:flex items-center gap-2 flex-shrink-0 ml-auto xl:ml-0">
               {/* Auth — Profile or Login */}
               <HeaderAuth />
             </div>
 
-            {/* Mobile right actions */}
             <div className="flex md:hidden items-center gap-2 ml-auto">
-              <button
-                className="p-2 rounded-full hover:bg-soft-sand/40 transition-colors"
-                aria-label="Поиск"
-              >
-                <Search className="w-5 h-5 text-muted-foreground" />
-              </button>
               <MobileUserButton isActive={isActive('/profile')} />
             </div>
           </div>
