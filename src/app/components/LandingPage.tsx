@@ -42,9 +42,10 @@ const SURVIVAL_CARDS_HERE: SurvivalCard[] = [
     detail: 'Стойка официального такси находится у выхода из таможни, но дешевле вызвать машину через приложение.',
     warning: 'Осторожно: фейковые таксисты. В зоне прилета к вам будут подходить люди и предлагать такси. Игнорируйте их, они завышают цены в 3-5 раз.',
     apps: [
-      { name: 'Grab', desc: 'Самое популярное такси', color: 'bg-[#00B14F]', icon: 'G', link: { ios: 'https://apps.apple.com/app/grab/id647268330', android: 'https://play.google.com/store/apps/details?id=com.grabtaxi.passenger' } },
-      { name: 'InDrive', desc: 'Можно торговаться', color: 'bg-[#B1D235]', textDark: true, icon: 'in', link: { ios: 'https://apps.apple.com/app/indrive/id1444377865', android: 'https://play.google.com/store/apps/details?id=sinet.startup.inDriver' } },
+      { name: 'Grab', desc: 'Самое популярное такси', color: 'bg-[#00B14F]', icon: 'G', link: { ios: 'https://apps.apple.com/app/grab/id647268330', android: 'https://play.google.com/store/apps/details?id=com.grabtaxi.passenger', web: 'https://www.grab.com/vn/en/' } },
+      { name: 'InDrive', desc: 'Можно торговаться', color: 'bg-[#B1D235]', textDark: true, icon: 'in', link: { ios: 'https://apps.apple.com/app/indrive/id1444377865', android: 'https://play.google.com/store/apps/details?id=sinet.startup.inDriver', web: 'https://indrive.com/en-vn' } },
       { name: 'Vexere', desc: 'Междугородные автобусы', color: 'bg-[#E85D04]', icon: 'V', link: { web: 'https://vexere.com/en-US/referral?rid=KRIUCHKOV001' } },
+      { name: 'ЖД', desc: 'Билеты на поезда', color: 'bg-[#003580]', icon: '🚆', link: { web: 'https://dsvn.vn/#/' } },
     ],
     color: 'bg-terracotta-deep/10 text-terracotta-deep',
     border: 'border-terracotta-deep/20',
@@ -692,7 +693,15 @@ function OnboardingFlow({
                                   <p className="font-bold text-sm">Скачайте приложения:</p>
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     {card.apps.map((app, appIdx) => (
-                                      <div key={appIdx} onClick={() => toggleComplete(app.name)} className="flex items-center justify-between p-3 rounded-2xl border border-border/60 hover:bg-muted/50 transition-colors group cursor-pointer">
+                                      <div 
+                                        key={appIdx} 
+                                        onClick={() => {
+                                          const url = app.link?.web || (typeof window !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent) ? app.link?.ios : app.link?.android);
+                                          if (url) window.open(url, '_blank');
+                                          toggleComplete(app.name);
+                                        }} 
+                                        className="flex items-center justify-between p-3 rounded-2xl border border-border/60 hover:bg-muted/50 transition-colors group cursor-pointer"
+                                      >
                                         <div className="flex items-center gap-3">
                                           <div className={`w-10 h-10 ${app.color} rounded-[12px] flex items-center justify-center font-bold text-lg ${app.textDark ? 'text-black/80' : 'text-white'}`}>{app.icon}</div>
                                           <div>
