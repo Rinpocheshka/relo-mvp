@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Megaphone, Loader2, CheckCircle2, ImagePlus, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
@@ -62,38 +62,45 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
     description: '',
   });
 
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
+  const [selectedAttachments, setSelectedAttachments] = useState<{file: File, preview: string}[]>([]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (selectedFiles.length + files.length > 5) {
+    if (selectedAttachments.length + files.length > 5) {
       setError('Максимум 5 фотографий');
       return;
     }
 
-    const newFiles = [...selectedFiles, ...files];
-    setSelectedFiles(newFiles);
+    const newAttachments = files.map(file => ({
+      file,
+      preview: URL.createObjectURL(file)
+    }));
 
-    const newPreviews = files.map(file => URL.createObjectURL(file));
-    setPreviews([...previews, ...newPreviews]);
+    setSelectedAttachments(prev => [...prev, ...newAttachments]);
     setError(null);
+    if (e.target) e.target.value = '';
   };
 
   const removeImage = (index: number) => {
-    const newFiles = [...selectedFiles];
-    newFiles.splice(index, 1);
-    setSelectedFiles(newFiles);
-
-    const newPreviews = [...previews];
-    URL.revokeObjectURL(newPreviews[index]);
-    newPreviews.splice(index, 1);
-    setPreviews(newPreviews);
+    setSelectedAttachments(prev => {
+      const updated = [...prev];
+      URL.revokeObjectURL(updated[index].preview);
+      updated.splice(index, 1);
+      return updated;
+    });
   };
+
+  // Cleanup all URLs on unmount
+  useEffect(() => {
+    return () => {
+      selectedAttachments.forEach(a => URL.revokeObjectURL(a.preview));
+    };
+  }, []);
 
   const uploadImages = async (): Promise<string[]> => {
     const urls: string[] = [];
-    for (const file of selectedFiles) {
+    for (const item of selectedAttachments) {
+      const file = item.file;
       const fileExt = file.name.split('.').pop();
       const fileName = `${user?.id}/${Math.random()}.${fileExt}`;
       const filePath = `announcements/${fileName}`;
@@ -122,7 +129,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
 
     try {
       let imageUrls: string[] = [];
-      if (selectedFiles.length > 0) {
+      if (selectedAttachments.length > 0) {
         imageUrls = await uploadImages();
       }
 
@@ -163,8 +170,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
           location_text: '',
           description: '',
         });
-        setSelectedFiles([]);
-        setPreviews([]);
+        setSelectedAttachments([]);
       }, 2000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Произошла ошибка при публикации');
@@ -264,9 +270,9 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                   <div className="space-y-2">
                     <label className="text-sm font-semibold ml-1">Фотографии (до 5)</label>
                     <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-                      {previews.map((preview, index) => (
-                        <div key={preview} className="relative aspect-square rounded-xl overflow-hidden group border border-border">
-                          <img src={preview} alt="preview" className="w-full h-full object-cover" />
+                      {selectedAttachments.map((item, index) => (
+                        <div key={item.preview} className="relative aspect-square rounded-xl overflow-hidden group border border-border">
+                          <img src={item.preview} alt="preview" className="w-full h-full object-cover" />
                           <button
                             type="button"
                             onClick={() => removeImage(index)}
@@ -276,7 +282,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                           </button>
                         </div>
                       ))}
-                      {selectedFiles.length < 5 && (
+                      {selectedAttachments.length < 5 && (
                         <button
                           type="button"
                           onClick={() => fileInputRef.current?.click()}
@@ -319,13 +325,21 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                   <div className="grid sm:grid-cols-2 gap-4">
                     {/* Price Text */}
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold ml-1">Цена</label>
+                      <div className="flex justify-between items-center ml-1">
+                        <label className="text-sm font-semibold">Цена ($)</label>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Макс. 10 цифр</span>
+                      </div>
                       <input
                         type="text"
-                        placeholder="Напр: $500 / мес"
+                        inputMode="numeric"
+                        maxLength={10}
+                        placeholder="Напр: 500"
                         value={form.price_text}
-                        onChange={(e) => setForm({ ...form, price_text: e.target.value })}
-                        className="w-full p-4 bg-soft-sand/20 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm"
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^0-9]/g, '');
+                          setForm({ ...form, price_text: val });
+                        }}
+                        className="w-full p-4 bg-soft-sand/20 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm font-medium"
                       />
                     </div>
                     {/* Location */}

@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, MapPin, Calendar, User, Share2, CornerUpRight } from 'lucide-react';
+import { X, MapPin, Calendar, User, CornerUpRight } from 'lucide-react';
 import { Button } from './ui/button';
 
 interface Announcement {
@@ -22,12 +23,21 @@ interface Props {
 }
 
 export function AnnouncementDetailsModal({ announcement, isOpen, onClose }: Props) {
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  // Reset active image when announcement changes
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [announcement?.id]);
+
   if (!announcement) return null;
+
+  const images = (announcement.images || []).filter(img => typeof img === 'string' && img.length > 0);
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6">
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 text-foreground">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -42,18 +52,8 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose }: Prop
             exit={{ opacity: 0, scale: 0.9, y: 40 }}
             className="relative bg-white w-full max-w-4xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
           >
-            {/* Navigation / Close */}
-            <div className="absolute top-6 right-6 z-20 flex gap-2">
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigator.clipboard.writeText(window.location.href);
-                }}
-                className="w-12 h-12 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all active:scale-95"
-                title="Поделиться"
-              >
-                <Share2 className="w-5 h-5 text-foreground" />
-              </button>
+            {/* Close Button */}
+            <div className="absolute top-6 right-6 z-20">
               <button 
                 onClick={onClose}
                 className="w-12 h-12 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all active:scale-95"
@@ -66,26 +66,33 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose }: Prop
             <div className="flex-1 overflow-y-auto">
               <div className="grid lg:grid-cols-2 h-full">
                 {/* Visuals */}
-                <div className="bg-soft-sand/20 relative min-h-[300px] lg:min-h-0 border-r border-border/40">
-                  {announcement.images && announcement.images.length > 0 ? (
-                    <div className="h-full flex flex-col">
-                      <div className="flex-1 relative overflow-hidden">
+                <div className="bg-soft-sand/5 relative min-h-[350px] lg:min-h-0 border-r border-border/40 flex flex-col">
+                  {images.length > 0 ? (
+                    <>
+                      <div className="flex-1 relative overflow-hidden bg-white/50">
                         <img 
-                          src={announcement.images[0]} 
+                          key={activeImageIndex}
+                          src={images[activeImageIndex]} 
                           alt={announcement.title} 
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      {announcement.images.length > 1 && (
-                        <div className="p-4 grid grid-cols-4 gap-2 bg-white/50 backdrop-blur-sm">
-                          {announcement.images.slice(1, 5).map((img, idx) => (
-                            <div key={idx} className="aspect-square rounded-xl overflow-hidden border border-white shadow-sm hover:ring-2 hover:ring-terracotta-deep transition-all cursor-pointer">
+                      {images.length > 1 && (
+                        <div className="p-4 grid grid-cols-5 gap-2 bg-white/80 border-t border-border/20 backdrop-blur-sm">
+                          {images.map((img, idx) => (
+                            <button 
+                              key={idx} 
+                              onClick={() => setActiveImageIndex(idx)}
+                              className={`aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
+                                activeImageIndex === idx ? 'border-terracotta-deep shadow-md' : 'border-transparent opacity-60 hover:opacity-100'
+                              }`}
+                            >
                               <img src={img} alt="" className="w-full h-full object-cover" />
-                            </div>
+                            </button>
                           ))}
                         </div>
                       )}
-                    </div>
+                    </>
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-soft-sand/40 to-dusty-indigo/10 p-12 text-center">
                       <div className="w-24 h-24 bg-white/50 rounded-full flex items-center justify-center mb-6 shadow-sm">
@@ -110,11 +117,13 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose }: Prop
                 {/* Info Container */}
                 <div className="p-8 lg:p-12 flex flex-col bg-milk-shake/5">
                   <div className="mb-8">
-                    <div className="flex justify-between items-start gap-4 mb-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4 relative pr-16 lg:pr-16">
                       <h2 className="text-3xl font-black leading-tight text-foreground">{announcement.title}</h2>
                       {announcement.price && (
-                        <div className="bg-terracotta-deep/10 px-4 py-2 rounded-2xl">
-                          <span className="text-xl font-black text-terracotta-deep whitespace-nowrap">{announcement.price}</span>
+                        <div className="bg-terracotta-deep/10 px-4 py-2 rounded-2xl shrink-0">
+                          <span className="text-xl font-black text-terracotta-deep whitespace-nowrap">
+                            {/^\d+$/.test(announcement.price) ? `$${announcement.price}` : announcement.price}
+                          </span>
                         </div>
                       )}
                     </div>

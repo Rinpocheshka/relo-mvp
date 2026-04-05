@@ -33,7 +33,7 @@ export function Announcements() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<'newest' | 'price_asc' | 'price_desc'>('newest');
-  const PAGE_SIZE = 50;
+  const PAGE_SIZE = 27;
   const [housingFilters, setHousingFilters] = useState({
     format: [] as string[],
     size: [] as string[],
