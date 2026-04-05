@@ -621,7 +621,7 @@ export function Profile() {
                     </div>
                     <div className="mt-auto flex items-center justify-between pt-4 border-t border-border/30">
                       <div className="text-lg font-black text-foreground">
-                         {announcement.price_text} $
+                         {announcement.price_text}
                       </div>
                       <div className="text-[10px] text-muted-foreground font-medium">
                         {new Date(announcement.created_at).toLocaleDateString('ru-RU')}

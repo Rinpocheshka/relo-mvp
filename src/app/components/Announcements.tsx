@@ -431,7 +431,7 @@ export function Announcements() {
                     {announcement.category}
                   </span>
                   {announcement.price_text && (
-                    <span className="font-bold text-terracotta-deep">{announcement.price_text} $</span>
+                    <span className="font-bold text-terracotta-deep">{announcement.price_text}</span>
                   )}
                 </div>
 

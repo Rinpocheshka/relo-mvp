@@ -372,7 +372,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                     {/* Price Text */}
                     <div className="space-y-2">
                       <div className="flex justify-between items-center ml-1">
-                        <label className="text-sm font-semibold">Цена ($)</label>
+                        <label className="text-sm font-semibold">Цена</label>
                         <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Макс. 10 цифр</span>
                       </div>
                       <input
