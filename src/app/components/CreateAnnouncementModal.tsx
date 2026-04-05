@@ -100,7 +100,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
             });
           } catch (err) {
             console.error('HEIC conversion failed:', err);
-            setError(`Не удалось конвертировать ${file.name}. Попробуйте использовать JPG.`);
+            setError(`Не удалось обработать ${file.name}. Попробуйте другое фото.`);
             continue;
           }
         }
@@ -344,7 +344,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                       ref={fileInputRef}
                       onChange={handleFileChange}
                       className="hidden"
-                      accept="image/*"
+                      accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif"
                       multiple
                     />
                   </div>
