@@ -126,22 +126,25 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
         imageUrls = await uploadImages();
       }
 
-      const { error: insertError } = await supabase
-        .from('announcements')
-        .insert({
-          title: form.title,
-          category: form.category,
-          subcategory: form.subcategory || null,
-          price_text: form.price_text,
-          price_numeric: form.price_numeric ? parseFloat(form.price_numeric) : null,
-          location_text: form.location_text,
-          description: form.description,
-          author_id: user.id,
-          author_name: profile.display_name || 'Пользователь',
-          city: profile.city || 'Дананг',
-          status: 'active',
-          images: imageUrls
-        });
+        const priceMatch = form.price_text.replace(/\s/g, '').match(/\d+/);
+        const price_numeric = priceMatch ? parseInt(priceMatch[0], 10) : null;
+
+        const { error: insertError } = await supabase
+          .from('announcements')
+          .insert({
+            title: form.title,
+            category: form.category,
+            subcategory: form.subcategory || null,
+            price_text: form.price_text,
+            price_numeric: price_numeric,
+            location_text: form.location_text,
+            description: form.description,
+            author_id: user.id,
+            author_name: profile.display_name || 'Пользователь',
+            city: profile.city || 'Дананг',
+            status: 'active',
+            images: imageUrls
+          });
 
       if (insertError) throw insertError;
 
@@ -296,10 +299,16 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
 
                   {/* Title */}
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold ml-1">Заголовок</label>
+                    <div className="flex justify-between items-center ml-1">
+                      <label className="text-sm font-semibold">Заголовок</label>
+                      <span className={`text-[10px] ${form.title.length > 90 ? 'text-red-500 font-bold' : 'text-muted-foreground'}`}>
+                        {form.title.length}/100
+                      </span>
+                    </div>
                     <input
                       required
                       type="text"
+                      maxLength={100}
                       placeholder="Напр: Классная студия в Сон Тра"
                       value={form.title}
                       onChange={(e) => setForm({ ...form, title: e.target.value })}
@@ -310,7 +319,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                   <div className="grid sm:grid-cols-2 gap-4">
                     {/* Price Text */}
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold ml-1">Цена текстом</label>
+                      <label className="text-sm font-semibold ml-1">Цена</label>
                       <input
                         type="text"
                         placeholder="Напр: $500 / мес"
@@ -319,21 +328,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                         className="w-full p-4 bg-soft-sand/20 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm"
                       />
                     </div>
-                    {/* Price Numeric */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold ml-1">Цена для фильтров ($)</label>
-                      <input
-                        type="number"
-                        placeholder="Напр: 500"
-                        value={form.price_numeric}
-                        onChange={(e) => setForm({ ...form, price_numeric: e.target.value })}
-                        className="w-full p-4 bg-soft-sand/20 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Location & Description */}
-                  <div className="space-y-6">
+                    {/* Location */}
                     <div className="space-y-2">
                       <label className="text-sm font-semibold ml-1">Район / Место</label>
                       <input
@@ -345,18 +340,25 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                         className="w-full p-4 bg-soft-sand/20 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm"
                       />
                     </div>
+                  </div>
 
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold ml-1">Описание</label>
-                      <textarea
-                        required
-                        rows={5}
-                        placeholder="Расскажите подробнее о вашем предложении..."
-                        value={form.description}
-                        onChange={(e) => setForm({ ...form, description: e.target.value })}
-                        className="w-full p-4 bg-soft-sand/20 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm resize-none"
-                      />
+                  {/* Description */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center ml-1">
+                      <label className="text-sm font-semibold">Описание</label>
+                      <span className={`text-[10px] ${form.description.length > 2800 ? 'text-red-500 font-bold' : 'text-muted-foreground'}`}>
+                        {form.description.length}/3000
+                      </span>
                     </div>
+                    <textarea
+                      required
+                      rows={5}
+                      maxLength={3000}
+                      placeholder="Расскажите подробнее о вашем предложении..."
+                      value={form.description}
+                      onChange={(e) => setForm({ ...form, description: e.target.value })}
+                      className="w-full p-4 bg-soft-sand/20 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm resize-none"
+                    />
                   </div>
 
                   {error && (

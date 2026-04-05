@@ -8,6 +8,7 @@ import { formatRelativeRu } from '@/lib/date';
 import { useAuth } from '../SupabaseAuthProvider';
 import { AuthModal } from './AuthWidget';
 import { CreateAnnouncementModal } from './CreateAnnouncementModal';
+import { AnnouncementDetailsModal } from './AnnouncementDetailsModal';
 
 interface Announcement {
   id: string;
@@ -43,6 +44,8 @@ export function Announcements() {
   const { user } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const categories = [
     { name: 'Все', icon: Megaphone },
@@ -381,7 +384,11 @@ export function Announcements() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="bg-white rounded-[24px] border border-border hover:shadow-xl transition-all cursor-pointer overflow-hidden group flex flex-col h-full"
+              onClick={() => {
+                setSelectedAnnouncement(announcement);
+                setIsDetailsModalOpen(true);
+              }}
+              className="bg-white rounded-[24px] border border-border hover:shadow-xl transition-all cursor-pointer overflow-hidden group flex flex-col h-full active:scale-[0.98]"
             >
               {/* Image */}
               <div className="h-56 bg-soft-sand/10 relative overflow-hidden">
@@ -503,6 +510,12 @@ export function Announcements() {
           isOpen={isCreateModalOpen} 
           onClose={() => setIsCreateModalOpen(false)}
           onSuccess={() => void fetchData()}
+        />
+
+        <AnnouncementDetailsModal 
+          announcement={selectedAnnouncement}
+          isOpen={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
         />
       </div>
     </div>
