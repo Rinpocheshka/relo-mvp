@@ -299,7 +299,7 @@ export function HomePage() {
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                 <div>
                   <h2 className="text-2xl font-bold mb-2">У тебя есть что предложить?</h2>
-                  <p className="opacity-85">Размести объявление, предложи событие или поделись советом</p>
+                  <p className="opacity-85">Размести объявление, предложи событие или поделись опытом</p>
                 </div>
                 <div className="flex gap-3 flex-wrap flex-shrink-0">
                   <Link to="/announcements">
