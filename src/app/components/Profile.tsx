@@ -216,7 +216,7 @@ export function Profile() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-[32px] border border-border/50 p-8 md:p-10 mb-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)]"
+          className="bg-white rounded-[24px] md:rounded-[32px] border border-border/50 p-5 md:p-10 mb-6 shadow-[0_4px_24px_rgba(0,0,0,0.02)]"
         >
           <div className="flex flex-col md:flex-row gap-6">
             {/* Avatar */}
@@ -317,24 +317,24 @@ export function Profile() {
                   </div>
                 </>
               ) : (
-                <div className="w-full flex flex-col gap-4">
-                   <div className="flex justify-between items-center mb-2">
-                     <h2 className="text-2xl font-bold">Редактирование профиля</h2>
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="icon" 
-                          className="rounded-full h-11 w-11 border-soft-sand/30 hover:bg-soft-sand/10"
-                          onClick={() => { setIsEditing(false); setEditForm(profile || {}); }}
-                        >
-                          <X className="w-5 h-5 text-muted-foreground" />
-                        </Button>
+                <div className="w-full flex flex-col gap-6">
+                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
+                     <h2 className="text-xl md:text-2xl font-bold">Редактирование профиля</h2>
+                      <div className="flex items-center gap-2 w-full md:w-auto">
                          <Button 
-                          className="bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full px-8 h-11 shadow-md font-semibold transition-all active:scale-95 min-w-[200px]" 
+                          className="flex-1 md:flex-none bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full px-6 h-11 shadow-md font-semibold transition-all active:scale-95 md:min-w-[160px]" 
                           onClick={handleSave}
                         >
                           <Save className="w-4 h-4 mr-2"/>
                           Сохранить
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          className="rounded-full h-11 w-11 border-soft-sand/30 hover:bg-soft-sand/10 flex-shrink-0"
+                          onClick={() => { setIsEditing(false); setEditForm(profile || {}); }}
+                        >
+                          <X className="w-5 h-5 text-muted-foreground" />
                         </Button>
                       </div>
                    </div>
@@ -387,7 +387,7 @@ export function Profile() {
                    
                    <div className="mt-2">
                       <label className="text-sm font-medium text-muted-foreground ml-1">Контакты для связи</label>
-                      <div className="flex gap-4 mt-1">
+                      <div className="flex flex-col sm:flex-row gap-4 mt-1">
                         <div className="flex-1 relative">
                            <Send className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-dusty-indigo/60" />
                            <input className="w-full p-3 pl-10 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] shadow-sm" placeholder="Telegram @username" value={editForm.contact_telegram || ''} onChange={e => setEditForm({...editForm, contact_telegram: e.target.value})} />
