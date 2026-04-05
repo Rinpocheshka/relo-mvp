@@ -6,6 +6,7 @@ import { MessageCircle, ArrowRight, Star, Users, Megaphone, Calendar, Heart, Map
 import { MessageHelper } from './MessageHelper';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
+import { AuthModal } from './AuthWidget';
 
 interface Person {
   id: string;
@@ -33,8 +34,6 @@ const STAGE_LABEL_MAP: Record<string, Stage> = {
   'leaving': 'leaving',
   'Уезжаю': 'leaving',
 };
-
-// ─── OLD Mock removed ──────────────────────
 
 // ─── Stage content ─────────────────────────────────────────────────────────────
 const stageContent = {
@@ -103,12 +102,10 @@ const stageContent = {
 export function HomePage() {
   const { session, user, profile } = useAuth();
   const [currentStage, setCurrentStage] = useState<Stage>('living');
-  const [showStageSelector, setShowStageSelector] = useState(false);
-  const [showMessageHelper, setShowMessageHelper] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState<string>('');
   const [city, setCity] = useState('Дананг');
   const [nearbyPeople, setNearbyPeople] = useState<Person[]>([]);
   const [peopleLoading, setPeopleLoading] = useState(true);
+  const [authOpen, setAuthOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -130,66 +127,53 @@ export function HomePage() {
   useEffect(() => {
     async function fetchMainData() {
       setPeopleLoading(true);
-      let currentCity = city;
-
-      // 2. Fetch others with proximity logic
+      
       const { data: allProfiles, error } = await supabase
         .from('profiles')
         .select('*');
       
       if (!error && allProfiles) {
         let results: Person[] = [];
-        const others = allProfiles.filter(p => p.id !== session?.user?.id);
-        const currentUser = allProfiles.find(p => p.id === session?.user?.id);
+        const currentUserId = session?.user?.id;
+        const others = allProfiles.filter(p => p.id !== currentUserId);
 
-        if (others.length === 0 && currentUser) {
-          // If I'm alone, show me 3x
-          results = [currentUser, currentUser, currentUser];
-        } else {
-          // Fallback logic
-          const sameCity = others.filter(p => p.city === currentCity);
-          results = [...sameCity];
+        // 1. Fill by proximity (city)
+        results = others.filter(p => p.city === city);
 
-          if (results.length < 3 && currentCity.includes(',')) {
-            const country = currentCity.split(',')[1]?.trim();
-            const sameCountry = others.filter(p => 
-              p.city?.includes(country) && !results.find(r => r.id === p.id)
-            );
-            results = [...results, ...sameCountry];
-          }
-
-          if (results.length < 3) {
-            const leftovers = others.filter(p => !results.find(r => r.id === p.id));
-            results = [...results, ...leftovers];
-          }
-          
-          results = results.slice(0, 3);
-          
-          // Final safety: if no one else exists and I'm even not in DB yet (not likely but safe)
-          if (results.length === 0 && currentUser) {
-            results = [currentUser, currentUser, currentUser];
-          }
+        // 2. Fallback to same country if filtered by city is empty
+        if (results.length < 3 && city.includes(',')) {
+          const country = city.split(',')[1]?.trim();
+          const sameCountry = others.filter(p => 
+            p.city?.includes(country) && !results.find(r => r.id === p.id)
+          );
+          results = [...results, ...sameCountry];
         }
-        setNearbyPeople(results);
+
+        // 3. Last fallback: random profiles to ensure 3
+        if (results.length < 3) {
+          const remaining = others.filter(p => !results.find(r => r.id === p.id));
+          const extras = remaining.sort(() => 0.5 - Math.random()).slice(0, 3 - results.length);
+          results = [...results, ...extras];
+        }
+
+        // 4. For absolute empty state (nobody else in DB), show self
+        if (results.length === 0) {
+          const self = allProfiles.find(p => p.id === currentUserId);
+          if (self) results = [self, self, self];
+        }
+
+        setNearbyPeople(results.slice(0, 3));
       }
       setPeopleLoading(false);
     }
     fetchMainData();
-  }, [session, user]);
+  }, [session, user, city]);
 
   const content = stageContent[currentStage];
-
-  const stageLabels: Record<Stage, { label: string; icon: string }> = {
-    planning: { label: 'Планирую переезд', icon: '🗺️' },
-    living: { label: 'Уже здесь', icon: '🌿' },
-    helping: { label: 'Помогаю другим', icon: '🤝' },
-    leaving: { label: 'Уезжаю', icon: '👋' },
-  };
 
   return (
     <div className="min-h-screen bg-warm-milk">
       <div className="max-w-5xl mx-auto px-4 py-8 pb-24 md:pb-8">
-
 
         <AnimatePresence mode="wait">
           <motion.div
@@ -199,17 +183,13 @@ export function HomePage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35 }}
           >
-            {/* ── Greeting Header ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center mb-12"
-            >
-              <h1 className="text-4xl font-bold mb-4">
-                {content.warmth}
-              </h1>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
+              <h1 className="text-4xl font-bold mb-4 whitespace-pre-line">{content.greeting.split('\n').map((line, i) => (
+                <span key={i} className="block">{line}</span>
+              ))}</h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{content.warmth}</p>
             </motion.div>
-            {/* ── Quick actions ── */}
+
             <div className="bg-white rounded-[32px] border border-border/40 shadow-sm overflow-hidden mb-10">
               <div className="flex flex-col md:flex-row">
                 <div className="p-6 md:p-8 flex-1">
@@ -225,17 +205,12 @@ export function HomePage() {
                   </div>
                 </div>
                 <div className="hidden md:block w-1/3 relative bg-terracotta-deep/5">
-                  <img 
-                    src="/assets/images/community-circle.jpg" 
-                    className="absolute inset-0 w-full h-full object-cover" 
-                    alt="" 
-                  />
+                  <img src="/assets/images/community-circle.jpg" className="absolute inset-0 w-full h-full object-cover" alt="" />
                   <div className="absolute inset-0 bg-gradient-to-r from-white via-white/20 to-transparent" />
                 </div>
               </div>
             </div>
 
-            {/* ── PEOPLE NEARBY ── */}
             <section className="mb-12">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
@@ -256,67 +231,23 @@ export function HomePage() {
                   {nearbyPeople.map((person, i) => (
                     <motion.div
                       key={person.id + i}
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.08 }}
-                      className={`bg-white p-6 rounded-[24px] border shadow-sm transition-all relative overflow-hidden group hover:shadow-md hover:-translate-y-0.5 ${
-                        person.is_guide
-                          ? 'border-warm-olive/30 bg-gradient-to-b from-white to-warm-olive/5'
-                          : 'border-border/40'
-                      }`}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: i * 0.1 }}
+                      className="group bg-white rounded-[32px] p-5 border border-border/40 hover:border-terracotta-deep/30 transition-all hover:shadow-xl hover:-translate-y-1 relative"
                     >
-                      <Link to={`/profile/${person.id}`} className="block">
-                        <div className="flex items-start gap-4 mb-4">
-                          <div className="relative flex-shrink-0">
-                            {person.avatar_url ? (
-                              <img src={person.avatar_url} className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm" alt="" />
-                            ) : (
-                              <div className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-sm ${
-                                person.is_guide ? 'bg-warm-olive' : 'bg-dusty-indigo/80'
-                              }`}>
-                                {(person.display_name || '?').charAt(0)}
-                              </div>
-                            )}
-                            {/* Online Status Dot */}
-                            <div className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white ${
-                              person.last_seen && (new Date().getTime() - new Date(person.last_seen).getTime() < 5 * 60 * 1000)
-                                ? 'bg-green-500' 
-                                : 'bg-amber-400'
-                            }`} />
-                          </div>
-                          <div className="flex-1 min-w-0 pr-6">
-                            <div className="flex items-center gap-1.5 mb-0.5">
-                              <span className="font-bold text-lg text-foreground truncate">{person.display_name || 'Без имени'}</span>
-                              {person.is_guide && <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 flex-shrink-0" />}
-                            </div>
-                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                              <MapPin className="w-3 h-3" />
-                              <span className="truncate">{person.city}</span>
-                            </div>
-                          </div>
+                      {user ? (
+                        <Link to={person.id === user?.id ? "/profile?edit=true" : `/profile/${person.id}`} className="block">
+                          <CardItemContent person={person} />
+                        </Link>
+                      ) : (
+                        <div onClick={() => setAuthOpen(true)} className="cursor-pointer">
+                          <CardItemContent person={person} />
                         </div>
+                      )}
 
-                        <div className="flex flex-wrap gap-1.5 mb-4">
-                           <span className="px-2.5 py-1 bg-soft-sand/50 rounded-full text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                              {person.stage === 'planning' ? 'Планирует' : 
-                               person.stage === 'living' ? 'Живет здесь' : 
-                               person.stage === 'helping' ? 'Помогает' : 
-                               person.stage === 'leaving' ? 'Уезжает' : person.stage || 'Участник'}
-                           </span>
-                           {person.interests && person.interests.length > 0 && (
-                             <span className="px-2.5 py-1 bg-terracotta-deep/5 rounded-full text-[10px] font-semibold text-terracotta-deep uppercase tracking-wider">
-                               {person.interests[0]}
-                             </span>
-                           )}
-                        </div>
-
-                        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                          {person.bio || 'Привет! Я присоединился к Relo.me, чтобы находить новых друзей.'}
-                        </p>
-                      </Link>
-
-                      {(person.id === user?.id || profile?.role === 'admin') && (
-                        <Link to={person.id === user?.id ? "/profile?edit=true" : `/profile/${person.id}`}>
+                      {user && (person.id === user.id || profile?.role === 'admin') && (
+                        <Link to={person.id === user.id ? "/profile?edit=true" : `/profile/${person.id}`}>
                            <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-white/90 hover:bg-white border border-border/50 shadow-sm">
                               <Edit className="w-4 h-4 text-muted-foreground" />
                            </Button>
@@ -328,7 +259,6 @@ export function HomePage() {
               ) : (
                 <div className="bg-white rounded-[32px] border border-border/40 p-12 text-center relative overflow-hidden group">
                   <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-terracotta-deep/5 rounded-full blur-3xl transition-transform group-hover:scale-110 duration-1000" />
-                  
                   <h3 className="text-xl font-bold mb-2">Кто-то уже готов написать тебе</h3>
                   <p className="text-muted-foreground mb-8 max-w-md mx-auto">Добавь профиль или открой страницу людей — начни разговор первым.</p>
                   <Link to="/people">
@@ -340,7 +270,6 @@ export function HomePage() {
               )}
             </section>
 
-            {/* ── Section cards ── */}
             <div className="grid md:grid-cols-3 gap-5 mb-12">
               {content.sections.map((section, i) => {
                 const Icon = section.icon;
@@ -355,9 +284,7 @@ export function HomePage() {
                       <div className={`w-12 h-12 ${section.bg} ${section.color} rounded-2xl flex items-center justify-center mb-4`}>
                         <Icon className="w-6 h-6" />
                       </div>
-                      <p className={`text-xs font-semibold uppercase tracking-wider ${section.color} mb-2`}>
-                        {section.subtitle}
-                      </p>
+                      <p className={`text-xs font-semibold uppercase tracking-wider ${section.color} mb-2`}>{section.subtitle}</p>
                       <h3 className="text-base font-semibold leading-snug flex-1">{section.title}</h3>
                       <div className={`flex items-center gap-1 mt-4 ${section.color} text-sm font-medium`}>
                         Перейти <ArrowRight className="w-4 h-4" />
@@ -368,7 +295,6 @@ export function HomePage() {
               })}
             </div>
 
-            {/* ── CTA: Create something ── */}
             <div className="bg-gradient-to-br from-dusty-indigo to-terracotta-deep rounded-[32px] p-8 md:p-10 text-white">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                 <div>
@@ -378,14 +304,12 @@ export function HomePage() {
                 <div className="flex gap-3 flex-wrap flex-shrink-0">
                   <Link to="/announcements">
                     <Button className="bg-white/20 hover:bg-white/30 text-white border border-white/30 rounded-full px-5 h-12 font-medium">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Объявление
+                      <Plus className="w-4 h-4 mr-2" /> Объявление
                     </Button>
                   </Link>
                   <Link to="/events">
                     <Button className="bg-white text-dusty-indigo hover:bg-white/90 rounded-full px-5 h-12 font-semibold shadow-sm">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Событие
+                      <Plus className="w-4 h-4 mr-2" /> Событие
                     </Button>
                   </Link>
                 </div>
@@ -396,19 +320,50 @@ export function HomePage() {
         </AnimatePresence>
       </div>
 
-      {/* ── Message Helper ── */}
-      <AnimatePresence>
-        {showMessageHelper && (
-          <MessageHelper
-            personName={selectedPerson}
-            onClose={() => setShowMessageHelper(false)}
-            onSend={(message) => {
-              console.log('Message sent to', selectedPerson, ':', message);
-              setShowMessageHelper(false);
-            }}
-          />
-        )}
-      </AnimatePresence>
+      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
     </div>
+  );
+}
+
+// ─── Helper for Card Content ──────────────────────────────────────────────────
+function CardItemContent({ person }: { person: Person }) {
+  return (
+    <>
+      <div className="flex items-center gap-4 mb-4">
+        <div className="relative">
+          {person.avatar_url ? (
+            <img src={person.avatar_url} alt={person.display_name} className="w-14 h-14 rounded-full object-cover shadow-md border-2 border-white" />
+          ) : (
+            <div className="w-14 h-14 rounded-full bg-soft-sand flex items-center justify-center shadow-inner">
+              <Users className="w-7 h-7 text-dusty-indigo" />
+            </div>
+          )}
+          <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full shadow-sm" title="В сети" />
+        </div>
+        <div>
+          <h3 className="font-bold text-lg text-foreground group-hover:text-terracotta-deep transition-colors w-full truncate">
+            {person.display_name || 'Без имени'}
+          </h3>
+          <div className="flex items-center text-xs text-muted-foreground bg-soft-sand/50 px-2 py-0.5 rounded-full mt-0.5 w-fit">
+            <MapPin className="w-3 h-3 mr-1" /> {person.city?.split(',')[0] || 'Не указан'}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-1.5 mb-4 h-[1.5rem] overflow-hidden">
+        {(person.interests || []).slice(0, 3).map((tag, idx) => (
+          <span key={idx} className="text-[10px] uppercase tracking-wider font-bold bg-white border border-border/60 text-muted-foreground px-2 py-0.5 rounded-md shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+            {tag}
+          </span>
+        ))}
+        {(person.interests || []).length > 3 && (
+          <span className="text-[10px] font-bold text-muted-foreground/60 px-1">+{(person.interests || []).length - 3}</span>
+        )}
+      </div>
+
+      <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed h-[2.5rem]">
+        {person.bio || 'Привет! Я присоединился к Relo.me, чтобы находить новых друзей.'}
+      </p>
+    </>
   );
 }

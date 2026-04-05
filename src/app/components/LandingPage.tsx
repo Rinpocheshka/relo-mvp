@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
@@ -9,8 +9,8 @@ import { AlertCircle, Download, CheckCircle, Navigation } from 'lucide-react';
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type FlowStage = 'landing' | 'onboarding';
-type OnboardingStep = 0 | 1 | 2 | 3;
-type UserPath = 'here' | 'planning' | null;
+type OnboardingStep = number;
+type UserPath = 'planning' | 'leaving_soon' | 'just_arrived' | 'living' | 'helper' | null;
 
 interface AppInfo {
   name: string;
@@ -120,6 +120,7 @@ const SITUATION_TAGS = [
   { value: 'pet', label: '🐾 С питомцем' },
   { value: 'remote', label: '💻 Удалёнщик' },
   { value: 'job', label: '💼 Ищу работу' },
+  { value: 'musician', label: '🎸 Музыкант' },
   { value: 'housing', label: '🏠 Ищу жильё' },
 ];
 
@@ -153,7 +154,7 @@ export function LandingPage() {
   const navigate = useNavigate();
   const [flowStage, setFlowStage] = useState<FlowStage>('landing');
   const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>(0);
-  const [userPath, setUserPath] = useState<UserPath>('here');
+  const [userPath, setUserPath] = useState<UserPath>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [openCard, setOpenCard] = useState<number | null>(null);
   const [openRoadmap, setOpenRoadmap] = useState<number>(0);
@@ -177,23 +178,19 @@ export function LandingPage() {
   const saveAndFinish = (cityToSave: string) => {
     localStorage.setItem('reloOnboarding', JSON.stringify({
       city: cityToSave,
-      stage: userPath === 'here' ? 'living' : 'planning',
+      stage: userPath,
       need: selectedTags,
       savePath: false,
     }));
-    localStorage.setItem('reloStage', userPath === 'here' ? 'living' : 'planning');
+    localStorage.setItem('reloStage', userPath || 'planning');
   };
 
   const goToNextStep = () => {
-    if (onboardingStep < 3) {
-      setOnboardingStep((onboardingStep + 1) as OnboardingStep);
-    }
+    setOnboardingStep(prev => prev + 1);
   };
 
   const goToPrevStep = () => {
-    if (onboardingStep > 0) {
-      setOnboardingStep((onboardingStep - 1) as OnboardingStep);
-    }
+    setOnboardingStep(prev => Math.max(0, prev - 1));
   };
 
   if (flowStage === 'onboarding') {
@@ -259,12 +256,12 @@ export function LandingPage() {
         <div className="max-w-3xl mx-auto text-center">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <h1 className="text-5xl md:text-6xl font-extrabold leading-[1.1] tracking-tight mb-6">
-              В любой точке мира можно{' '}
-              <span className="text-terracotta-deep">быть дома</span>
+              В любой точке мира -{' '}
+              <span className="text-terracotta-deep">как дома</span>
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-              Relo.me — живая экосистема людей, которые помогают друг другу адаптироваться.<br />
-              Жильё, события, советы и поддержка — всё в одном месте.
+              Relo.me — система для удобной жизни релокантов<br />
+              Удобно когда жильё, события, вещи и поддержка в одном месте.
             </p>
           </motion.div>
         </div>
@@ -387,7 +384,7 @@ export function LandingPage() {
       <footer className="px-4 py-8 border-t border-border/30">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <div className="font-bold text-terracotta-deep text-base">Relo.me</div>
-          <p>© 2026 · Платформа для релокантов</p>
+          <p>© 2026 · Relo.me — система для удобной жизни релокантов</p>
           <div className="flex gap-3">
             {/* Telegram */}
             <a href="https://t.me/relo_me" target="_blank" rel="noopener noreferrer" aria-label="Telegram"
@@ -438,7 +435,7 @@ export function LandingPage() {
   );
 }
 
-// ─── 4-Step Reverse Onboarding ────────────────────────────────────────────────
+// ─── Stage-Based Onboarding Flow ─────────────────────────────────────────────
 
 function OnboardingFlow({
   step,
@@ -482,6 +479,18 @@ function OnboardingFlow({
   const [country, setCountry] = useState<string>('');
   const [manualInput, setManualInput] = useState<string>('');
 
+  const isVietnam = city.toLowerCase().includes('вьетнам');
+  const showArrivalKit = ['leaving_soon', 'just_arrived', 'living'].includes(userPath || '') && isVietnam;
+  const showPlanningKit = userPath === 'planning' && isVietnam;
+  const shouldSkipSurvival = !showArrivalKit && !showPlanningKit;
+
+  // Handle conditional step skipping for Step 2
+  useEffect(() => {
+    if (step === 2 && shouldSkipSurvival) {
+      onNext();
+    }
+  }, [step, shouldSkipSurvival, onNext]);
+
   const handleAutoLocation = () => {
     setLocState('loading');
     if (!navigator.geolocation) {
@@ -499,7 +508,7 @@ function OnboardingFlow({
           setCity(`${foundCity}${foundCountry ? ', ' + foundCountry : ''}`);
           setCountry(foundCountry);
           setLocState('success');
-          setTimeout(() => { setUserPath('here'); onNext(); }, 1500);
+          setTimeout(() => { onNext(); }, 1500);
         } catch (e) {
           setLocState('error');
         }
@@ -515,10 +524,8 @@ function OnboardingFlow({
     const val = manualInput.trim();
     if (!val) return;
     setCity(val);
-    // Try to extract country from the last part after comma
     const parts = val.split(',');
     setCountry(parts.length > 1 ? parts[parts.length - 1].trim() : val);
-    setUserPath('here');
     onNext();
   };
 
@@ -528,9 +535,13 @@ function OnboardingFlow({
     setCompletedItems(next);
   };
 
-  const totalItems = ROADMAP_STEPS.flatMap(s => s.items).length;
-  const doneCount = completedItems.size;
-  const progressPct = Math.round((doneCount / totalItems) * 100);
+  const STAGES: { value: UserPath; label: string; icon: string }[] = [
+    { value: 'planning', label: 'планирую переезд', icon: '🗓️' },
+    { value: 'leaving_soon', label: 'скоро выезжаю', icon: '✈️' },
+    { value: 'just_arrived', label: 'только приехал', icon: '🛬' },
+    { value: 'living', label: 'уже живу', icon: '🏠' },
+    { value: 'helper', label: 'помогаю другим', icon: '🤝' },
+  ];
 
   return (
     <div className="fixed inset-0 bg-warm-milk z-50 flex flex-col overflow-hidden">
@@ -544,7 +555,7 @@ function OnboardingFlow({
             </button>
           )}
           <span className="text-sm font-medium text-muted-foreground">
-            {step === 0 ? 'Шаг 1 из 3' : step === 1 ? 'Шаг 2 из 3' : 'Шаг 3 из 3'}
+            Шаг {step + 1} из 4
           </span>
         </div>
         {/* Progress dots */}
@@ -579,11 +590,33 @@ function OnboardingFlow({
             className="min-h-full"
           >
 
-            {/* ── Step 0: Where are you? ── */}
+            {/* ── Step 0: Stage Selection ── */}
             {step === 0 && (
-              <div className="flex flex-col items-center justify-center min-h-[calc(100vh-65px)] px-5 py-12 text-center h-[calc(100vh-65px)]">
+              <div className="flex flex-col items-center justify-center min-h-[calc(100vh-100px)] px-5 py-8 sm:py-12 text-center">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-8 min-h-[3.5rem] tracking-tight text-foreground">Привет!<br />Где ты на этом пути?</h2>
 
-                <h2 className="text-3xl md:text-4xl font-extrabold mb-8 tracking-tight text-foreground">Привет!<br />Где ты сейчас?</h2>
+                <div className="w-full max-w-sm space-y-3">
+                  {STAGES.map((s, i) => (
+                    <motion.button
+                      key={s.value}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      onClick={() => { setUserPath(s.value); onNext(); }}
+                      className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${userPath === s.value ? 'bg-terracotta-deep text-white border-terracotta-deep shadow-md' : 'bg-white border-border hover:border-terracotta-deep/40 hover:bg-terracotta-deep/5'}`}
+                    >
+                      <span className="text-2xl">{s.icon}</span>
+                      <span className="font-bold">{s.label}</span>
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Step 1: Location selection ── */}
+            {step === 1 && (
+              <div className="flex flex-col items-center justify-center min-h-[calc(100vh-100px)] px-5 py-8 sm:py-12 text-center">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-8 tracking-tight text-foreground">Место уже известно?</h2>
 
                 <div className="w-full max-w-sm space-y-3 mb-8">
                   {/* Геопозиция кнопка */}
@@ -594,9 +627,7 @@ function OnboardingFlow({
                       transition={{ delay: 0.1 }}
                       onClick={handleAutoLocation}
                       disabled={locState === 'loading' || locState === 'success'}
-                      className={`w-full text-white rounded-2xl px-6 py-4 flex items-center justify-center gap-3 transition-all font-semibold shadow-sm ${
-                        locState === 'success' ? 'bg-green-600' : 'bg-terracotta-deep hover:bg-terracotta-deep/90 shadow-terracotta-deep/20 shadow-lg'
-                      }`}
+                      className={`w-full text-white rounded-2xl px-6 py-4 flex items-center justify-center gap-3 transition-all font-semibold shadow-sm ${locState === 'success' ? 'bg-green-600' : 'bg-terracotta-deep hover:bg-terracotta-deep/90 shadow-terracotta-deep/20 shadow-lg'}`}
                     >
                       {locState === 'idle' && (
                         <>
@@ -621,22 +652,13 @@ function OnboardingFlow({
 
                   {/* Сообщение об ошибке геолокации */}
                   {locState === 'error' && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-sm text-muted-foreground bg-amber-50 border border-amber-200/60 rounded-2xl px-4 py-3"
-                    >
-                      Не удалось определить геолокацию — введи город вручную 👇
-                    </motion.p>
+                    <p className="text-sm text-muted-foreground bg-amber-50 border border-amber-200/60 rounded-2xl px-4 py-3">
+                      Не удалось определить — выберите город вручную 👇
+                    </p>
                   )}
 
                   {/* Ручной выбор */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="relative"
-                  >
+                  <div className="relative">
                     <MapPin className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-10" />
                     <select
                       value={manualInput}
@@ -644,7 +666,6 @@ function OnboardingFlow({
                       className="w-full bg-white border border-border rounded-2xl pl-12 pr-10 py-4 text-foreground focus:outline-none focus:border-terracotta-deep/50 focus:ring-2 focus:ring-terracotta-deep/5 transition-all shadow-sm appearance-none cursor-pointer relative z-0"
                     >
                       <option value="" disabled>Выберите город из списка...</option>
-                      <option value="В дороге" className="font-bold text-foreground italic">📍 В дороге</option>
                       <optgroup label="Вьетнам">
                         <option value="Вьетнам">Вьетнам (вся страна)</option>
                         <option value="Дананг, Вьетнам">Дананг</option>
@@ -653,262 +674,144 @@ function OnboardingFlow({
                         <option value="Хошимин, Вьетнам">Хошимин</option>
                         <option value="Ханой, Вьетнам">Ханой</option>
                       </optgroup>
-                      <optgroup label="Таиланд">
-                        <option value="Таиланд">Таиланд (вся страна)</option>
-                        <option value="Паттайя, Таиланд">Паттайя</option>
-                      </optgroup>
                     </select>
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground z-10">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="m6 9 6 6 6-6"/></svg>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="m6 9 6 6 6-6" /></svg>
                     </div>
-                  </motion.div>
+                  </div>
 
-                  {/* Кнопка подтверждения ручного ввода */}
-                  <AnimatePresence>
-                    {manualInput.trim().length > 0 && (
-                      <motion.button
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 6 }}
-                        onClick={handleManualSubmit}
-                        className="w-full bg-white border-2 border-terracotta-deep/60 text-terracotta-deep rounded-2xl px-6 py-3.5 font-semibold hover:bg-terracotta-deep/5 transition-all"
-                      >
-                        Я в {manualInput.split(',')[0]} →
-                      </motion.button>
-                    )}
-                  </AnimatePresence>
+                  {manualInput.trim().length > 0 && (
+                    <motion.button
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      onClick={handleManualSubmit}
+                      className="w-full bg-white border-2 border-terracotta-deep/60 text-terracotta-deep rounded-2xl px-6 py-3.5 font-semibold hover:bg-terracotta-deep/5 transition-all"
+                    >
+                      Я в {manualInput.split(',')[0]} →
+                    </motion.button>
+                  )}
                 </div>
 
-                {/* Ссылка "Еще не уехал" */}
+                {/* Ссылка "Пока думаю" */}
                 <motion.button
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.4 }}
-                  onClick={() => { setUserPath('planning'); onNext(); }}
+                  onClick={() => { setCity(''); setCountry(''); onNext(); }}
                   className="text-muted-foreground hover:text-terracotta-deep font-medium transition-colors mt-4 underline underline-offset-4 decoration-border hover:decoration-terracotta-deep/30"
                 >
-                  Я еще не уехал
+                  Пока думаю
                 </motion.button>
-
               </div>
             )}
 
-            {/* ── Step 1: Aptechka (survival kit) ── */}
-            {step === 1 && (
-              <div className="px-5 py-10 max-w-2xl mx-auto">
-                <div className="text-center mb-10">
-                  {userPath === 'here' && (
-                    <p className="text-sm text-warm-olive font-medium mb-3">Понимаем 🤍 Вот что нужно разобрать прямо сейчас</p>
-                  )}
-                  <h2 className="text-3xl font-extrabold tracking-tight mb-2">
-                    {userPath === 'here'
+            {/* ── Step 2: Survival kit (Conditional) ── */}
+            {step === 2 && !shouldSkipSurvival && (
+              <div className="px-4 sm:px-5 py-6 sm:py-10 max-w-2xl mx-auto">
+                <div className="text-center mb-8 sm:mb-10">
+                  <p className="text-xs sm:text-sm text-warm-olive font-medium mb-1.5 sm:mb-3">
+                    {showArrivalKit ? 'Понимаем 🤍 Вот что нужно разобрать прямо сейчас' : 'Готовимся! 🌿 Вот база для старта'}
+                  </p>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
+                    {showArrivalKit
                       ? <>Добро пожаловать{country ? <> в {country}!</> : '!'}</>
-                      : 'Готовимся к переезду!'}
+                      : 'Подготовка к переезду'}
                   </h2>
-                  <p className="text-muted-foreground text-lg">
-                    {userPath === 'here' ? 'Вот что нужно прямо сейчас:' : 'Вот что стоит знать до прилёта:'}
+                  <p className="text-muted-foreground text-base sm:text-lg">
+                    {showArrivalKit ? 'Вот что нужно прямо сейчас:' : 'Вот что стоит знать до прилёта:'}
                   </p>
                 </div>
 
                 <div className="space-y-4 mb-10">
-                  {(userPath === 'here' ? SURVIVAL_CARDS_HERE : SURVIVAL_CARDS_PLANNING).map((card, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.1 }}
-                      className={`bg-white rounded-[20px] border ${card.border} overflow-hidden shadow-sm`}
-                    >
-                      <button
-                        className="w-full text-left px-6 py-5 flex items-center justify-between gap-4"
-                        onClick={() => setOpenCard(openCard === i ? null : i)}
-                      >
+                  {(showArrivalKit ? SURVIVAL_CARDS_HERE : SURVIVAL_CARDS_PLANNING).map((card, i) => (
+                    <div key={i} className={`bg-white rounded-[20px] border ${card.border} overflow-hidden shadow-sm`}>
+                      <button className="w-full text-left px-6 py-5 flex items-center justify-between gap-4" onClick={() => setOpenCard(openCard === i ? null : i)}>
                         <div className="flex items-center gap-4">
-                          <span className={`w-12 h-12 rounded-2xl ${card.color} flex items-center justify-center text-2xl flex-shrink-0`}>
-                            {card.emoji}
-                          </span>
+                          <span className={`w-12 h-12 rounded-2xl ${card.color} flex items-center justify-center text-2xl flex-shrink-0`}>{card.emoji}</span>
                           <div>
                             <div className="font-bold text-base">{card.title}</div>
                             <div className="text-sm text-muted-foreground">{card.short}</div>
                           </div>
                         </div>
-                        {openCard === i ? (
-                          <ChevronUp className="w-5 h-5 text-muted-foreground flex-shrink-0" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0" />
-                        )}
+                        {openCard === i ? <ChevronUp className="w-5 h-5 text-muted-foreground" /> : <ChevronDown className="w-5 h-5 text-muted-foreground" />}
                       </button>
                       <AnimatePresence>
                         {openCard === i && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="overflow-hidden"
-                          >
+                          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
                             <div className="px-6 pb-6 pt-2 space-y-5 border-t border-border/40 mt-1">
-
-                              {/* Основной текст */}
                               <p className="text-foreground/90 leading-relaxed text-sm">{card.detail}</p>
-
-                              {/* Блок предупреждения */}
                               {card.warning && (
                                 <div className="bg-amber-50/50 border border-amber-200/60 rounded-2xl p-4 flex gap-3 text-sm text-amber-900/80">
                                   <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
                                   <p>{card.warning}</p>
                                 </div>
                               )}
-
-                              {/* Приложения */}
                               {card.apps && (
                                 <div className="space-y-3">
-                                  <p className="font-bold text-sm">
-                                    {card.title === 'Связь и интернет' ? 'Выберите оператора:' : 'Скачайте приложения:'}
-                                  </p>
+                                  <p className="font-bold text-sm">Скачайте приложения:</p>
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     {card.apps.map((app, appIdx) => (
                                       <div key={appIdx} onClick={() => toggleComplete(app.name)} className="flex items-center justify-between p-3 rounded-2xl border border-border/60 hover:bg-muted/50 transition-colors group cursor-pointer">
                                         <div className="flex items-center gap-3">
-                                          <div className={`w-10 h-10 ${app.color} rounded-[12px] flex items-center justify-center font-bold text-lg ${app.textDark ? 'text-black/80' : 'text-white'}`}>
-                                            {app.icon}
-                                          </div>
+                                          <div className={`w-10 h-10 ${app.color} rounded-[12px] flex items-center justify-center font-bold text-lg ${app.textDark ? 'text-black/80' : 'text-white'}`}>{app.icon}</div>
                                           <div>
                                             <div className="font-semibold text-sm">{app.name}</div>
                                             <div className="text-xs text-muted-foreground">{app.desc}</div>
                                           </div>
-                                        </div>
-                                        <div className="flex flex-col gap-1.5 items-end ml-1">
-                                          {app.link?.web && (
-                                            <a href={app.link.web} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="text-xs font-medium text-terracotta-deep flex items-center gap-1 hover:underline">
-                                              Перейти <Navigation className="w-3 h-3" />
-                                            </a>
-                                          )}
-                                          {!app.link?.web && (app.link?.ios || app.link?.android) && (
-                                            <div className="flex flex-col gap-1 items-end">
-                                              {app.link.ios && (
-                                                <a href={app.link.ios} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="max-w-[75px] text-right leading-tight text-[11px] font-medium text-terracotta-deep flex items-center gap-1 hover:underline">
-                                                  App Store <Download className="w-3 h-3 flex-shrink-0" />
-                                                </a>
-                                              )}
-                                              {app.link.android && (
-                                                <a href={app.link.android} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="max-w-[85px] text-right leading-tight text-[11px] font-medium text-terracotta-deep flex items-center gap-1 hover:underline">
-                                                  Google Play <Download className="w-3 h-3 flex-shrink-0" />
-                                                </a>
-                                              )}
-                                            </div>
-                                          )}
-                                          {!app.link && (
-                                            <span className="text-xs font-medium text-terracotta-deep flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                              Скачать <Download className="w-3 h-3" />
-                                            </span>
-                                          )}
                                         </div>
                                       </div>
                                     ))}
                                   </div>
                                 </div>
                               )}
-
-                              {/* Кнопка "Понятно" */}
                               <div className="pt-2">
                                 <Button className="w-full rounded-2xl bg-muted/50 text-foreground hover:bg-terracotta-deep hover:text-white transition-colors" onClick={() => { toggleComplete(`card-${i}`); setOpenCard(null); }}>
-                                  <CheckCircle className="w-4 h-4 mr-2 opacity-70" /> Понятно
+                                  <CheckCircle className="w-4 h-4 mr-2" /> Понятно
                                 </Button>
                               </div>
                             </div>
                           </motion.div>
                         )}
                       </AnimatePresence>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
-
-                <Button
-                  size="lg"
-                  onClick={onNext}
-                  className="w-full bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full h-14 font-semibold shadow-md text-base"
-                >
+                <Button size="lg" onClick={onNext} className="w-full bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full h-14 font-semibold shadow-md text-base">
                   С первым шагом разобрались! →
                 </Button>
               </div>
             )}
 
-            {/* ── Step 2: Situation tags ── */}
-            {step === 2 && (
-              <div className="flex flex-col items-center px-5 py-10 max-w-xl mx-auto">
-                <div className="text-center mb-10">
-                  <p className="text-sm text-warm-olive font-medium mb-3">Почти готово! 🌿</p>
-                  <h2 className="text-3xl font-extrabold tracking-tight mb-3">Расскажи немного о себе</h2>
-                  <p className="text-muted-foreground text-lg">
-                    Чтобы показать актуальное именно для тебя. Можно выбрать несколько.
-                  </p>
+            {/* ── Step 3: Situation Tags & Auth ── */}
+            {step === 3 && (
+              <div className="flex flex-col items-center px-4 sm:px-5 py-6 sm:py-10 max-w-xl mx-auto w-full">
+                <div className="text-center mb-6 sm:mb-8">
+                  <p className="text-xs sm:text-sm text-warm-olive font-medium mb-1.5 sm:mb-3">Почти готово! 🌿</p>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2 sm:mb-3">Расскажи немного о себе</h2>
+                  <p className="text-muted-foreground text-base sm:text-lg">Чтобы показать актуальное именно для тебя. Можно выбрать несколько.</p>
                 </div>
-
-                <div className="flex flex-wrap gap-3 justify-center mb-10">
+                <div className="flex flex-wrap gap-2 sm:gap-3 justify-center mb-8 sm:mb-10">
                   {SITUATION_TAGS.map((tag, i) => {
                     const selected = selectedTags.includes(tag.value);
                     return (
-                      <motion.button
-                        key={i}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: i * 0.05 }}
-                        onClick={() => toggleTag(tag.value)}
-                        className={`px-5 py-3 rounded-full text-sm font-medium border-2 transition-all ${selected
-                            ? 'bg-terracotta-deep text-white border-terracotta-deep shadow-sm'
-                            : 'bg-white text-foreground border-border hover:border-terracotta-deep/50'
-                          }`}
-                      >
+                      <motion.button key={i} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }} onClick={() => toggleTag(tag.value)} className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-medium border-2 transition-all ${selected ? 'bg-terracotta-deep text-white border-terracotta-deep shadow-sm' : 'bg-white text-foreground border-border hover:border-terracotta-deep/50'}`}>
                         {tag.label}
                       </motion.button>
                     );
                   })}
                 </div>
-
-              </div>
-            )}
-
-            {/* ── Step 2: Auth CTA (was Step 3) ── */}
-            {step === 2 && (
-              <div className="px-5 py-10 max-w-xl mx-auto">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="bg-gradient-to-br from-dusty-indigo/90 to-terracotta-deep rounded-[28px] p-8 text-white text-center shadow-xl"
-                >
-                  <div className="text-4xl mb-4">🌿</div>
-                  <h3 className="text-2xl font-extrabold mb-3 leading-tight">
-                    Сохрани свой путь
-                  </h3>
-                  <p className="opacity-85 mb-2 leading-relaxed">
-                    Без аккаунта прогресс, контакты и настройки не сохранятся — они исчезнут, когда ты закроешь страницу.
-                  </p>
-                  <p className="text-sm opacity-70 mb-7">
-                    Регистрация займет всего пару секунд
-                  </p>
-                  <div className="space-y-3">
-                    <Button
-                      size="lg"
-                      onClick={() => onFinish(city)}
-                      className="w-full bg-white text-terracotta-deep hover:bg-white/90 rounded-full h-14 font-bold text-base shadow-lg"
-                    >
-                      Создать профиль и сохранить →
-                    </Button>
-                    <button
-                      onClick={() => onSkipAuth(city)}
-                      className="w-full text-center text-sm opacity-70 hover:opacity-100 py-2 transition-opacity"
-                    >
-                      Продолжить без сохранения
-                    </button>
+                {/* Сохрани свой путь - moved higher as requested */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-gradient-to-br from-dusty-indigo/90 to-terracotta-deep rounded-[24px] sm:rounded-[28px] p-6 sm:p-8 text-white text-center shadow-xl w-full">
+                  <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🌿</div>
+                  <h3 className="text-xl sm:text-2xl font-extrabold mb-2 sm:mb-3 leading-tight">Сохрани свой путь</h3>
+                  <p className="text-sm sm:text-base opacity-85 mb-2 leading-relaxed">Без аккаунта прогресс, контакты и настройки не сохранятся.</p>
+                  <div className="space-y-2.5 sm:space-y-3">
+                    <Button size="lg" onClick={() => onFinish(city)} className="w-full bg-white text-terracotta-deep hover:bg-white/90 rounded-full h-12 sm:h-14 font-bold text-sm sm:text-base shadow-lg">Создать профиль и сохранить →</Button>
+                    <button onClick={() => onSkipAuth(city)} className="w-full text-center text-[10px] sm:text-sm opacity-70 hover:opacity-100 py-1.5 transition-opacity">Продолжить без сохранения</button>
                   </div>
                 </motion.div>
               </div>
             )}
-
-
-
 
           </motion.div>
         </AnimatePresence>
