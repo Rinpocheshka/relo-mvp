@@ -222,6 +222,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
                     <input
                       type="text"
                       placeholder="Бесплатно или 1000"
+                      maxLength={10}
                       className="w-full pl-12 pr-5 py-4 bg-soft-sand/20 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 transition-all font-medium"
                       value={formData.price_text}
                       onChange={e => setFormData({ ...formData, price_text: e.target.value })}
@@ -239,6 +240,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
                     <input
                       required
                       type="datetime-local"
+                      max="9999-12-31T23:59"
                       className="w-full pl-12 pr-5 py-4 bg-soft-sand/20 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 transition-all font-medium"
                       value={formData.starts_at}
                       onChange={e => setFormData({ ...formData, starts_at: e.target.value })}
@@ -253,6 +255,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
                     <Users className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
                       type="number"
+                      min={0}
                       placeholder="Безлимитно"
                       className="w-full pl-12 pr-5 py-4 bg-soft-sand/20 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 transition-all font-medium"
                       value={formData.max_attendees}
@@ -270,6 +273,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
                   <input
                     required
                     type="text"
+                    maxLength={40}
                     placeholder="Название заведения или адрес"
                     className="w-full pl-12 pr-5 py-4 bg-soft-sand/20 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 transition-all font-medium"
                     value={formData.location_text}
@@ -285,6 +289,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
                   required
                   placeholder="О чем будет встреча? Кого вы ждете?"
                   rows={4}
+                  maxLength={1000}
                   className="w-full px-5 py-4 bg-soft-sand/20 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 transition-all font-medium resize-none"
                   value={formData.description}
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
