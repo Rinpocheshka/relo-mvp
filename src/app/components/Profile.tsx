@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { MapPin, Calendar, Star, MessageCircle, Settings, Edit, Award, Heart, Save, X, Camera, Loader2, Send, Phone, Lock } from 'lucide-react';
+import { MapPin, Calendar, Star, MessageCircle, Settings, Edit, Award, Heart, Save, X, Camera, Loader2, Send, Phone, Lock, Clock, Users } from 'lucide-react';
 import { Button } from './ui/button';
 import { useParams, useLocation, useNavigate } from 'react-router';
 import { supabase } from '../../lib/supabaseClient';
@@ -8,6 +8,25 @@ import { useAuth } from '../SupabaseAuthProvider';
 import { AuthModal } from './AuthWidget';
 import { AnnouncementDetailsModal } from './AnnouncementDetailsModal';
 import { Announcement } from './Announcements';
+import { EventDetailsModal } from './EventDetailsModal';
+import { EventFormModal } from './EventFormModal';
+
+interface Event {
+  id: string;
+  title: string;
+  type: string;
+  starts_at: string;
+  date: string;
+  time: string;
+  location: string;
+  organizer: string;
+  organizer_id?: string;
+  attendees: number;
+  maxAttendees?: number;
+  description: string;
+  price: string;
+  images: string[];
+}
 
 interface UserData {
   id: string;
@@ -52,6 +71,12 @@ export function Profile() {
   const [announcementsCount, setAnnouncementsCount] = useState<number>(0);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [userEvents, setUserEvents] = useState<Event[]>([]);
+  const [eventsCount, setEventsCount] = useState<number>(0);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [isEventDetailsModalOpen, setIsEventDetailsModalOpen] = useState(false);
+  const [isEventFormModalOpen, setIsEventFormModalOpen] = useState(false);
+  const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
 
   const isOwnProfile = !id || id === user?.id;
   const targetId = isOwnProfile ? session?.user?.id : id;
@@ -91,6 +116,37 @@ export function Profile() {
         if (!annError && annData) {
           setUserAnnouncements(annData);
           setAnnouncementsCount(count || 0);
+        }
+
+        // Fetch User Events
+        const { data: eventData, count: eCount, error: eventError } = await supabase
+          .from('events')
+          .select('*, event_participants(user_id)', { count: 'exact' })
+          .eq('organizer_id', targetId)
+          .order('starts_at', { ascending: false });
+
+        if (!eventError && eventData) {
+          const mapped: Event[] = (eventData ?? []).map((row: any) => {
+            const startsAt = row.starts_at ? new Date(row.starts_at) : new Date();
+            return {
+              id: row.id,
+              title: row.title || '',
+              type: row.type || '',
+              starts_at: row.starts_at,
+              date: startsAt.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' }),
+              time: startsAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+              location: row.location_text || '',
+              organizer: row.organizer_name || 'Организатор',
+              organizer_id: row.organizer_id,
+              attendees: (row.event_participants || []).length,
+              maxAttendees: row.max_attendees,
+              description: row.description || '',
+              price: row.price_text || 'Бесплатно',
+              images: row.images || [],
+            };
+          });
+          setUserEvents(mapped);
+          setEventsCount(eCount || 0);
         }
       } else if (isOwnProfile) {
         let initialData: Partial<UserData> = {};
@@ -503,7 +559,7 @@ export function Profile() {
             <div className="w-14 h-14 bg-dusty-indigo/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Calendar className="w-7 h-7 text-dusty-indigo" />
             </div>
-            <div className="text-4xl font-extrabold text-dusty-indigo mb-1">-</div>
+            <div className="text-4xl font-extrabold text-dusty-indigo mb-1">{eventsCount}</div>
             <p className="text-sm font-medium text-muted-foreground">Событий</p>
           </motion.div>
 
@@ -660,6 +716,115 @@ export function Profile() {
             setUserAnnouncements(prev => prev.filter(a => a.id !== selectedAnnouncement.id));
             setAnnouncementsCount(prev => prev - 1);
             setIsDetailsModalOpen(false);
+          }}
+        />
+      )}
+
+      {/* User Events Grid */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8 }}
+        className="mt-12 bg-white rounded-[32px] border border-border/50 p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)]"
+      >
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-2xl font-black text-foreground">{isOwnProfile ? 'Мои события' : 'События'}</h2>
+            <p className="text-sm text-muted-foreground">Мероприятия, организованные пользователем</p>
+          </div>
+          {eventsCount > 0 && (
+            <span className="px-4 py-1.5 bg-dusty-indigo/10 text-dusty-indigo text-xs font-bold rounded-full uppercase tracking-widest border border-dusty-indigo/20">
+              {eventsCount}
+            </span>
+          )}
+        </div>
+
+        {userEvents.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {userEvents.map((event, i) => (
+              <motion.div
+                key={event.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 + i * 0.05 }}
+                onClick={() => {
+                  setSelectedEvent(event);
+                  setIsEventDetailsModalOpen(true);
+                }}
+                className="bg-white rounded-[24px] border border-border/50 hover:shadow-xl transition-all cursor-pointer overflow-hidden group flex flex-col h-full active:scale-[0.98] shadow-sm"
+              >
+                <div className="h-40 bg-soft-sand/10 relative overflow-hidden">
+                  {event.images && event.images.length > 0 ? (
+                    <img src={event.images[0]} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-dusty-indigo/20 to-terracotta-deep/10" />
+                  )}
+                  <div className="absolute top-3 left-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-[10px] font-bold text-dusty-indigo uppercase tracking-wider shadow-sm">
+                    {event.type}
+                  </div>
+                </div>
+                <div className="p-5 flex flex-col flex-1">
+                  <h3 className="font-bold text-lg mb-2 line-clamp-1 group-hover:text-dusty-indigo transition-colors">{event.title}</h3>
+                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-4 px-1">
+                    <Clock className="w-3 h-3 text-terracotta-deep" /> {event.date}
+                  </div>
+                  <div className="mt-auto pt-4 border-t border-border/30 flex items-center justify-between text-xs font-bold text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Users className="w-3.5 h-3.5" /> {event.attendees}
+                    </div>
+                    <div className="text-foreground">{event.price}</div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-12 text-center border-2 border-dashed border-border/40 rounded-[24px] bg-soft-sand/5">
+            <Calendar className="w-12 h-12 text-muted-foreground/20 mx-auto mb-4" />
+            <p className="text-muted-foreground italic mb-6">Событий пока нет...</p>
+            {isOwnProfile && (
+              <Button 
+                onClick={() => navigate('/events')}
+                className="bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-full px-8 h-12 font-bold shadow-lg shadow-dusty-indigo/10"
+              >
+                Перейти в Афишу
+              </Button>
+            )}
+          </div>
+        )}
+      </motion.div>
+
+      {/* Event Modals */}
+      {selectedEvent && (
+        <EventDetailsModal
+          isOpen={isEventDetailsModalOpen}
+          onClose={() => setIsEventDetailsModalOpen(false)}
+          event={selectedEvent}
+          onJoined={() => {
+            setUserEvents(prev => prev.map(e => e.id === selectedEvent.id ? { ...e, attendees: e.attendees + 1 } : e));
+          }}
+          onLeft={() => {
+            setUserEvents(prev => prev.map(e => e.id === selectedEvent.id ? { ...e, attendees: e.attendees - 1 } : e));
+          }}
+          onDeleted={() => {
+            setUserEvents(prev => prev.filter(e => e.id !== selectedEvent.id));
+            setEventsCount(prev => prev - 1);
+          }}
+          onEdited={(editedEvent) => {
+            setEventToEdit(editedEvent);
+            setIsEventFormModalOpen(true);
+          }}
+        />
+      )}
+
+      {isEventFormModalOpen && (
+        <EventFormModal
+          isOpen={isEventFormModalOpen}
+          onClose={() => setIsEventFormModalOpen(false)}
+          eventToEdit={eventToEdit}
+          onSuccess={() => {
+            // Refresh logic - simplest is to just re-fetch for now or update local item
+            window.location.reload(); 
           }}
         />
       )}

@@ -1,30 +1,44 @@
-import { useEffect, useMemo, useState } from 'react';
-import { motion } from 'motion/react';
-import { Calendar, Search, Plus, Users, MapPin, Clock, Filter } from 'lucide-react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Calendar, Search, Plus, Users, MapPin, Clock, Filter, CheckCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { supabase } from '@/lib/supabaseClient';
-import { formatRelativeRu } from '@/lib/date';
+import { useAuth } from '../SupabaseAuthProvider';
+import { EventDetailsModal } from './EventDetailsModal';
+import { EventFormModal } from './EventFormModal';
 
 interface Event {
   id: string;
   title: string;
   type: string;
+  starts_at: string;
   date: string;
   time: string;
   location: string;
   organizer: string;
+  organizer_id?: string;
   attendees: number;
   maxAttendees?: number;
   description: string;
   price: string;
+  images: string[];
+  is_attending?: boolean;
 }
 
 export function Events() {
+  const { user } = useAuth();
   const [selectedType, setSelectedType] = useState('Все');
   const [timeFilter, setTimeFilter] = useState('Все');
+  const [searchTerm, setSearchTerm] = useState('');
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+
+  // Modal states
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [eventToEdit, setEventToEdit] = useState<any>(null);
 
   const eventTypes = [
     'Все',
@@ -32,59 +46,108 @@ export function Events() {
     'Деловые и язык',
     'Спорт и экскурсии',
     'Для детей',
+    'Иное'
   ];
 
   const timeFilters = ['Все', 'Сегодня', 'Эта неделя', 'Этот месяц'];
 
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const { data, error } = await supabase
+        .from('events')
+        .select(`
+          *,
+          event_participants(user_id)
+        `)
+        .order('starts_at', { ascending: true });
+
+      if (error) throw error;
+
+      const mapped: Event[] = (data ?? []).map((row: any) => {
+        const startsAt = row.starts_at ? new Date(row.starts_at) : new Date();
+        const participants = row.event_participants || [];
+        return {
+          id: row.id,
+          title: row.title || '',
+          type: row.type || '',
+          starts_at: row.starts_at,
+          date: startsAt.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' }),
+          time: startsAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+          location: row.location_text || '',
+          organizer: row.organizer_name || 'Организатор',
+          organizer_id: row.organizer_id,
+          attendees: participants.length,
+          maxAttendees: row.max_attendees,
+          description: row.description || '',
+          price: row.price_text || 'Бесплатно',
+          images: row.images || [],
+          is_attending: user ? participants.some((p: any) => p.user_id === user.id) : false,
+        };
+      });
+      setEvents(mapped);
+    } catch (e) {
+      console.error('Fetch error:', e);
+      setLoadError(e instanceof Error ? e.message : 'Не удалось загрузить данные');
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setLoadError(null);
-      try {
-        const { data, error } = await supabase
-          .from('events')
-          .select('id,type,title,description,starts_at,location_text,organizer_name,price_text,max_attendees,created_at')
-          .order('starts_at', { ascending: true, nullsFirst: false });
-
-        if (error) throw error;
-
-        const mapped: Event[] = (data ?? []).map((row) => {
-          const startsAt = row.starts_at ? new Date(row.starts_at as string) : null;
-          return {
-            id: row.id as string,
-            title: (row.title ?? '') as string,
-            type: (row.type ?? '') as string,
-            date: startsAt ? startsAt.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' }) : (row.created_at ? formatRelativeRu(new Date(row.created_at as string)) : ''),
-            time: startsAt ? startsAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '',
-            location: (row.location_text ?? '') as string,
-            organizer: (row.organizer_name ?? 'Организатор') as string,
-            attendees: 0,
-            maxAttendees: (row.max_attendees ?? undefined) as number | undefined,
-            description: (row.description ?? '') as string,
-            price: (row.price_text ?? 'Бесплатно') as string,
-          };
-        });
-        setEvents(mapped);
-      } catch (e) {
-        const message = e instanceof Error ? e.message : 'Не удалось загрузить данные';
-        setLoadError(message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void fetchData();
-  }, []);
+    fetchData();
+  }, [fetchData]);
 
   const filteredEvents = useMemo(() => {
     return events.filter((event) => {
       const typeMatch = selectedType === 'Все' || event.type === selectedType;
-      return typeMatch;
+      const searchMatch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          event.description.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      let dateMatch = true;
+      if (timeFilter !== 'Все') {
+        const eventDate = new Date(event.starts_at);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (timeFilter === 'Сегодня') {
+          const tomorrow = new Date(today);
+          tomorrow.setDate(today.getDate() + 1);
+          dateMatch = eventDate >= today && eventDate < tomorrow;
+        } else if (timeFilter === 'Эта неделя') {
+          const nextWeek = new Date(today);
+          nextWeek.setDate(today.getDate() + 7);
+          dateMatch = eventDate >= today && eventDate < nextWeek;
+        } else if (timeFilter === 'Этот месяц') {
+          const nextMonth = new Date(today);
+          nextMonth.setMonth(today.getMonth() + 1);
+          dateMatch = eventDate >= today && eventDate < nextMonth;
+        }
+      }
+
+      return typeMatch && searchMatch && dateMatch;
     });
-  }, [events, selectedType]);
+  }, [events, selectedType, searchTerm, timeFilter]);
+
+  const handleCreate = () => {
+    setEventToEdit(null);
+    setIsFormOpen(true);
+  };
+
+  const handleEdit = (event: Event) => {
+    setEventToEdit(event);
+    setIsDetailsOpen(false);
+    setIsFormOpen(true);
+  };
+
+  const handleCardClick = (event: Event) => {
+    setSelectedEvent(event);
+    setIsDetailsOpen(true);
+  };
 
   return (
-    <div className="min-h-screen bg-warm-milk py-8">
+    <div className="min-h-screen bg-warm-milk py-8 pb-32">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <motion.div
@@ -98,7 +161,7 @@ export function Events() {
           </div>
           <h1 className="text-4xl font-bold mb-4">События и встречи</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Находи интересные мероприятия и знакомься с людьми
+            Находи интересные мероприятия и знакомься с новыми людьми
           </p>
         </motion.div>
 
@@ -109,12 +172,15 @@ export function Events() {
             <input
               type="text"
               placeholder="Поиск событий..."
-              className="w-full pl-12 pr-4 py-4 bg-white border border-border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20"
+              className="w-full pl-12 pr-4 py-4 bg-white border border-border/50 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20 shadow-sm"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <Button 
+            onClick={handleCreate}
             size="lg"
-            className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[12px] whitespace-nowrap"
+            className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[58px] px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95"
           >
             <Plus className="w-5 h-5 mr-2" />
             Создать событие
@@ -122,21 +188,21 @@ export function Events() {
         </div>
 
         {/* Filters */}
-        <div className="mb-8 space-y-4">
+        <div className="mb-10 space-y-6">
           <div>
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-4 px-1">
               <Filter className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium text-muted-foreground">Тип события:</span>
+              <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Категория</span>
             </div>
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-1">
               {eventTypes.map((type) => (
                 <button
                   key={type}
                   onClick={() => setSelectedType(type)}
-                  className={`px-4 py-2 rounded-[12px] whitespace-nowrap transition-all ${
+                  className={`px-5 py-2.5 rounded-full whitespace-nowrap transition-all font-medium border ${
                     selectedType === type
-                      ? 'bg-dusty-indigo text-white shadow-md'
-                      : 'bg-white text-foreground hover:bg-soft-sand/30 border border-border'
+                      ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-md'
+                      : 'bg-white text-muted-foreground hover:bg-soft-sand/30 border-border/50 hover:text-foreground shadow-sm'
                   }`}
                 >
                   {type}
@@ -146,19 +212,19 @@ export function Events() {
           </div>
 
           <div>
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-4 px-1">
               <Clock className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium text-muted-foreground">Когда:</span>
+              <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Когда</span>
             </div>
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-1">
               {timeFilters.map((filter) => (
                 <button
                   key={filter}
                   onClick={() => setTimeFilter(filter)}
-                  className={`px-4 py-2 rounded-[12px] whitespace-nowrap transition-all ${
+                  className={`px-5 py-2.5 rounded-full whitespace-nowrap transition-all font-medium border ${
                     timeFilter === filter
-                      ? 'bg-warm-olive text-white shadow-md'
-                      : 'bg-white text-foreground hover:bg-soft-sand/30 border border-border'
+                      ? 'bg-warm-olive text-white border-warm-olive shadow-md'
+                      : 'bg-white text-muted-foreground hover:bg-soft-sand/30 border-border/50 hover:text-foreground shadow-sm'
                   }`}
                 >
                   {filter}
@@ -169,15 +235,17 @@ export function Events() {
         </div>
 
         {/* Events Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {loading && (
-            <div className="col-span-full text-center text-muted-foreground py-10">
-              Загружаем события…
+            <div className="col-span-full text-center text-muted-foreground py-20 flex flex-col items-center">
+              <div className="w-10 h-10 border-4 border-terracotta-deep/20 border-t-terracotta-deep rounded-full animate-spin mb-4" />
+              <p className="font-medium">Загружаем события...</p>
             </div>
           )}
           {!loading && loadError && (
-            <div className="col-span-full text-center text-red-600 py-10">
-              Ошибка загрузки: {loadError}
+            <div className="col-span-full text-center py-20 bg-red-50 rounded-[32px] border border-red-100">
+               <p className="text-red-600 font-bold mb-2">Ошибка загрузки</p>
+               <p className="text-red-500 text-sm">{loadError}</p>
             </div>
           )}
           {!loading && !loadError && filteredEvents.map((event, i) => (
@@ -186,70 +254,69 @@ export function Events() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="bg-white rounded-[16px] border border-border hover:shadow-md transition-all cursor-pointer group overflow-hidden"
+              onClick={() => handleCardClick(event)}
+              className="bg-white rounded-[28px] border border-border/40 hover:shadow-xl transition-all cursor-pointer group overflow-hidden flex flex-col h-full shadow-sm hover:-translate-y-1 active:scale-[0.98]"
             >
-              {/* Image Placeholder with gradient */}
-              <div className={`h-40 bg-gradient-to-br ${
-                event.type === 'Встречи' ? 'from-terracotta-deep/20 to-dusty-indigo/20' :
-                event.type === 'Спорт' ? 'from-warm-olive/20 to-terracotta-deep/20' :
-                event.type === 'Культура' ? 'from-dusty-indigo/20 to-warm-olive/20' :
-                event.type === 'Обучение' ? 'from-warm-olive/30 to-soft-sand/30' :
-                event.type === 'Нетворкинг' ? 'from-terracotta-deep/30 to-warm-olive/20' :
-                'from-dusty-indigo/20 to-terracotta-deep/20'
-              } group-hover:scale-105 transition-transform`}></div>
-
-              {/* Content */}
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`px-3 py-1 text-xs rounded-full ${
-                    event.type === 'Встречи' ? 'bg-terracotta-deep/10 text-terracotta-deep' :
-                    event.type === 'Спорт' ? 'bg-warm-olive/10 text-warm-olive' :
-                    event.type === 'Культура' ? 'bg-dusty-indigo/10 text-dusty-indigo' :
-                    event.type === 'Обучение' ? 'bg-warm-olive/20 text-warm-olive' :
-                    'bg-terracotta-deep/10 text-terracotta-deep'
-                  }`}>
+              <div className="relative h-48 sm:h-56 overflow-hidden">
+                {event.images && event.images.length > 0 ? (
+                  <img 
+                    src={event.images[0]} 
+                    alt={event.title} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                  />
+                ) : (
+                  <div className={`w-full h-full bg-gradient-to-br ${
+                    event.type === 'Развлечения' ? 'from-terracotta-deep/20 to-dusty-indigo/20' :
+                    event.type === 'Спорт и экскурсии' ? 'from-warm-olive/20 to-terracotta-deep/20' :
+                    'from-dusty-indigo/20 to-terracotta-deep/20'
+                  } group-hover:scale-105 transition-transform duration-700`} />
+                )}
+                
+                <div className="absolute top-4 left-4 flex gap-2">
+                  <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-terracotta-deep text-[10px] font-bold tracking-widest uppercase rounded-full border border-terracotta-deep/20 shadow-sm">
                     {event.type}
                   </span>
-                  <span className={`font-semibold text-sm ${
+                  {event.is_attending && (
+                    <span className="px-3 py-1 bg-green-500 text-white text-[10px] font-bold tracking-widest uppercase rounded-full shadow-sm flex items-center gap-1">
+                      <CheckCircle className="w-3 h-3" /> Иду
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="p-6 flex flex-col flex-1">
+                <div className="flex items-center justify-between mb-3">
+                  <span className={`font-bold text-sm ${
                     event.price === 'Бесплатно' ? 'text-green-600' : 'text-foreground'
                   }`}>
                     {event.price}
                   </span>
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-soft-sand/30 px-2 py-1 rounded-full">
+                    <Users className="w-3.5 h-3.5" />
+                    {event.attendees} {event.maxAttendees ? `/ ${event.maxAttendees}` : ''}
+                  </div>
                 </div>
 
-                <h3 className="font-semibold text-lg mb-2 group-hover:text-dusty-indigo transition-colors">
+                <h3 className="font-bold text-xl mb-2 group-hover:text-terracotta-deep transition-colors line-clamp-1 leading-tight">
                   {event.title}
                 </h3>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                <p className="text-sm text-muted-foreground mb-6 line-clamp-2 leading-relaxed">
                   {event.description}
                 </p>
 
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4 flex-shrink-0" />
+                <div className="mt-auto space-y-2.5">
+                  <div className="flex items-center gap-2.5 text-sm font-medium text-muted-foreground">
+                    <div className="w-8 h-8 rounded-full bg-soft-sand/30 flex items-center justify-center text-terracotta-deep">
+                      <Calendar className="w-4 h-4" />
+                    </div>
                     <span>{event.date}, {event.time}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="w-4 h-4 flex-shrink-0" />
+                  <div className="flex items-center gap-2.5 text-sm font-medium text-muted-foreground">
+                    <div className="w-8 h-8 rounded-full bg-soft-sand/30 flex items-center justify-center text-terracotta-deep">
+                      <MapPin className="w-4 h-4" />
+                    </div>
                     <span className="truncate">{event.location}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Users className="w-4 h-4 flex-shrink-0" />
-                    <span>
-                      {event.attendees} участников
-                      {event.maxAttendees && ` / ${event.maxAttendees}`}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">от {event.organizer}</span>
-                  <Button 
-                    size="sm"
-                    className="bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-[12px]"
-                  >
-                    Я пойду!
-                  </Button>
                 </div>
               </div>
             </motion.div>
@@ -258,42 +325,66 @@ export function Events() {
 
         {/* Empty State */}
         {!loading && !loadError && filteredEvents.length === 0 && (
-          <div className="bg-white border border-border/80 rounded-[16px] p-12 text-center my-8">
-            <div className="w-20 h-20 bg-soft-sand/50 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Calendar className="w-10 h-10 text-dusty-indigo" />
+          <div className="bg-white border border-border/40 rounded-[32px] p-16 text-center my-8 shadow-sm">
+            <div className="w-24 h-24 bg-soft-sand/50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Calendar className="w-12 h-12 text-dusty-indigo/40" />
             </div>
             <h3 className="text-2xl font-bold mb-3">Событий пока нет</h3>
-            <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+            <p className="text-muted-foreground mb-10 max-w-md mx-auto text-lg">
               Самое время проявить инициативу. Создайте встречу, и к вам обязательно присоединятся.
             </p>
-            <Button className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[12px] px-8">
+            <Button 
+              onClick={handleCreate}
+              className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full px-10 h-14 font-bold text-lg shadow-lg shadow-terracotta-deep/20"
+            >
               <Plus className="w-5 h-5 mr-2" />
               Создать событие
             </Button>
           </div>
         )}
 
+        {/* Stats */}
         {events.length > 0 && (
-          <div className="grid md:grid-cols-3 gap-6 my-12">
-            <div className="bg-white p-6 rounded-[16px] border border-border text-center">
-              <div className="text-3xl font-bold text-dusty-indigo mb-2">{events.length}</div>
-              <p className="text-muted-foreground">Событий на этой неделе</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-16">
+            <div className="bg-white p-8 rounded-[32px] border border-border/40 text-center shadow-sm">
+              <div className="text-4xl font-black text-dusty-indigo mb-2">{events.length}</div>
+              <p className="text-muted-foreground font-bold text-sm uppercase tracking-widest">Мероприятий</p>
             </div>
-            <div className="bg-white p-6 rounded-[16px] border border-border text-center">
-              <div className="text-3xl font-bold text-terracotta-deep mb-2">
+            <div className="bg-white p-8 rounded-[32px] border border-border/40 text-center shadow-sm">
+              <div className="text-4xl font-black text-terracotta-deep mb-2">
                 {events.reduce((sum, e) => sum + e.attendees, 0)}
               </div>
-              <p className="text-muted-foreground">Участников</p>
+              <p className="text-muted-foreground font-bold text-sm uppercase tracking-widest">Участников</p>
             </div>
-            <div className="bg-white p-6 rounded-[16px] border border-border text-center">
-              <div className="text-3xl font-bold text-warm-olive mb-2">
-                {events.filter(e => e.price === 'Бесплатно').length}
+            <div className="bg-white p-8 rounded-[32px] border border-border/40 text-center shadow-sm">
+              <div className="text-4xl font-black text-warm-olive mb-2">
+                {events.filter(e => e.price.toLowerCase().includes('бесплатно')).length}
               </div>
-              <p className="text-muted-foreground">Бесплатных событий</p>
+              <p className="text-muted-foreground font-bold text-sm uppercase tracking-widest">Бесплатных встреч</p>
             </div>
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      {selectedEvent && (
+        <EventDetailsModal
+          isOpen={isDetailsOpen}
+          onClose={() => setIsDetailsOpen(false)}
+          event={selectedEvent}
+          onJoined={fetchData}
+          onLeft={fetchData}
+          onDeleted={fetchData}
+          onEdited={() => handleEdit(selectedEvent)}
+        />
+      )}
+
+      <EventFormModal
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        eventToEdit={eventToEdit}
+        onSuccess={fetchData}
+      />
     </div>
   );
 }
