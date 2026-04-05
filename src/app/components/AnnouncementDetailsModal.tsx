@@ -5,27 +5,16 @@ import { Button } from './ui/button';
 import { useAuth } from '../SupabaseAuthProvider';
 import { supabase } from '@/lib/supabaseClient';
 
-interface Announcement {
-  id: string;
-  title: string;
-  category: string;
-  subcategory?: string;
-  description: string;
-  author: string;
-  price?: string;
-  location: string;
-  date: string;
-  images: string[];
-  author_id: string;
-}
+import { Announcement } from './Announcements';
 
 interface Props {
   announcement: Announcement | null;
   isOpen: boolean;
   onClose: () => void;
+  onDeleted?: () => void;
 }
 
-export function AnnouncementDetailsModal({ announcement, isOpen, onClose }: Props) {
+export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDeleted }: Props) {
   const { user, profile } = useAuth();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -50,8 +39,14 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose }: Prop
         .eq('id', announcement.id);
 
       if (error) throw error;
-      onClose();
-      window.location.reload(); // Simple refresh to update the list
+      
+      if (onDeleted) {
+        onDeleted();
+      } else {
+        onClose();
+        // Fallback for pages without onDeleted handler yet
+        window.location.reload();
+      }
     } catch (err) {
       alert('Ошибка при удалении');
       console.error(err);
@@ -149,10 +144,10 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose }: Prop
                   <div className="mb-8">
                     <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4 relative pr-16 lg:pr-16">
                       <h2 className="text-3xl font-black leading-tight text-foreground">{announcement.title}</h2>
-                      {announcement.price && (
+                      {announcement.price_text && (
                         <div className="bg-terracotta-deep/10 px-4 py-2 rounded-2xl shrink-0">
                           <span className="text-xl font-black text-terracotta-deep whitespace-nowrap">
-                            {announcement.price}
+                            {announcement.price_text} $
                           </span>
                         </div>
                       )}
@@ -161,15 +156,15 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose }: Prop
                     <div className="flex flex-wrap gap-4 text-sm text-muted-foreground font-medium">
                       <div className="flex items-center gap-2 bg-white/80 border border-border/40 px-3 py-1.5 rounded-xl">
                         <MapPin className="w-4 h-4 text-terracotta-deep" />
-                        {announcement.location}
+                        {announcement.location_text}
                       </div>
                       <div className="flex items-center gap-2 bg-white/80 border border-border/40 px-3 py-1.5 rounded-xl">
                         <Calendar className="w-4 h-4 text-dusty-indigo" />
-                        {announcement.date}
+                        {new Date(announcement.created_at).toLocaleDateString('ru-RU')}
                       </div>
                       <div className="flex items-center gap-2 bg-white/80 border border-border/40 px-3 py-1.5 rounded-xl">
                         <User className="w-4 h-4 text-warm-olive" />
-                        {announcement.author}
+                        {announcement.author_name}
                       </div>
                     </div>
                   </div>

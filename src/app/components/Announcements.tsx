@@ -10,19 +10,20 @@ import { AuthModal } from './AuthWidget';
 import { CreateAnnouncementModal } from './CreateAnnouncementModal';
 import { AnnouncementDetailsModal } from './AnnouncementDetailsModal';
 
-interface Announcement {
+export interface Announcement {
   id: string;
   title: string;
   category: string;
   subcategory?: string;
   description: string;
-  author: string;
-  price?: string;
+  author_name: string; // From table
+  price_text: string;  // From table
   price_numeric?: number;
-  location: string;
-  date: string;
+  location_text: string; // From table
+  created_at: string;
   images: string[];
   author_id: string;
+  status: string;
 }
 
 export function Announcements() {
@@ -113,13 +114,14 @@ export function Announcements() {
         category: (row.category ?? '') as string,
         subcategory: (row.subcategory ?? undefined) as string | undefined,
         description: (row.description ?? '') as string,
-        author: (row.author_name ?? 'Пользователь') as string,
-        price: (row.price_text ?? undefined) as string | undefined,
+        author_name: (row.author_name ?? 'Пользователь') as string,
+        price_text: (row.price_text ?? '') as string,
         price_numeric: row.price_numeric as number | undefined,
-        location: (row.location_text ?? '') as string,
-        date: row.created_at ? formatRelativeRu(new Date(row.created_at as string)) : '',
+        location_text: (row.location_text ?? '') as string,
+        created_at: (row.created_at ?? '') as string,
         images: (row.images ?? []) as string[],
-        author_id: row.author_id as string,
+        author_id: (row.author_id ?? '') as string,
+        status: (row.status ?? 'active') as string,
       }));
       setAnnouncements(mapped);
     } catch (e) {
@@ -428,8 +430,8 @@ export function Announcements() {
                   }`}>
                     {announcement.category}
                   </span>
-                  {announcement.price && (
-                    <span className="font-bold text-terracotta-deep">{announcement.price}</span>
+                  {announcement.price_text && (
+                    <span className="font-bold text-terracotta-deep">{announcement.price_text} $</span>
                   )}
                 </div>
 
@@ -441,11 +443,11 @@ export function Announcements() {
                 </p>
 
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>от {announcement.author}</span>
-                  <span>{announcement.date}</span>
+                  <span>от {announcement.author_name}</span>
+                  <span>{formatRelativeRu(new Date(announcement.created_at))}</span>
                 </div>
                 <div className="text-xs text-muted-foreground mt-1">
-                  📍 {announcement.location}
+                  📍 {announcement.location_text}
                 </div>
               </div>
             </motion.div>

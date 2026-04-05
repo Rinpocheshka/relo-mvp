@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { MapPin, Calendar, Star, MessageCircle, Settings, Edit, Award, Heart, Save, X, Camera, Loader2, Send, Phone, Lock } from 'lucide-react';
 import { Button } from './ui/button';
-import { useParams, useLocation } from 'react-router';
+import { useParams, useLocation, useNavigate } from 'react-router';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
 import { AuthModal } from './AuthWidget';
+import { AnnouncementDetailsModal } from './AnnouncementDetailsModal';
+import { Announcement } from './Announcements';
 
 interface UserData {
   id: string;
@@ -36,6 +38,7 @@ const PROFILE_TAGS = [
 
 export function Profile() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const location = useLocation();
   const { session, user, profile: globalProfile, loading: authLoading, refreshProfile } = useAuth();
   
@@ -45,6 +48,10 @@ export function Profile() {
   const [editForm, setEditForm] = useState<Partial<UserData>>({});
   const [uploading, setUploading] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [userAnnouncements, setUserAnnouncements] = useState<Announcement[]>([]);
+  const [announcementsCount, setAnnouncementsCount] = useState<number>(0);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const isOwnProfile = !id || id === user?.id;
   const targetId = isOwnProfile ? session?.user?.id : id;
@@ -72,6 +79,18 @@ export function Profile() {
         // Check if we should start in edit mode
         if (isOwnProfile && new URLSearchParams(location.search).get('edit') === 'true') {
           setIsEditing(true);
+        }
+        
+        // Fetch User Announcements
+        const { data: annData, count, error: annError } = await supabase
+          .from('announcements')
+          .select('*', { count: 'exact' })
+          .eq('author_id', targetId)
+          .order('created_at', { ascending: false });
+        
+        if (!annError && annData) {
+          setUserAnnouncements(annData);
+          setAnnouncementsCount(count || 0);
         }
       } else if (isOwnProfile) {
         let initialData: Partial<UserData> = {};
@@ -471,7 +490,7 @@ export function Profile() {
             <div className="w-14 h-14 bg-terracotta-deep/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <MessageCircle className="w-7 h-7 text-terracotta-deep" />
             </div>
-            <div className="text-4xl font-extrabold text-terracotta-deep mb-1">-</div>
+            <div className="text-4xl font-extrabold text-terracotta-deep mb-1">{announcementsCount}</div>
             <p className="text-sm font-medium text-muted-foreground">Объявлений</p>
           </motion.div>
 
@@ -542,7 +561,108 @@ export function Profile() {
             ))}
           </div>
         </motion.div>
+
+        {/* User Announcements Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="mt-8"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">{isOwnProfile ? 'Мои объявления' : 'Объявления'}</h2>
+            {announcementsCount > 0 && (
+               <span className="px-3 py-1 bg-terracotta-deep/10 text-terracotta-deep text-xs font-bold rounded-full">
+                 {announcementsCount}
+               </span>
+            )}
+          </div>
+          
+          {userAnnouncements.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {userAnnouncements.map((announcement, i) => (
+                <motion.div
+                  key={announcement.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 + i * 0.05 }}
+                  onClick={() => {
+                    setSelectedAnnouncement(announcement);
+                    setIsDetailsModalOpen(true);
+                  }}
+                  className="bg-white rounded-[24px] border border-border/50 hover:shadow-xl transition-all cursor-pointer overflow-hidden group flex flex-col h-full active:scale-[0.98]"
+                >
+                  {/* Image */}
+                  <div className="h-48 bg-soft-sand/10 relative overflow-hidden">
+                    {announcement.images && announcement.images.length > 0 ? (
+                      <img 
+                        src={announcement.images[0]} 
+                        alt={announcement.title} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
+                        <MessageCircle className="w-12 h-12" />
+                      </div>
+                    )}
+                    <div className="absolute top-3 left-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-[10px] font-bold text-terracotta-deep uppercase tracking-wider shadow-sm">
+                      {announcement.category}
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div className="p-5 flex flex-col flex-1">
+                    <h3 className="font-bold text-lg mb-2 line-clamp-1 group-hover:text-terracotta-deep transition-colors">
+                      {announcement.title}
+                    </h3>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+                      <MapPin className="w-3 h-3" />
+                      <span className="line-clamp-1">{announcement.location_text}</span>
+                    </div>
+                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-border/30">
+                      <div className="text-lg font-black text-foreground">
+                         {announcement.price_text} $
+                      </div>
+                      <div className="text-[10px] text-muted-foreground font-medium">
+                        {new Date(announcement.created_at).toLocaleDateString('ru-RU')}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white rounded-[32px] border border-border/50 p-12 text-center shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
+              <div className="w-14 h-14 bg-terracotta-deep/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MessageCircle className="w-7 h-7 text-terracotta-deep/30" />
+              </div>
+              <p className="text-muted-foreground italic">Объявлений пока нет...</p>
+              {isOwnProfile && (
+                <Button 
+                  className="mt-6 bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full px-8"
+                  onClick={() => navigate('/announcements')}
+                >
+                  Создать первое
+                </Button>
+              )}
+            </div>
+          )}
+        </motion.div>
       </div>
+
+      {/* Announcements Details Modal */}
+      {selectedAnnouncement && (
+        <AnnouncementDetailsModal
+          isOpen={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
+          announcement={selectedAnnouncement}
+          onDeleted={() => {
+            setUserAnnouncements(prev => prev.filter(a => a.id !== selectedAnnouncement.id));
+            setAnnouncementsCount(prev => prev - 1);
+            setIsDetailsModalOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }
