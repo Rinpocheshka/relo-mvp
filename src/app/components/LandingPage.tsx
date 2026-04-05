@@ -723,7 +723,7 @@ function OnboardingFlow({
                 <div className="text-center mb-8 sm:mb-10">
                   <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
                     {showArrivalKit
-                      ? <>Добро пожаловать{country ? <> в {country}!</> : '!'}</>
+                      ? <>Добро пожаловать{country ? <> {country === 'Вьетнам' ? 'во' : 'в'} {country}!</> : '!'}</>
                       : 'Подготовка к переезду'}
                   </h2>
                   <p className="text-muted-foreground text-base sm:text-lg">
