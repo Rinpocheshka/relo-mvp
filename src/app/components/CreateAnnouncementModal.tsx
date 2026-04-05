@@ -390,10 +390,16 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                     </div>
                     {/* Location */}
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold ml-1">Район / Место</label>
+                      <div className="flex justify-between items-center ml-1">
+                        <label className="text-sm font-semibold">Район / Место</label>
+                        <span className={`text-[10px] ${form.location_text.length > 25 ? 'text-red-500 font-bold' : 'text-muted-foreground'}`}>
+                          {form.location_text.length}/30
+                        </span>
+                      </div>
                       <input
                         required
                         type="text"
+                        maxLength={30}
                         placeholder="Напр: Сон Тра, Дананг"
                         value={form.location_text}
                         onChange={(e) => setForm({ ...form, location_text: e.target.value })}
@@ -406,14 +412,14 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center ml-1">
                       <label className="text-sm font-semibold">Описание</label>
-                      <span className={`text-[10px] ${form.description.length > 2800 ? 'text-red-500 font-bold' : 'text-muted-foreground'}`}>
-                        {form.description.length}/3000
+                      <span className={`text-[10px] ${form.description.length > 900 ? 'text-red-500 font-bold' : 'text-muted-foreground'}`}>
+                        {form.description.length}/1000
                       </span>
                     </div>
                     <textarea
                       required
                       rows={5}
-                      maxLength={3000}
+                      maxLength={1000}
                       placeholder="Расскажите подробнее о вашем предложении..."
                       value={form.description}
                       onChange={(e) => setForm({ ...form, description: e.target.value })}
