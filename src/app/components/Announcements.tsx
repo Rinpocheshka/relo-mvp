@@ -5,6 +5,9 @@ import { Button } from './ui/button';
 import { Link } from 'react-router';
 import { supabase } from '@/lib/supabaseClient';
 import { formatRelativeRu } from '@/lib/date';
+import { useAuth } from '../SupabaseAuthProvider';
+import { AuthModal } from './AuthWidget';
+import { CreateAnnouncementModal } from './CreateAnnouncementModal';
 
 interface Announcement {
   id: string;
@@ -32,6 +35,10 @@ export function Announcements() {
     district: [] as string[],
     term: [] as string[],
   });
+
+  const { user } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const categories = [
     { name: 'Все', icon: Megaphone },
@@ -66,38 +73,38 @@ export function Announcements() {
     term: ['2 недели', '1 месяц', '3 месяца', '6 месяцев', 'Год'],
   };
 
+  const fetchData = async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const { data, error } = await supabase
+        .from('announcements')
+        .select('id,title,category,subcategory,description,author_name,price_text,location_text,created_at')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const mapped: Announcement[] = (data ?? []).map((row) => ({
+        id: row.id as string,
+        title: (row.title ?? '') as string,
+        category: (row.category ?? '') as string,
+        subcategory: (row.subcategory ?? undefined) as string | undefined,
+        description: (row.description ?? '') as string,
+        author: (row.author_name ?? 'Пользователь') as string,
+        price: (row.price_text ?? undefined) as string | undefined,
+        location: (row.location_text ?? '') as string,
+        date: row.created_at ? formatRelativeRu(new Date(row.created_at as string)) : '',
+      }));
+      setAnnouncements(mapped);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Не удалось загрузить данные';
+      setLoadError(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setLoadError(null);
-      try {
-        const { data, error } = await supabase
-          .from('announcements')
-          .select('id,title,category,subcategory,description,author_name,price_text,location_text,created_at')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        const mapped: Announcement[] = (data ?? []).map((row) => ({
-          id: row.id as string,
-          title: (row.title ?? '') as string,
-          category: (row.category ?? '') as string,
-          subcategory: (row.subcategory ?? undefined) as string | undefined,
-          description: (row.description ?? '') as string,
-          author: (row.author_name ?? 'Пользователь') as string,
-          price: (row.price_text ?? undefined) as string | undefined,
-          location: (row.location_text ?? '') as string,
-          date: row.created_at ? formatRelativeRu(new Date(row.created_at as string)) : '',
-        }));
-        setAnnouncements(mapped);
-      } catch (e) {
-        const message = e instanceof Error ? e.message : 'Не удалось загрузить данные';
-        setLoadError(message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     void fetchData();
   }, []);
 
@@ -314,6 +321,7 @@ export function Announcements() {
           </div>
           <Button
             size="lg"
+            onClick={() => user ? setIsCreateModalOpen(true) : setIsAuthModalOpen(true)}
             className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[12px] whitespace-nowrap"
           >
             <Plus className="w-5 h-5 mr-2" />
@@ -389,12 +397,26 @@ export function Announcements() {
             <p className="text-muted-foreground mb-6">
               Поделись тем, что ищешь или предлагаешь — здесь это ценят
             </p>
-            <Button className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[12px]">
+            <Button 
+              onClick={() => user ? setIsCreateModalOpen(true) : setIsAuthModalOpen(true)}
+              className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[12px]"
+            >
               <Plus className="w-5 h-5 mr-2" />
               Добавить объявление
             </Button>
           </div>
         )}
+
+        <AuthModal 
+          open={isAuthModalOpen} 
+          onClose={() => setIsAuthModalOpen(false)} 
+        />
+        
+        <CreateAnnouncementModal 
+          isOpen={isCreateModalOpen} 
+          onClose={() => setIsCreateModalOpen(false)}
+          onSuccess={() => void fetchData()}
+        />
       </div>
     </div>
   );
