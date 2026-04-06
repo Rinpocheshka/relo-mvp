@@ -246,14 +246,15 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
               {/* Title */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 px-1">Название</label>
-                <input
-                  required
-                  type="text"
-                  placeholder="Например: Встреча в коворкинге"
-                  className="w-full px-5 py-4 bg-soft-sand/20 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 transition-all font-medium"
-                  value={formData.title}
-                  onChange={e => setFormData({ ...formData, title: e.target.value })}
-                />
+                  <input
+                    required
+                    type="text"
+                    maxLength={50}
+                    placeholder="Например: Встреча в коворкинге"
+                    className="w-full px-5 py-4 bg-soft-sand/20 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 transition-all font-medium"
+                    value={formData.title}
+                    onChange={e => setFormData({ ...formData, title: e.target.value })}
+                  />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -300,6 +301,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
                       required
                       type="datetime-local"
                       max="9999-12-31T23:59"
+                      step={900}
                       className="w-full pl-12 pr-5 py-4 bg-soft-sand/20 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 transition-all font-medium"
                       value={formData.starts_at}
                       onChange={e => setFormData({ ...formData, starts_at: e.target.value })}
@@ -315,10 +317,14 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
                     <input
                       type="number"
                       min={0}
+                      max={9999}
                       placeholder="Безлимитно"
                       className="w-full pl-12 pr-5 py-4 bg-soft-sand/20 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 transition-all font-medium"
                       value={formData.max_attendees}
-                      onChange={e => setFormData({ ...formData, max_attendees: e.target.value })}
+                      onChange={e => {
+                        const val = e.target.value.slice(0, 4);
+                        setFormData({ ...formData, max_attendees: val });
+                      }}
                     />
                   </div>
                 </div>
