@@ -40,6 +40,34 @@ export function Events() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [eventToEdit, setEventToEdit] = useState<any>(null);
 
+  const handleToggleAttendance = async (event: Event) => {
+    if (!user) {
+      alert('Пожалуйста, войдите, чтобы записаться на событие');
+      return;
+    }
+    try {
+      if (event.is_attending) {
+        await supabase
+          .from('event_participants')
+          .delete()
+          .eq('event_id', event.id)
+          .eq('user_id', user.id);
+      } else {
+        // Optional: Check max attendees if needed
+        if (event.maxAttendees && event.attendees >= event.maxAttendees) {
+          alert('Извините, мест больше нет');
+          return;
+        }
+        await supabase
+          .from('event_participants')
+          .insert([{ event_id: event.id, user_id: user.id }]);
+      }
+      fetchData();
+    } catch (e) {
+      console.error('Attendance toggle error:', e);
+    }
+  };
+
   const eventTypes = [
     'Все',
     'Развлечения',
@@ -255,7 +283,7 @@ export function Events() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
               onClick={() => handleCardClick(event)}
-              className="bg-white rounded-[28px] border border-border/40 hover:shadow-xl transition-all cursor-pointer group overflow-hidden flex flex-col h-full shadow-sm hover:-translate-y-1 active:scale-[0.98]"
+              className="bg-white rounded-[32px] border border-border/40 hover:shadow-xl transition-all cursor-pointer group overflow-hidden flex flex-col h-full shadow-sm hover:-translate-y-1 active:scale-[0.98]"
             >
               <div className="relative h-48 sm:h-56 overflow-hidden">
                 {event.images && event.images.length > 0 ? (
@@ -271,52 +299,63 @@ export function Events() {
                     'from-dusty-indigo/20 to-terracotta-deep/20'
                   } group-hover:scale-105 transition-transform duration-700`} />
                 )}
-                
-                <div className="absolute top-4 left-4 flex gap-2">
-                  <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-terracotta-deep text-[10px] font-bold tracking-widest uppercase rounded-full border border-terracotta-deep/20 shadow-sm">
-                    {event.type}
-                  </span>
-                  {event.is_attending && (
-                    <span className="px-3 py-1 bg-green-500 text-white text-[10px] font-bold tracking-widest uppercase rounded-full shadow-sm flex items-center gap-1">
-                      <CheckCircle className="w-3 h-3" /> Иду
-                    </span>
-                  )}
-                </div>
               </div>
 
-              <div className="p-6 flex flex-col flex-1">
-                <div className="flex items-center justify-between mb-3">
+              <div className="p-6 flex flex-col flex-1 gap-3">
+                {/* Category & Price */}
+                <div className="flex items-center justify-between">
+                  <span className="px-3 py-1 bg-soft-sand/80 text-terracotta-deep text-[10px] font-bold tracking-widest uppercase rounded-full border border-terracotta-deep/5">
+                    {event.type === 'Развлечения' ? 'Встречи' : event.type}
+                  </span>
                   <span className={`font-bold text-sm ${
                     event.price === 'Бесплатно' ? 'text-green-600' : 'text-foreground'
                   }`}>
                     {event.price}
                   </span>
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-soft-sand/30 px-2 py-1 rounded-full">
-                    <Users className="w-3.5 h-3.5" />
-                    {event.attendees} {event.maxAttendees ? `/ ${event.maxAttendees}` : ''}
-                  </div>
                 </div>
-
-                <h3 className="font-bold text-xl mb-2 group-hover:text-terracotta-deep transition-colors line-clamp-1 leading-tight">
+                <h3 className="font-bold text-xl text-dusty-indigo leading-tight group-hover:underline decoration-dusty-indigo/30 transition-all line-clamp-1">
                   {event.title}
                 </h3>
-                <p className="text-sm text-muted-foreground mb-6 line-clamp-2 leading-relaxed">
+                
+                <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                   {event.description}
                 </p>
 
-                <div className="mt-auto space-y-2.5">
-                  <div className="flex items-center gap-2.5 text-sm font-medium text-muted-foreground">
-                    <div className="w-8 h-8 rounded-full bg-soft-sand/30 flex items-center justify-center text-terracotta-deep">
-                      <Calendar className="w-4 h-4" />
-                    </div>
+                {/* Event Details List */}
+                <div className="py-2 space-y-2">
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground/80 font-medium italic">
+                    <Calendar className="w-4 h-4 opacity-70" />
                     <span>{event.date}, {event.time}</span>
                   </div>
-                  <div className="flex items-center gap-2.5 text-sm font-medium text-muted-foreground">
-                    <div className="w-8 h-8 rounded-full bg-soft-sand/30 flex items-center justify-center text-terracotta-deep">
-                      <MapPin className="w-4 h-4" />
-                    </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground/80 font-medium italic">
+                    <MapPin className="w-4 h-4 opacity-70" />
                     <span className="truncate">{event.location}</span>
                   </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground/80 font-medium italic">
+                    <Users className="w-4 h-4 opacity-70" />
+                    <span>{event.attendees} участников {event.maxAttendees ? `/ ${event.maxAttendees}` : ''}</span>
+                  </div>
+                </div>
+
+                {/* Footer Organizer & Join Button */}
+                <div className="mt-auto pt-4 flex items-center justify-between border-t border-border/30">
+                  <span className="text-xs text-muted-foreground font-medium italic">
+                    от {event.organizer}
+                  </span>
+                  <Button
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleAttendance(event);
+                    }}
+                    className={`rounded-2xl px-5 h-10 font-bold text-sm shadow-md transition-all active:scale-[0.97] ${
+                      event.is_attending
+                        ? 'bg-soft-sand text-dusty-indigo hover:bg-soft-sand/80 shadow-soft-sand/10'
+                        : 'bg-dusty-indigo text-white hover:bg-dusty-indigo/90 shadow-dusty-indigo/20'
+                    }`}
+                  >
+                    {event.is_attending ? 'Я иду' : 'Я пойду!'}
+                  </Button>
                 </div>
               </div>
             </motion.div>
