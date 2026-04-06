@@ -61,7 +61,7 @@ export function Events() {
           *,
           event_participants(user_id)
         `)
-        .order('starts_at', { ascending: true });
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 

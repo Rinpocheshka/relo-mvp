@@ -27,11 +27,16 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
     title: '',
     type: 'Развлечения',
     description: '',
-    starts_at: '',
+    date: '',
+    hour: '12',
+    minute: '00',
     location_text: '',
     price_text: 'Бесплатно',
     max_attendees: '',
   });
+
+  const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
+  const minutes = ['00', '15', '30', '45'];
 
   const eventTypes = [
     'Развлечения',
@@ -43,11 +48,14 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
 
   useEffect(() => {
     if (eventToEdit) {
+      const startsAt = eventToEdit.starts_at ? new Date(eventToEdit.starts_at) : new Date();
       setFormData({
         title: eventToEdit.title || '',
         type: eventToEdit.type || 'Развлечения',
         description: eventToEdit.description || '',
-        starts_at: eventToEdit.starts_at ? new Date(eventToEdit.starts_at).toISOString().slice(0, 16) : '',
+        date: startsAt.toISOString().split('T')[0],
+        hour: startsAt.getHours().toString().padStart(2, '0'),
+        minute: startsAt.getMinutes().toString().padStart(2, '0'),
         location_text: eventToEdit.location_text || '',
         price_text: eventToEdit.price_text || 'Бесплатно',
         max_attendees: eventToEdit.max_attendees?.toString() || '',
@@ -59,7 +67,9 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
         title: '',
         type: 'Развлечения',
         description: '',
-        starts_at: '',
+        date: '',
+        hour: '12',
+        minute: '00',
         location_text: '',
         price_text: 'Бесплатно',
         max_attendees: '',
@@ -166,14 +176,19 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
       const finalImages = [...existingImages, ...newImageUrls];
 
       // 2. Prepare payload
+      const combinedStartsAt = new Date(`${formData.date}T${formData.hour}:${formData.minute}:00`).toISOString();
       const payload = {
-        ...formData,
+        title: formData.title,
+        type: formData.type,
+        description: formData.description,
+        location_text: formData.location_text,
+        price_text: formData.price_text,
         organizer_id: user.id,
         organizer_name: profile?.display_name || user.email?.split('@')[0],
         city: profile?.city || 'Не указано',
         images: finalImages,
         max_attendees: formData.max_attendees ? parseInt(formData.max_attendees) : null,
-        starts_at: new Date(formData.starts_at).toISOString(),
+        starts_at: combinedStartsAt,
       };
 
       // 3. Upsert
@@ -293,19 +308,47 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Date & Time */}
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 px-1">Дата и время</label>
+                <div className="sm:col-span-1">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 px-1">Дата</label>
                   <div className="relative">
-                    <Clock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
                       required
-                      type="datetime-local"
-                      max="9999-12-31T23:59"
-                      step={900}
+                      type="date"
                       className="w-full pl-12 pr-5 py-4 bg-soft-sand/20 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 transition-all font-medium"
-                      value={formData.starts_at}
-                      onChange={e => setFormData({ ...formData, starts_at: e.target.value })}
+                      value={formData.date}
+                      onChange={e => setFormData({ ...formData, date: e.target.value })}
                     />
+                  </div>
+                </div>
+
+                <div className="sm:col-span-1">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 px-1">Время</label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10 pointer-events-none" />
+                      <select
+                        className="w-full pl-10 pr-4 py-4 bg-soft-sand/20 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 transition-all font-medium appearance-none"
+                        value={formData.hour}
+                        onChange={e => setFormData({ ...formData, hour: e.target.value })}
+                      >
+                        {hours.map(h => (
+                          <option key={h} value={h}>{h}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex items-center text-muted-foreground font-black">:</div>
+                    <div className="relative flex-1">
+                      <select
+                        className="w-full px-4 py-4 bg-soft-sand/20 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 transition-all font-medium appearance-none"
+                        value={formData.minute}
+                        onChange={e => setFormData({ ...formData, minute: e.target.value })}
+                      >
+                        {minutes.map(m => (
+                          <option key={m} value={m}>{m}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
 
@@ -338,7 +381,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
                   <input
                     required
                     type="text"
-                    maxLength={40}
+                    maxLength={60}
                     placeholder="Название заведения или адрес"
                     className="w-full pl-12 pr-5 py-4 bg-soft-sand/20 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 transition-all font-medium"
                     value={formData.location_text}
@@ -382,10 +425,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
                   {/* New Selected Previews */}
                   {selectedAttachments.map((item, i) => (
                     <div key={`new-${i}`} className="relative aspect-square rounded-2xl overflow-hidden group border border-dashed border-terracotta-deep/30">
-                      <img src={item.preview} alt="new-event" className="w-full h-full object-cover opacity-60" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                         <Loader2 className="w-5 h-5 text-terracotta-deep animate-spin" />
-                      </div>
+                      <img src={item.preview} alt="new-event" className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => removeSelectedImage(i)}
