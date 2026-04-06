@@ -65,26 +65,7 @@ export function PeopleNearby() {
     ? people.filter(p => p.bio?.toLowerCase().includes('друз'))
     : people;
 
-  if (!session) {
-    return (
-      <div className="min-h-screen bg-warm-milk py-16 flex items-center justify-center">
-        <div className="text-center max-w-lg px-4">
-          <div className="w-20 h-20 bg-dusty-indigo/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Users className="w-10 h-10 text-dusty-indigo" />
-          </div>
-          <h2 className="text-3xl font-bold mb-4">Люди рядом</h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            Этот раздел доступен только авторизованным пользователям. Войдите, чтобы находить единомышленников и общаться.
-          </p>
-          <Link to="/profile">
-            <Button size="lg" className="bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-[12px]">
-              Войти в профиль
-            </Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen bg-warm-milk py-8">
@@ -140,7 +121,7 @@ export function PeopleNearby() {
        {loading ? (
     <div className="min-h-screen bg-warm-milk py-16 flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dusty-indigo"></div></div>
   ) : !session ? (
-    <div className="min-h-screen bg-warm-milk py-8 px-4">
+    <div className="py-8 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12 py-12 bg-white/50 backdrop-blur-sm rounded-[32px] border border-white/20 shadow-xl relative overflow-hidden">
             <div className="relative z-10">
@@ -282,19 +263,21 @@ export function PeopleNearby() {
           </div>
         )}
 
-        {/* CTA Section */}
-        <div className="mt-16 bg-gradient-to-br from-dusty-indigo to-terracotta-deep p-16 rounded-[40px] text-white text-center shadow-xl">
-          <h2 className="text-4xl font-extrabold mb-4 leading-tight">Присоединяйся к сообществу</h2>
-          <p className="text-xl opacity-90 mb-10 max-w-2xl mx-auto font-medium">
-            Создай профиль и находи людей, которые помогут тебе освоиться в новом городе
-          </p>
-          <Button 
-            size="lg"
-            className="bg-white text-dusty-indigo hover:bg-white/90 rounded-full h-14 px-8 text-lg font-bold shadow-lg"
-          >
-            Создать профиль
-          </Button>
-        </div>
+        {/* CTA Section - Only for guests */}
+        {!session && (
+          <div className="mt-16 bg-gradient-to-br from-dusty-indigo to-terracotta-deep p-16 rounded-[40px] text-white text-center shadow-xl">
+            <h2 className="text-4xl font-extrabold mb-4 leading-tight">Присоединяйся к сообществу</h2>
+            <p className="text-xl opacity-90 mb-10 max-w-2xl mx-auto font-medium">
+              Создай профиль и находи людей, которые помогут тебе освоиться в новом городе
+            </p>
+            <Button 
+              size="lg"
+              className="bg-white text-dusty-indigo hover:bg-white/90 rounded-full h-14 px-8 text-lg font-bold shadow-lg"
+            >
+              Создать профиль
+            </Button>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="grid md:grid-cols-3 gap-6 my-12">
