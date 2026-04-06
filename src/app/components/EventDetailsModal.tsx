@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
+import { formatPrice } from '@/lib/format';
 
 interface Event {
   id: string;
@@ -214,7 +215,7 @@ export function EventDetailsModal({
                   <div className="bg-terracotta-deep text-white px-5 py-3 rounded-2xl shrink-0 flex items-center gap-2 shadow-lg shadow-terracotta-deep/20">
                     <Wallet className="w-5 h-5" />
                     <span className="text-2xl font-black whitespace-nowrap">
-                      {event.price}
+                      {formatPrice(event.price)}
                     </span>
                   </div>
                 </div>

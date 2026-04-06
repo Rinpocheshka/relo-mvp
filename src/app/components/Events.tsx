@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
 import { EventDetailsModal } from './EventDetailsModal';
 import { EventFormModal } from './EventFormModal';
+import { formatPrice } from '@/lib/format';
 
 interface Event {
   id: string;
@@ -310,7 +311,7 @@ export function Events() {
                   <span className={`font-bold text-sm ${
                     event.price === 'Бесплатно' ? 'text-green-600' : 'text-foreground'
                   }`}>
-                    {event.price}
+                    {formatPrice(event.price)}
                   </span>
                 </div>
                 <h3 className="font-bold text-xl text-dusty-indigo leading-tight group-hover:underline decoration-dusty-indigo/30 transition-all line-clamp-1">

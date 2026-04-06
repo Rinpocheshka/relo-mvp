@@ -6,6 +6,7 @@ import { useAuth } from '../SupabaseAuthProvider';
 import { supabase } from '@/lib/supabaseClient';
 
 import { Announcement } from './Announcements';
+import { formatPrice } from '@/lib/format';
 
 interface Props {
   announcement: Announcement | null;
@@ -147,7 +148,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
                       {announcement.price_text && (
                         <div className="bg-terracotta-deep/10 px-4 py-2 rounded-2xl shrink-0">
                           <span className="text-xl font-black text-terracotta-deep whitespace-nowrap">
-                            {announcement.price_text}
+                            {formatPrice(announcement.price_text)}
                           </span>
                         </div>
                       )}
