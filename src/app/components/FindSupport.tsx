@@ -224,70 +224,71 @@ export function FindSupport() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] pb-20">
-      {/* ── Header Section ── */}
-      <section className="pt-12 pb-10">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-6 py-2 bg-terracotta-deep/5 rounded-full mb-6 border border-terracotta-deep/10"
-          >
-            <Heart className="w-4 h-4 text-terracotta-deep fill-terracotta-deep/20" />
-            <span className="text-terracotta-deep font-semibold text-sm">Найти опору</span>
-          </motion.div>
+    <div className="min-h-screen bg-warm-milk py-8 pb-32">
+      <div className="max-w-7xl mx-auto px-4 text-center">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-4">
+            <Heart className="w-5 h-5 text-dusty-indigo" />
+            <span className="text-dusty-indigo font-medium">Найти опору</span>
+          </div>
           
           <h1 className="text-4xl font-bold mb-4">
             Вопросы и ответы
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Задавай вопросы и получай проверенные ответы от проводников города
           </p>
+        </motion.div>
 
-          {/* Tab Switcher */}
-          <div className="flex justify-center mb-8">
-             <div className="bg-soft-sand/20 p-1.5 rounded-2xl border border-border/40 inline-flex shadow-sm">
-                <button
-                  onClick={() => { setActiveTab('questions'); setSelectedCategory('Все'); }}
-                  className={`px-8 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${
-                    activeTab === 'questions'
-                      ? 'bg-white text-terracotta-deep shadow-md'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Вопросы и ответы
-                </button>
-                <button
-                  onClick={() => { setActiveTab('resources'); setSelectedCategory('Все'); }}
-                  className={`px-8 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${
-                    activeTab === 'resources'
-                      ? 'bg-white text-terracotta-deep shadow-md'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Полезные ресурсы
-                </button>
-             </div>
+        {/* Tab Switcher */}
+        <div className="flex justify-center mb-12">
+          <div className="bg-soft-sand/20 p-1.5 rounded-2xl border border-border/40 inline-flex shadow-sm">
+            <button
+              onClick={() => { setActiveTab('questions'); setSelectedCategory('Все'); }}
+              className={`px-8 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${
+                activeTab === 'questions'
+                  ? 'bg-white text-dusty-indigo shadow-md'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Вопросы и ответы
+            </button>
+            <button
+              onClick={() => { setActiveTab('resources'); setSelectedCategory('Все'); }}
+              className={`px-8 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${
+                activeTab === 'resources'
+                  ? 'bg-white text-dusty-indigo shadow-md'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Полезные ресурсы
+            </button>
           </div>
         </div>
-      </section>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4">
         {/* ── Search & Categories ── */}
         <div className="mb-12">
-          <div className="bg-white p-2 rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col md:flex-row gap-2 mb-8">
+          <div className="flex flex-col md:flex-row gap-4 mb-8">
             <div className="relative flex-1">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/60" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <input
                 type="text"
-                placeholder="Поиск вопросов..."
-                className="w-full pl-14 pr-6 py-4 bg-transparent outline-none text-lg placeholder:text-muted-foreground/40"
+                placeholder={activeTab === 'questions' ? "Поиск вопросов..." : "Поиск ресурсов..."}
+                className="w-full pl-12 pr-4 py-4 bg-white border border-border/50 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20 shadow-sm"
               />
             </div>
             <Button 
-              className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[18px] px-8 h-14 md:h-auto font-bold text-lg shadow-sm transition-all active:scale-[0.98]"
+              className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[58px] px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95 font-bold"
             >
-              Задать вопрос
+              <Plus className="w-5 h-5 mr-2" />
+              {activeTab === 'questions' ? 'Задать вопрос' : 'Предложить ресурс'}
             </Button>
           </div>
 
@@ -298,7 +299,7 @@ export function FindSupport() {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-5 py-2.5 rounded-full whitespace-nowrap text-sm font-semibold transition-all duration-200 border ${
                   selectedCategory === category
-                    ? 'bg-terracotta-deep text-white border-terracotta-deep shadow-md'
+                    ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-md'
                     : 'bg-white text-muted-foreground hover:bg-soft-sand/20 border-border/50'
                 }`}
               >
