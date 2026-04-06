@@ -239,13 +239,13 @@ export function EventDetailsModal({
                       <p className="font-black text-base text-foreground/90">{event.time}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 p-4 bg-soft-sand/20 rounded-2xl border border-border/5">
-                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md text-terracotta-deep">
+                  <div className="flex items-start gap-4 p-4 bg-soft-sand/20 rounded-2xl border border-border/5">
+                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md text-terracotta-deep shrink-0">
                       <MapPin className="w-6 h-6" />
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 pt-0.5">
                       <p className="text-[10px] uppercase tracking-widest font-black text-muted-foreground/60 mb-0.5">Место</p>
-                      <p className="font-black text-base text-foreground/90 truncate">{event.location}</p>
+                      <p className="font-black text-base text-foreground/90 break-words leading-tight">{event.location}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 p-4 bg-soft-sand/20 rounded-2xl border border-border/5">

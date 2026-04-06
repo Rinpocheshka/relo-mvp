@@ -154,9 +154,9 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
                     </div>
 
                     <div className="flex flex-wrap gap-4 text-sm text-muted-foreground font-medium">
-                      <div className="flex items-center gap-2 bg-white/80 border border-border/40 px-3 py-1.5 rounded-xl">
-                        <MapPin className="w-4 h-4 text-terracotta-deep" />
-                        {announcement.location_text}
+                      <div className="flex items-start gap-2 bg-white/80 border border-border/40 px-3 py-1.5 rounded-xl">
+                        <MapPin className="w-4 h-4 text-terracotta-deep shrink-0 mt-0.5" />
+                        <span className="break-words min-w-0">{announcement.location_text}</span>
                       </div>
                       <div className="flex items-center gap-2 bg-white/80 border border-border/40 px-3 py-1.5 rounded-xl">
                         <Calendar className="w-4 h-4 text-dusty-indigo" />
