@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { MapPin, Calendar, Star, MessageCircle, Settings, Edit, Award, Heart, Save, X, Camera, Loader2, Send, Phone, Lock, Clock, Users } from 'lucide-react';
+import { MapPin, Calendar, Star, MessageCircle, Settings, Edit, Award, Heart, Save, X, Camera, Loader2, Send, Phone, Lock, Clock, Users, ChevronDown, Search } from 'lucide-react';
 import { Button } from './ui/button';
 import { useParams, useLocation, useNavigate } from 'react-router';
 import { supabase } from '../../lib/supabaseClient';
@@ -44,15 +44,55 @@ interface UserData {
   role?: string;
 }
 
-const PROFILE_TAGS = [
-  { value: 'solo', label: '🧍 Я один' },
-  { value: 'partner', label: '👫 С партнёром' },
-  { value: 'kids', label: '👨‍👩‍👧 С детьми' },
-  { value: 'pet', label: '🐾 С питомцем' },
-  { value: 'remote', label: '💻 Удалёнщик' },
-  { value: 'job', label: '💼 Ищу работу' },
-  { value: 'musician', label: '🎸 Музыкант' },
-  { value: 'housing', label: '🏠 Ищу жильё' },
+const SITUATION_TAGS = [
+  { value: 'solo', label: '🧍 я один' },
+  { value: 'partner', label: '👫 с партнером' },
+  { value: 'kids', label: '👨‍👩‍👧 с детьми' },
+  { value: 'pet', label: '🐾 с питомцем' },
+  { value: 'lgbt', label: '🏳️‍🌈 LGBT' },
+  { value: 'volunteer', label: '🤝 волонтер' },
+  { value: 'remote', label: '💻 удаленщик' },
+  { value: 'maternity', label: '👶 мама в декрете' },
+  { value: 'it_specialist', label: '👨‍💻 IT специалист' },
+  { value: 'master_classes', label: '🎨 веду мастер-классы' },
+  { value: 'looking_job', label: '💼 ищу работу' },
+  { value: 'looking_friends', label: '👋 ищу друзей' },
+  { value: 'local_business', label: '🏗️ строю местный бизнес' },
+];
+
+const INTERESTS_TAGS = [
+  { value: 'english', label: '🇬🇧 учу английский' },
+  { value: 'philosopher', label: '🧠 философ' },
+  { value: 'artist', label: '🎨 художник' },
+  { value: 'sport', label: '💪 спорт' },
+  { value: 'yoga', label: '🧘 йога' },
+  { value: 'surfing', label: '🏄 серфинг' },
+  { value: 'motorcycles', label: '🏍️ мотоциклы' },
+  { value: 'biking', label: '🚲 велопрогулки' },
+  { value: 'psychology', label: '🧩 психология' },
+  { value: 'wine', label: '🍷 люблю вино' },
+  { value: 'photographer', label: '📸 фотограф' },
+  { value: 'health', label: '🥗 ЗОЖ' },
+  { value: 'clubbing', label: '🕺 хожу в клубы' },
+  { value: 'no_alcohol', label: '🚫 Non Alcohol' },
+  { value: 'musician', label: '🎸 музыкант' },
+  { value: 'karaoke', label: '🎤 караоке' },
+  { value: 'handicrafts', label: '🧶 рукоделие' },
+  { value: 'kids_activities', label: '🧸 занятия с детьми' },
+  { value: 'reading', label: '📚 чтение книг' },
+  { value: 'esoterics', label: '🔮 эзотерика' },
+  { value: 'dancing', label: '💃 люблю танцевать' },
+  { value: 'actor', label: '🎭 актер' },
+  { value: 'standup', label: '🎤 стендап' },
+  { value: 'vietnamese', label: '🇻🇳 учу вьетнамский' },
+];
+
+const STAGES = [
+  { value: 'planning', label: 'планирую переезд', icon: '🗓️' },
+  { value: 'just_arrived', label: 'только приехал', icon: '🛬' },
+  { value: 'settling', label: 'осваиваюсь', icon: '🏠' },
+  { value: 'sharing', label: 'делюсь опытом', icon: '🤝' },
+  { value: 'moving_on', label: 'переезжаю дальше', icon: '🚀' },
 ];
 
 export function Profile() {
@@ -65,6 +105,7 @@ export function Profile() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<Partial<UserData>>({});
+  const [manualCity, setManualCity] = useState('');
   const [uploading, setUploading] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [userAnnouncements, setUserAnnouncements] = useState<Announcement[]>([]);
@@ -101,6 +142,11 @@ export function Profile() {
       if (!error && data) {
         setProfile(data);
         setEditForm(data);
+        // Pre-fill manual city if current city is not in standard list
+        const standardCities = ['Вьетнам', 'Дананг, Вьетнам'];
+        if (data.city && !standardCities.includes(data.city)) {
+          setManualCity(data.city);
+        }
         // Check if we should start in edit mode
         if (isOwnProfile && new URLSearchParams(location.search).get('edit') === 'true') {
           setIsEditing(true);
@@ -174,13 +220,15 @@ export function Profile() {
   const handleSave = async () => {
     if (!session?.user?.id) return;
     
+    const finalCity = manualCity.trim() || editForm.city || '';
+    
     const { error } = await supabase
       .from('profiles')
       .upsert({ 
         id: targetId, // Use targetId to allow Admins to save edits to other profiles
         display_name: editForm.display_name?.slice(0, 20), // Enforce 20 char limit on save
         stage: editForm.stage,
-        city: editForm.city,
+        city: finalCity,
         bio: editForm.bio,
         interests: editForm.interests || [],
         avatar_url: editForm.avatar_url,
@@ -189,7 +237,7 @@ export function Profile() {
       });
 
     if (!error) {
-      setProfile({ ...profile, ...editForm } as UserData);
+      setProfile({ ...profile, ...editForm, city: finalCity } as UserData);
       setIsEditing(false);
       refreshProfile(); // Sync Header
     } else {
@@ -325,7 +373,9 @@ export function Profile() {
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
                     <div>
                       <h1 className="text-3xl font-bold mb-2">{profile?.display_name || 'Аноним'}</h1>
-                      <p className="text-lg text-muted-foreground mb-3">{profile?.stage === 'living' ? 'Уже здесь' : 'Планирую переезд'}</p>
+                      <p className="text-lg text-muted-foreground mb-3">
+                        {STAGES.find(s => s.value === profile?.stage)?.icon} {STAGES.find(s => s.value === profile?.stage)?.label || 'Участник сообщества'}
+                      </p>
                       
                       <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
@@ -426,35 +476,67 @@ export function Profile() {
                        />
                      </div>
                      <div>
-                       <label className="text-sm font-medium text-muted-foreground ml-1">Роль в сообществе</label>
-                       <select className="w-full p-3 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] mt-1 shadow-sm" value={editForm.stage || ''} onChange={e => setEditForm({...editForm, stage: e.target.value})}>
-                         <option value="" disabled>Выберите ваш статус</option>
-                         <option value="planning">Планирую переезд</option>
-                         <option value="living">Уже здесь</option>
-                       </select>
-                     </div>
-                     <div className="md:col-span-2">
-                       <label className="text-sm font-medium text-muted-foreground ml-1">Город</label>
-                       <div className="relative mt-1">
-                         <MapPin className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                         <select className="w-full p-3 pl-10 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] shadow-sm appearance-none cursor-pointer" value={editForm.city || ''} onChange={e => setEditForm({...editForm, city: e.target.value})}>
-                           <option value="" disabled>Селект локации</option>
-                           <option value="В дороге" className="font-bold">📍 В дороге</option>
-                           <optgroup label="Вьетнам">
-                             <option value="Вьетнам">Вьетнам (вся страна)</option>
-                             <option value="Дананг, Вьетнам">Дананг</option>
-                             <option value="Нячанг, Вьетнам">Нячанг</option>
-                             <option value="Муйне, Вьетнам">Муйне</option>
-                             <option value="Хошимин, Вьетнам">Хошимин</option>
-                             <option value="Ханой, Вьетнам">Ханой</option>
-                           </optgroup>
+                        <label className="text-sm font-medium text-muted-foreground ml-1">Статус (Шаг 1 онбординга)</label>
+                        <select 
+                          className="w-full p-3 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] mt-1 shadow-sm" 
+                          value={editForm.stage || ''} 
+                          onChange={e => setEditForm({...editForm, stage: e.target.value})}
+                        >
+                          <option value="" disabled>Выберите ваш статус</option>
+                          {STAGES.map(s => (
+                            <option key={s.value} value={s.value}>{s.icon} {s.label}</option>
+                          ))}
+                        </select>
+                      </div>
 
-                         </select>
-                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground z-10">
-                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m6 9 6 6 6-6"/></svg>
-                         </div>
-                       </div>
-                     </div>
+                      <div className="md:col-span-2">
+                        <label className="text-sm font-medium text-muted-foreground ml-1">Место (Шаг 2 онбординга)</label>
+                        <div className="flex flex-col gap-4 mt-2">
+                          <div className="relative">
+                            <MapPin className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                            <select 
+                              className="w-full p-3 pl-10 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] shadow-sm appearance-none cursor-pointer" 
+                              value={editForm.city || ''} 
+                              onChange={e => {
+                                setEditForm({...editForm, city: e.target.value});
+                                setManualCity('');
+                              }}
+                            >
+                              <option value="" disabled>Селект локации</option>
+                              <option value="Вьетнам">🇻🇳 Весь Вьетнам</option>
+                              <option value="Дананг, Вьетнам">🏙️ Дананг</option>
+                            </select>
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground z-10">
+                              <ChevronDown className="w-4 h-4" />
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            <div className="h-px bg-border/40 flex-1" />
+                            <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-black">или свой вариант</span>
+                            <div className="h-px bg-border/40 flex-1" />
+                          </div>
+
+                          <div className="relative">
+                            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                            <input
+                              className="w-full p-3 pl-10 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] shadow-sm"
+                              placeholder="Город \ страна"
+                              maxLength={20}
+                              value={manualCity}
+                              onChange={(e) => {
+                                setManualCity(e.target.value);
+                                if (e.target.value) setEditForm({...editForm, city: ''});
+                              }}
+                            />
+                            {manualCity && (
+                              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-muted-foreground/40">
+                                {manualCity.length}/20
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                    </div>
                    
                    <div className="mt-2">
@@ -483,51 +565,99 @@ export function Profile() {
                  </div>
               )}
 
-              {/* Interests */}
+              {/* Interests Sections */}
               {!isEditing ? (
-                <div className="flex flex-col gap-2 mt-2">
-                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Интересы и потребности</span>
+                <div className="flex flex-col gap-6 mt-6">
+                  {/* Situation */}
+                  <div className="flex flex-col gap-2">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Кто вы?</span>
                     <div className="flex flex-wrap gap-2">
-                    {(profile?.interests || []).length > 0 ? (
-                      (profile?.interests || []).map((interest: string) => {
-                        const lbl = PROFILE_TAGS.find(t => t.value === interest)?.label || interest;
-                        return (
-                          <span
-                            key={interest}
-                            className="px-3 py-1.5 bg-white border border-border/80 text-sm font-medium text-foreground rounded-full shadow-sm"
-                          >
-                            {lbl}
-                          </span>
-                        );
-                      })
-                    ) : (
-                      <span className="text-sm text-muted-foreground">Не указаны</span>
-                    )}
+                      { (profile?.interests || []).filter(int => SITUATION_TAGS.some(t => t.value === int)).length > 0 ? (
+                        (profile?.interests || []).filter(int => SITUATION_TAGS.some(t => t.value === int)).map((interest: string) => {
+                          const lbl = SITUATION_TAGS.find(t => t.value === interest)?.label || interest;
+                          return (
+                            <span key={interest} className="px-3 py-1.5 bg-terracotta-deep/5 border border-terracotta-deep/10 text-sm font-medium text-foreground rounded-full shadow-sm">
+                              {lbl}
+                            </span>
+                          );
+                        })
+                      ) : (
+                        <span className="text-sm text-muted-foreground italic">Информация не заполнена</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Interests */}
+                  <div className="flex flex-col gap-2">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ваши интересы</span>
+                    <div className="flex flex-wrap gap-2">
+                      { (profile?.interests || []).filter(int => INTERESTS_TAGS.some(t => t.value === int)).length > 0 ? (
+                        (profile?.interests || []).filter(int => INTERESTS_TAGS.some(t => t.value === int)).map((interest: string) => {
+                          const lbl = INTERESTS_TAGS.find(t => t.value === interest)?.label || interest;
+                          return (
+                            <span key={interest} className="px-3 py-1.5 bg-dusty-indigo/5 border border-dusty-indigo/10 text-sm font-medium text-foreground rounded-full shadow-sm">
+                              {lbl}
+                            </span>
+                          );
+                        })
+                      ) : (
+                        <span className="text-sm text-muted-foreground italic">Интересы пока не добавлены</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               ) : (
-                <div className="mt-4">
-                  <label className="text-sm font-medium text-muted-foreground ml-1">Теги и интересы</label>
-                  <p className="text-[13px] text-muted-foreground mb-3 ml-1">Помогают другим находить вас по общим интересам</p>
-                  <div className="flex flex-wrap gap-2">
-                    {PROFILE_TAGS.map((tag) => {
-                      const selected = (editForm.interests || []).includes(tag.value);
-                      return (
-                        <button
-                          key={tag.value}
-                          type="button"
-                          onClick={() => {
-                            const newInterests = selected 
-                              ? (editForm.interests || []).filter((t: string) => t !== tag.value) 
-                              : [...(editForm.interests || []), tag.value];
-                            setEditForm({ ...editForm, interests: newInterests });
-                          }}
-                          className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors shadow-sm ${selected ? 'bg-terracotta-deep text-white border-terracotta-deep' : 'bg-white text-foreground border-border hover:border-terracotta-deep/50'}`}
-                        >
-                          {tag.label}
-                        </button>
-                      );
-                    })}
+                <div className="mt-8 space-y-8">
+                  {/* Edit Situation */}
+                  <div>
+                    <label className="text-sm font-bold text-foreground">Кто вы?</label>
+                    <p className="text-[13px] text-muted-foreground mb-3">Ваш статус и текущая ситуация</p>
+                    <div className="flex flex-wrap gap-2">
+                      {SITUATION_TAGS.map((tag) => {
+                        const selected = (editForm.interests || []).includes(tag.value);
+                        return (
+                          <button
+                            key={tag.value}
+                            type="button"
+                            onClick={() => {
+                              const newInterests = selected 
+                                ? (editForm.interests || []).filter((t: string) => t !== tag.value) 
+                                : [...(editForm.interests || []), tag.value];
+                              setEditForm({ ...editForm, interests: newInterests });
+                            }}
+                            className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors shadow-sm ${selected ? 'bg-terracotta-deep text-white border-terracotta-deep' : 'bg-white text-foreground border-border hover:border-terracotta-deep/50'}`}
+                          >
+                            {tag.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Edit Interests */}
+                  <div>
+                    <label className="text-sm font-bold text-foreground">Ваши интересы</label>
+                    <p className="text-[13px] text-muted-foreground mb-3">Хобби и способы проведения досуга</p>
+                    <div className="flex flex-wrap gap-2">
+                      {INTERESTS_TAGS.map((tag) => {
+                        const selected = (editForm.interests || []).includes(tag.value);
+                        return (
+                          <button
+                            key={tag.value}
+                            type="button"
+                            onClick={() => {
+                              const newInterests = selected 
+                                ? (editForm.interests || []).filter((t: string) => t !== tag.value) 
+                                : [...(editForm.interests || []), tag.value];
+                              setEditForm({ ...editForm, interests: newInterests });
+                            }}
+                            className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors shadow-sm ${selected ? 'bg-dusty-indigo text-white border-dusty-indigo' : 'bg-white text-foreground border-border hover:border-dusty-indigo/50'}`}
+                          >
+                            {tag.label}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               )}

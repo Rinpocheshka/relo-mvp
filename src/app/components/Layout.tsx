@@ -172,7 +172,7 @@ export function Layout() {
     { path: '/announcements', icon: Megaphone, label: 'Объявления' },
     { path: '/events', icon: Calendar, label: 'Афиша' },
     { path: '/support', icon: Heart, label: 'Найти опору' },
-    { path: '/people', icon: Users, label: 'Люди' },
+    { path: '/people', icon: Users, label: 'Люди рядом' },
   ];
 
   useEffect(() => {
