@@ -21,6 +21,7 @@ import { useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
 import { Link } from 'react-router';
+import { translateTag } from '@/lib/tags';
 
 export function PeopleNearby() {
   const { session } = useAuth();
@@ -98,7 +99,7 @@ export function PeopleNearby() {
             <Users className="w-5 h-5 text-dusty-indigo" />
             <span className="text-dusty-indigo font-medium">Люди рядом</span>
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 leading-[1.15] tracking-tight">Здесь уже есть люди, которые проходят тот же путь</h1>
+          <h1 className="text-4xl font-bold mb-4">Здесь уже есть люди, которые проходят тот же путь</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Познакомься с теми, кто сейчас в том же этапе или может помочь советом
           </p>
@@ -251,7 +252,7 @@ export function PeopleNearby() {
                             : 'bg-soft-sand/50 text-foreground'
                         }`}
                       >
-                        {interest}
+                        {translateTag(interest)}
                       </span>
                     ))}
                   </div>

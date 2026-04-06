@@ -254,7 +254,7 @@ export function EventDetailsModal({
                       <Users className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase tracking-widest font-black text-muted-foreground/60 mb-0.5">Лимит</p>
+                      <p className="text-[10px] uppercase tracking-widest font-black text-muted-foreground/60 mb-0.5">Поместится</p>
                       <p className="font-black text-base text-foreground/90">
                         {participants.length} {event.maxAttendees ? `/ ${event.maxAttendees}` : 'безлимитно'}
                       </p>

@@ -7,6 +7,7 @@ import { MessageHelper } from './MessageHelper';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
 import { AuthModal } from './AuthWidget';
+import { translateTag } from '@/lib/tags';
 
 interface Person {
   id: string;
@@ -353,7 +354,7 @@ function CardItemContent({ person }: { person: Person }) {
       <div className="flex flex-wrap gap-1.5 mb-4 h-[1.5rem] overflow-hidden">
         {(person.interests || []).slice(0, 3).map((tag, idx) => (
           <span key={idx} className="text-[10px] uppercase tracking-wider font-bold bg-white border border-border/60 text-muted-foreground px-2 py-0.5 rounded-md shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-            {tag}
+            {translateTag(tag)}
           </span>
         ))}
         {(person.interests || []).length > 3 && (

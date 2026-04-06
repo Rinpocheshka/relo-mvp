@@ -237,11 +237,11 @@ export function FindSupport() {
             <span className="text-terracotta-deep font-semibold text-sm">Найти опору</span>
           </motion.div>
           
-          <h1 className="text-4xl md:text-5xl font-black text-foreground mb-6 tracking-tight">
-            Найти опору
+          <h1 className="text-4xl font-bold mb-4">
+            Вопросы и ответы
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
-            Задавай вопросы экспертам и находи полезные ресурсы для жизни во Вьетнаме
+            Задавай вопросы и получай проверенные ответы от проводников города
           </p>
 
           {/* Tab Switcher */}

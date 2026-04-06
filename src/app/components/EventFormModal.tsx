@@ -354,7 +354,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
 
                 {/* Max Attendees */}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 px-1">Лимит человек</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 px-1">Сколько поместится</label>
                   <div className="relative">
                     <Users className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
