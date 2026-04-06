@@ -153,7 +153,7 @@ export function Layout() {
               id: user.id,
               city: data.city,
               stage: data.stage,
-              interests: data.need || [],
+              interests: [...(data.situation || []), ...(data.interests || [])],
             }).then(({ error }: { error: any }) => {
               if (!error) {
                 localStorage.removeItem('reloOnboarding');

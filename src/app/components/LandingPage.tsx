@@ -2,15 +2,15 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
-import { X, ArrowRight, MapPin, ChevronDown, ChevronUp, CheckCircle2, Search } from 'lucide-react';
+import { X, ArrowRight, MapPin, ChevronDown, ChevronUp, CheckCircle2, Search, Zap } from 'lucide-react';
 import { AuthModal } from './AuthWidget';
-import { AlertCircle, Download, CheckCircle, Navigation } from 'lucide-react';
+import { AlertCircle, Download, CheckCircle, Navigation, Info } from 'lucide-react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type FlowStage = 'landing' | 'onboarding';
 type OnboardingStep = number;
-type UserPath = 'planning' | 'leaving_soon' | 'just_arrived' | 'living' | 'helper' | null;
+type UserPath = 'planning' | 'just_arrived' | 'settling' | 'sharing' | 'moving_on' | null;
 
 interface AppInfo {
   name: string;
@@ -43,7 +43,7 @@ const SURVIVAL_CARDS_HERE: SurvivalCard[] = [
     warning: 'Осторожно: фейковые таксисты. В зоне прилета к вам будут подходить люди и предлагать такси. Игнорируйте их, они завышают цены в 3-5 раз.',
     apps: [
       { name: 'Grab', desc: 'Самое популярное такси', color: 'bg-[#00B14F]', icon: 'G', link: { ios: 'https://apps.apple.com/app/grab/id647268330', android: 'https://play.google.com/store/apps/details?id=com.grabtaxi.passenger', web: 'https://www.grab.com/vn/en/' } },
-      { name: 'InDrive', desc: 'Можно торговаться', color: 'bg-[#B1D235]', textDark: true, icon: 'in', link: { ios: 'https://apps.apple.com/app/indrive/id1444377865', android: 'https://play.google.com/store/apps/details?id=sinet.startup.inDriver', web: 'https://indrive.com/en-vn' } },
+      { name: 'Xanh SM', desc: 'Электромобили (рекомендуем)', color: 'bg-[#00B4D8]', icon: 'X', link: { web: 'https://www.xanhsm.com/' } },
       { name: 'Vexere', desc: 'Междугородные автобусы', color: 'bg-[#E85D04]', icon: 'V', link: { web: 'https://vexere.com/en-US/referral?rid=KRIUCHKOV001' } },
       { name: 'ЖД', desc: 'Билеты на поезда', color: 'bg-[#003580]', icon: '🚆', link: { web: 'https://dsvn.vn/#/' } },
     ],
@@ -58,7 +58,6 @@ const SURVIVAL_CARDS_HERE: SurvivalCard[] = [
     apps: [
       { name: 'Viettel', desc: 'Самый крупный оператор', color: 'bg-[#E30019]', icon: 'V', link: { web: 'https://viettel.vn/' } },
       { name: 'Vinaphone', desc: 'Хороший охват', color: 'bg-[#0066CC]', icon: 'VP', link: { web: 'https://vinaphone.com.vn/' } },
-      { name: 'MobiFone', desc: 'Популярен в городах', color: 'bg-[#009944]', icon: 'M', link: { web: 'https://www.mobifone.vn/' } },
     ],
     color: 'bg-dusty-indigo/10 text-dusty-indigo',
     border: 'border-dusty-indigo/20',
@@ -84,21 +83,6 @@ const SURVIVAL_CARDS_PLANNING: SurvivalCard[] = [
     border: 'border-dusty-indigo/20',
   },
   {
-    emoji: '🏠',
-    title: 'Где искать жилье?',
-    short: 'Отели на первое время и жилье на долгий срок',
-    detail: <>Постоянное жилье можно найти у нас на сайте, в тематических группах Facebook или на местном аналоге Авито <a href="https://www.nhatot.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-warm-olive">www.nhatot.com</a>.<br/><br/>А на первое время можно забронировать отель или апартаменты на любом из популярных сайтов.</>,
-    apps: [
-      { name: 'Booking', desc: 'Популярный сервис бронирования', color: 'bg-[#003580]', icon: 'B', link: { web: 'https://www.booking.com/' } },
-      { name: 'Agoda', desc: 'Много вариантов в Азии', color: 'bg-[#0E5196]', icon: 'A', link: { web: 'https://www.agoda.com/' } },
-      { name: 'Trip.com', desc: 'Можно оплатить картами РФ', color: 'bg-[#3264FF]', icon: 'T', link: { web: 'https://ru.trip.com/' } },
-      { name: 'Airbnb', desc: 'Аренда жилья у местных', color: 'bg-[#FF5A5F]', icon: 'ab', link: { web: 'https://www.airbnb.com/' } },
-    ],
-    warning: 'Никогда не подписывайте долгосрочный контракт удаленно. Всегда проверяйте квартиру на плесень и шум лично.',
-    color: 'bg-warm-olive/10 text-warm-olive',
-    border: 'border-warm-olive/20',
-  },
-  {
     emoji: '✈️',
     title: 'Как добраться',
     short: 'Поиск авиабилетов и маршрутов',
@@ -112,17 +96,90 @@ const SURVIVAL_CARDS_PLANNING: SurvivalCard[] = [
     color: 'bg-terracotta-deep/10 text-terracotta-deep',
     border: 'border-terracotta-deep/20',
   },
+  {
+    emoji: '🏠',
+    title: 'Где искать жилье?',
+    short: 'Отели и аренда на долгий срок',
+    detail: <>Постоянное жилье можно найти у нас на сайте или на местном аналоге Авито <a href="https://www.nhatot.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-warm-olive">www.nhatot.com</a>.<br/><br/>А на первое время можно забронировать отель или апартаменты на любом из популярных сайтов.</>,
+    apps: [
+      { name: 'Booking', desc: 'Популярный сервис бронирования', color: 'bg-[#003580]', icon: 'B', link: { web: 'https://www.booking.com/' } },
+      { name: 'Agoda', desc: 'Много вариантов в Азии', color: 'bg-[#0E5196]', icon: 'A', link: { web: 'https://www.agoda.com/' } },
+      { name: 'Airbnb', desc: 'Аренда жилья у местных', color: 'bg-[#FF5A5F]', icon: 'ab', link: { web: 'https://www.airbnb.com/' } },
+    ],
+    warning: 'Никогда не подписывайте контракт удаленно — всегда проверяйте квартиру лично на шум и плесень.',
+    color: 'bg-warm-olive/10 text-warm-olive',
+    border: 'border-warm-olive/20',
+  },
+];
+
+const SURVIVAL_CARDS_SHOPPING: SurvivalCard[] = [
+  {
+    emoji: '🛍️',
+    title: 'Шоппинг и маркетплейсы',
+    short: 'Shopee и Lazada — всё с доставкой на дом',
+    detail: 'Во Вьетнаме почти всё покупают онлайн. На Shopee и Lazada можно найти практически любой товар: от продуктов до техники.',
+    warning: 'Оплатить картой РФ не получится. Выбирайте оплату наличными при получении (Cash on Delivery).',
+    apps: [
+      { name: 'Shopee', desc: 'Самый массовый маркетплейс', color: 'bg-[#EE4D2D]', icon: 'S', link: { web: 'https://shopee.vn/' } },
+      { name: 'Lazada', desc: 'Популярный аналог Shopee', color: 'bg-[#00008B]', icon: 'L', link: { web: 'https://www.lazada.vn/' } },
+    ],
+    color: 'bg-warm-olive/10 text-warm-olive',
+    border: 'border-warm-olive/20',
+  },
+];
+
+const SURVIVAL_CARDS_WHY_RELO: SurvivalCard[] = [
+  {
+    emoji: '🚀',
+    title: 'Зачем мне этот сайт?',
+    short: 'Relo — твой помощник в мобильности',
+    detail: 'С Relo удобно: пересдать квартиру, продать лишние вещи, запланировать переезд в новое место. Мы помогаем сделать каждое перемещение проще.',
+    color: 'bg-terracotta-deep/10 text-terracotta-deep',
+    border: 'border-terracotta-deep/20',
+  }
 ];
 
 const SITUATION_TAGS = [
-  { value: 'solo', label: '🧍 Я один' },
-  { value: 'partner', label: '👫 С партнёром' },
-  { value: 'kids', label: '👨‍👩‍👧 С детьми' },
-  { value: 'pet', label: '🐾 С питомцем' },
-  { value: 'remote', label: '💻 Удалёнщик' },
-  { value: 'job', label: '💼 Ищу работу' },
-  { value: 'musician', label: '🎸 Музыкант' },
-  { value: 'housing', label: '🏠 Ищу жильё' },
+  { value: 'solo', label: 'я один' },
+  { value: 'partner', label: 'с партнером' },
+  { value: 'kids', label: 'с детьми' },
+  { value: 'pet', label: 'с питомцем' },
+  { value: 'lgbt', label: 'LGBT' },
+  { value: 'volunteer', label: 'волонтер' },
+  { value: 'remote', label: 'удаленщик' },
+  { value: 'maternity', label: 'мама в декрете' },
+  { value: 'it_specialist', label: 'IT специалист' },
+  { value: 'master_classes', label: 'веду мастер-классы' },
+  { value: 'looking_job', label: 'ищу работу' },
+  { value: 'looking_friends', label: 'ищу друзей' },
+  { value: 'local_business', label: 'строю местный бизнес' },
+];
+
+const INTERESTS_TAGS = [
+  { value: 'english', label: 'учу английский' },
+  { value: 'philosopher', label: 'философ' },
+  { value: 'artist', label: 'художник' },
+  { value: 'sport', label: 'спорт' },
+  { value: 'yoga', label: 'йога' },
+  { value: 'surfing', label: 'серфинг' },
+  { value: 'motorcycles', label: 'мотоциклы' },
+  { value: 'biking', label: 'велопрогулки' },
+  { value: 'psychology', label: 'психология' },
+  { value: 'wine', label: 'люблю вино' },
+  { value: 'photographer', label: 'фотограф' },
+  { value: 'health', label: 'ЗОЖ' },
+  { value: 'clubbing', label: 'хожу в клубы' },
+  { value: 'no_alcohol', label: 'Non Alcohol' },
+  { value: 'musician', label: 'музыкант' },
+  { value: 'karaoke', label: 'караоке' },
+  { value: 'handicrafts', label: 'рукоделие' },
+  { value: 'kids_activities', label: 'занятия с детьми' },
+  { value: 'reading', label: 'чтение книг' },
+  { value: 'esoterics', label: 'эзотерика' },
+  { value: 'dancing', label: 'люблю танцевать' },
+  { value: 'actor', label: 'актер' },
+  { value: 'standup', label: 'стендап' },
+  { value: 'vietnamese', label: 'учу вьетнамский' },
 ];
 
 const ROADMAP_STEPS = [
@@ -157,6 +214,7 @@ export function LandingPage() {
   const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>(0);
   const [userPath, setUserPath] = useState<UserPath>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [openCard, setOpenCard] = useState<number | null>(null);
   const [openRoadmap, setOpenRoadmap] = useState<number>(0);
   const [completedItems, setCompletedItems] = useState<Set<string>>(new Set());
@@ -176,11 +234,18 @@ export function LandingPage() {
     );
   };
 
+  const toggleInterest = (val: string) => {
+    setSelectedInterests(prev =>
+      prev.includes(val) ? prev.filter(t => t !== val) : [...prev, val]
+    );
+  };
+
   const saveAndFinish = (cityToSave: string) => {
     localStorage.setItem('reloOnboarding', JSON.stringify({
       city: cityToSave,
       stage: userPath,
-      need: selectedTags,
+      situation: selectedTags,
+      interests: selectedInterests,
       savePath: false,
     }));
     localStorage.setItem('reloStage', userPath || 'planning');
@@ -203,6 +268,8 @@ export function LandingPage() {
           setUserPath={setUserPath}
           selectedTags={selectedTags}
           toggleTag={toggleTag}
+          selectedInterests={selectedInterests}
+          toggleInterest={toggleInterest}
           openCard={openCard}
           setOpenCard={setOpenCard}
           openRoadmap={openRoadmap}
@@ -399,48 +466,7 @@ export function LandingPage() {
           <div className="font-bold text-terracotta-deep text-base">Relo.me</div>
           <p>© 2026 · Relo.me — система для удобной жизни релокантов</p>
           <div className="flex gap-3">
-            {/* Telegram */}
-            <a href="https://t.me/relo_me" target="_blank" rel="noopener noreferrer" aria-label="Telegram"
-              className="w-8 h-8 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-full flex items-center justify-center transition-colors text-muted-foreground">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.888-.662 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
-              </svg>
-            </a>
-            {/* WhatsApp */}
-            <a href="https://wa.me/relome" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"
-              className="w-8 h-8 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-full flex items-center justify-center transition-colors text-muted-foreground">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                <path d="M12.01 2.014a10.01 10.01 0 0 0-8.5 15.28L2 22l4.87-1.25a9.96 9.96 0 0 0 5.14 1.41h.01a10.03 10.03 0 0 0 10-10.04 10.01 10.01 0 0 0-10.01-10.1zm0 18.23a8.21 8.21 0 0 1-4.18-1.14l-.3-.18-3.1.81.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24a8.24 8.24 0 0 1 8.23 8.24 8.24 8.24 0 0 1-8.26 8.24zm4.53-6.17c-.25-.13-1.47-.73-1.7-.81-.23-.08-.4-.13-.57.12-.17.25-.65.81-.79.98-.15.17-.3.19-.55.06a6.83 6.83 0 0 1-3.32-2.05c-.32-.37-.54-.83-.72-1.14-.17-.31-.02-.48.11-.6.11-.11.25-.3.37-.45.09-.13.13-.22.19-.37.06-.15.03-.28-.03-.41-.06-.13-.57-1.38-.78-1.89-.2-.5-.4-.43-.55-.43h-.47c-.17 0-.45.06-.68.32-.23.25-.87.85-.87 2.08s.89 2.42 1.01 2.58c.13.17 1.76 2.69 4.26 3.77 1.49.65 2.15.7 2.92.59.88-.13 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.19-.06-.1-.23-.16-.48-.28z" />
-              </svg>
-            </a>
-            {/* TikTok */}
-            <a href="https://tiktok.com/@relome" target="_blank" rel="noopener noreferrer" aria-label="TikTok"
-              className="w-8 h-8 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-full flex items-center justify-center transition-colors text-muted-foreground">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.06-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93v7.24a8.1 8.1 0 0 1-5 7.42 8.13 8.13 0 0 1-9.98-3.9 8.01 8.01 0 0 1 1-8.52 8.1 8.1 0 0 1 6.57-2.6v4.13a4.01 4.01 0 0 0-2.31 7.23 4.06 4.06 0 0 0 4.1.6 4.01 4.01 0 0 0 2.22-3.66l.01-15.9Z" />
-              </svg>
-            </a>
-            {/* Instagram */}
-            <a href="https://instagram.com/relo.me" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
-              className="w-8 h-8 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-full flex items-center justify-center transition-colors text-muted-foreground">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                <rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-              </svg>
-            </a>
-            {/* Facebook */}
-            <a href="https://facebook.com/relome" target="_blank" rel="noopener noreferrer" aria-label="Facebook"
-              className="w-8 h-8 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-full flex items-center justify-center transition-colors text-muted-foreground">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-              </svg>
-            </a>
-            {/* Email */}
-            <a href="mailto:hello@relo.me" aria-label="Email"
-              className="w-8 h-8 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-full flex items-center justify-center transition-colors text-muted-foreground">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                <rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-              </svg>
-            </a>
+             {/* Icons here... */}
           </div>
         </div>
       </footer>
@@ -456,6 +482,8 @@ function OnboardingFlow({
   setUserPath,
   selectedTags,
   toggleTag,
+  selectedInterests,
+  toggleInterest,
   openCard,
   setOpenCard,
   openRoadmap,
@@ -474,6 +502,8 @@ function OnboardingFlow({
   setUserPath: (p: UserPath) => void;
   selectedTags: string[];
   toggleTag: (v: string) => void;
+  selectedInterests: string[];
+  toggleInterest: (v: string) => void;
   openCard: number | null;
   setOpenCard: (i: number | null) => void;
   openRoadmap: number;
@@ -492,9 +522,14 @@ function OnboardingFlow({
   const [manualInput, setManualInput] = useState<string>('');
 
   const isVietnam = city.toLowerCase().includes('вьетнам');
-  const showArrivalKit = ['leaving_soon', 'just_arrived', 'living'].includes(userPath || '') && isVietnam;
+  
+  // Conditional kits logic
   const showPlanningKit = userPath === 'planning' && isVietnam;
-  const shouldSkipSurvival = !showArrivalKit && !showPlanningKit;
+  const showArrivalKit = userPath === 'just_arrived' && isVietnam;
+  const showShoppingKit = (userPath === 'settling' || userPath === 'sharing') && isVietnam;
+  const showMovingOnKit = userPath === 'moving_on';
+  
+  const shouldSkipSurvival = !showPlanningKit && !showArrivalKit && !showShoppingKit && !showMovingOnKit;
 
   // Handle conditional step skipping for Step 2
   useEffect(() => {
@@ -505,10 +540,11 @@ function OnboardingFlow({
 
   const handleManualSubmit = () => {
     const val = manualInput.trim();
-    if (!val) return;
-    setCity(val);
-    const parts = val.split(',');
-    setCountry(parts.length > 1 ? parts[parts.length - 1].trim() : val);
+    if (val) {
+      setCity(val);
+      const parts = val.split(',');
+      setCountry(parts.length > 1 ? parts[parts.length - 1].trim() : val);
+    }
     onNext();
   };
 
@@ -520,10 +556,10 @@ function OnboardingFlow({
 
   const STAGES: { value: UserPath; label: string; icon: string }[] = [
     { value: 'planning', label: 'планирую переезд', icon: '🗓️' },
-    { value: 'leaving_soon', label: 'скоро выезжаю', icon: '✈️' },
     { value: 'just_arrived', label: 'только приехал', icon: '🛬' },
-    { value: 'living', label: 'уже живу', icon: '🏠' },
-    { value: 'helper', label: 'помогаю другим', icon: '🤝' },
+    { value: 'settling', label: 'осваиваюсь', icon: '🏠' },
+    { value: 'sharing', label: 'делюсь опытом', icon: '🤝' },
+    { value: 'moving_on', label: 'переезжаю дальше', icon: '🚀' },
   ];
 
   return (
@@ -578,7 +614,7 @@ function OnboardingFlow({
               <div className="flex flex-col items-center justify-center min-h-[calc(100vh-100px)] px-5 py-8 sm:py-12 text-center">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-8 min-h-[3.5rem] tracking-tight text-foreground">Привет!<br />Где ты на этом пути?</h2>
 
-                <div className="w-full max-w-sm space-y-3">
+                <div className="w-full max-w-sm mx-auto mb-8 space-y-3 px-4">
                   {STAGES.map((s, i) => (
                     <motion.button
                       key={s.value}
@@ -601,48 +637,65 @@ function OnboardingFlow({
               <div className="flex flex-col items-center justify-center min-h-[calc(100vh-100px)] px-5 py-8 sm:py-12 text-center">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-8 tracking-tight text-foreground">Место уже известно?</h2>
 
-                <div className="w-full max-w-sm space-y-3 mb-8">
-                  {/* Ручной выбор */}
+                <div className="w-full max-w-sm space-y-4 mb-8">
+                  {/* Выбор из списка */}
                   <div className="relative">
                     <MapPin className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-10" />
                     <select
-                      value={manualInput}
-                      onChange={(e) => setManualInput(e.target.value)}
+                      value={city}
+                      onChange={(e) => { setCity(e.target.value); setManualInput(''); }}
                       className="w-full bg-white border border-border rounded-2xl pl-12 pr-10 py-4 text-foreground focus:outline-none focus:border-terracotta-deep/50 focus:ring-2 focus:ring-terracotta-deep/5 transition-all shadow-sm appearance-none cursor-pointer relative z-0"
                     >
-                      <option value="" disabled>Выберите город из списка...</option>
-                      <optgroup label="Вьетнам">
-                        <option value="Вьетнам">Вьетнам (вся страна)</option>
-                        <option value="Дананг, Вьетнам">Дананг</option>
-                        <option value="Нячанг, Вьетнам">Нячанг</option>
-                        <option value="Муйне, Вьетнам">Муйне</option>
-                        <option value="Хошимин, Вьетнам">Хошимин</option>
-                        <option value="Ханой, Вьетнам">Ханой</option>
-                      </optgroup>
+                      <option value="" disabled selected={city === ''}>Выберите город из списка...</option>
+                      <option value="Вьетнам">Весь Вьетнам</option>
+                      <option value="Дананг, Вьетнам">Дананг</option>
                     </select>
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground z-10">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="m6 9 6 6 6-6" /></svg>
+                      <ChevronDown className="w-5 h-5" />
                     </div>
                   </div>
 
-                  {manualInput.trim().length > 0 && (
+                  <div className="flex items-center gap-3 py-2">
+                    <div className="h-px bg-border/40 flex-1" />
+                    <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-black">или введи свой</span>
+                    <div className="h-px bg-border/40 flex-1" />
+                  </div>
+
+                  {/* Свой вариант */}
+                  <div className="relative">
+                    <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-10" />
+                    <input
+                      type="text"
+                      maxLength={20}
+                      value={manualInput}
+                      placeholder="Город \ страна"
+                      onChange={(e) => { setManualInput(e.target.value); if (e.target.value) setCity(''); }}
+                      className="w-full bg-white border border-border rounded-2xl pl-12 pr-4 py-4 text-foreground focus:outline-none focus:border-terracotta-deep/50 transition-all shadow-sm"
+                    />
+                    {manualInput && (
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-muted-foreground/40">
+                        {manualInput.length}/20
+                      </div>
+                    )}
+                  </div>
+
+                  {(city || manualInput.trim().length > 0) && (
                     <motion.button
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
                       onClick={handleManualSubmit}
-                      className="w-full bg-white border-2 border-terracotta-deep/60 text-terracotta-deep rounded-2xl px-6 py-3.5 font-semibold hover:bg-terracotta-deep/5 transition-all"
+                      className="w-full bg-terracotta-deep text-white rounded-2xl px-6 py-4 font-bold hover:bg-terracotta-deep/90 transition-all shadow-lg shadow-terracotta-deep/10"
                     >
-                      Я в {manualInput.split(',')[0]} →
+                      Продолжить →
                     </motion.button>
                   )}
                 </div>
 
-                {/* Ссылка "Пока думаю" */}
                 <motion.button
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.4 }}
-                  onClick={() => { setCity(''); setCountry(''); onNext(); }}
+                  onClick={() => { setCity(''); setCountry(''); setManualInput(''); onNext(); }}
                   className="text-muted-foreground hover:text-terracotta-deep font-medium transition-colors mt-4 underline underline-offset-4 decoration-border hover:decoration-terracotta-deep/30"
                 >
                   Пока думаю
@@ -655,18 +708,24 @@ function OnboardingFlow({
               <div className="px-4 sm:px-5 py-6 sm:py-10 max-w-2xl mx-auto">
                 <div className="text-center mb-8 sm:mb-10">
                   <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
-                    {showArrivalKit
-                      ? <>Добро пожаловать{country ? <> {country === 'Вьетнам' ? 'во' : 'в'} {country}!</> : '!'}</>
-                      : 'Подготовка к переезду'}
+                    {showMovingOnKit ? 'Relo помогает в пути' : 'Твой путеводитель'}
                   </h2>
                   <p className="text-muted-foreground text-base sm:text-lg">
-                    {showArrivalKit ? 'Вот что нужно прямо сейчас:' : 'Вот что стоит знать до прилёта:'}
+                    {showPlanningKit && 'Вот что стоит знать до прилёта:'}
+                    {showArrivalKit && 'Вот что нужно прямо сейчас:'}
+                    {showShoppingKit && 'Твой шоппинг-гид:'}
+                    {showMovingOnKit && 'Для тех, кто не стоит на месте:'}
                   </p>
                 </div>
 
                 <div className="space-y-4 mb-10">
-                  {(showArrivalKit ? SURVIVAL_CARDS_HERE : SURVIVAL_CARDS_PLANNING).map((card, i) => (
-                    <div key={i} className={`bg-white rounded-[20px] border ${card.border} overflow-hidden shadow-sm`}>
+                  {(
+                    showPlanningKit ? SURVIVAL_CARDS_PLANNING :
+                    showArrivalKit ? SURVIVAL_CARDS_HERE :
+                    showShoppingKit ? SURVIVAL_CARDS_SHOPPING :
+                    showMovingOnKit ? SURVIVAL_CARDS_WHY_RELO : []
+                  ).map((card, i) => (
+                    <div key={i} className={`bg-white rounded-[20px] border shadow-sm ${card.border} overflow-hidden`}>
                       <button className="w-full text-left px-6 py-5 flex items-center justify-between gap-4" onClick={() => setOpenCard(openCard === i ? null : i)}>
                         <div className="flex items-center gap-4">
                           <span className={`w-12 h-12 rounded-2xl ${card.color} flex items-center justify-center text-2xl flex-shrink-0`}>{card.emoji}</span>
@@ -700,13 +759,13 @@ function OnboardingFlow({
                                           if (url) window.open(url, '_blank');
                                           toggleComplete(app.name);
                                         }} 
-                                        className="flex items-center justify-between p-3 rounded-2xl border border-border/60 hover:bg-muted/50 transition-colors group cursor-pointer"
+                                        className="flex items-center justify-between p-3 rounded-2xl border border-border/60 hover:bg-muted/50 transition-colors cursor-pointer"
                                       >
                                         <div className="flex items-center gap-3">
-                                          <div className={`w-10 h-10 ${app.color} rounded-[12px] flex items-center justify-center font-bold text-lg ${app.textDark ? 'text-black/80' : 'text-white'}`}>{app.icon}</div>
+                                          <div className={`w-10 h-10 ${app.color} rounded-[12px] flex items-center justify-center font-black text-xs ${app.textDark ? 'text-black/80' : 'text-white'}`}>{app.icon}</div>
                                           <div>
-                                            <div className="font-semibold text-sm">{app.name}</div>
-                                            <div className="text-xs text-muted-foreground">{app.desc}</div>
+                                            <div className="font-semibold text-[13px]">{app.name}</div>
+                                            <div className="text-[11px] text-muted-foreground leading-tight">{app.desc}</div>
                                           </div>
                                         </div>
                                       </div>
@@ -726,38 +785,82 @@ function OnboardingFlow({
                     </div>
                   ))}
                 </div>
-                <Button size="lg" onClick={onNext} className="w-full bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full h-14 font-semibold shadow-md text-base">
-                  С первым шагом разобрались! →
+                <Button size="lg" onClick={onNext} className="w-full bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full h-14 font-bold shadow-md text-base">
+                  Продолжить →
                 </Button>
               </div>
             )}
 
-            {/* ── Step 3: Situation Tags & Auth ── */}
+            {/* ── Step 3: Situation & Interests ── */}
             {step === 3 && (
               <div className="flex flex-col items-center px-4 sm:px-5 py-6 sm:py-10 max-w-xl mx-auto w-full">
-                <div className="text-center mb-6 sm:mb-8">
-                  <p className="text-xs sm:text-sm text-warm-olive font-medium mb-1.5 sm:mb-3">Почти готово! 🌿</p>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2 sm:mb-3">Расскажи немного о себе</h2>
-                  <p className="text-muted-foreground text-base sm:text-lg">Чтобы показать актуальное именно для тебя. Можно выбрать несколько.</p>
+                <div className="text-center mb-8">
+                   <h2 className="text-3xl font-extrabold tracking-tight mb-2">Расскажи о себе</h2>
+                   <p className="text-muted-foreground">Твой профиль будет полезнее для других</p>
                 </div>
-                <div className="flex flex-wrap gap-2 sm:gap-3 justify-center mb-8 sm:mb-10">
-                  {SITUATION_TAGS.map((tag, i) => {
-                    const selected = selectedTags.includes(tag.value);
-                    return (
-                      <motion.button key={i} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }} onClick={() => toggleTag(tag.value)} className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-medium border-2 transition-all ${selected ? 'bg-terracotta-deep text-white border-terracotta-deep shadow-sm' : 'bg-white text-foreground border-border hover:border-terracotta-deep/50'}`}>
-                        {tag.label}
-                      </motion.button>
-                    );
-                  })}
+
+                <div className="w-full space-y-10">
+                  {/* Situation tags */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                       <Info className="w-4 h-4 text-warm-olive" />
+                       <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">Кто ты?</h3>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {SITUATION_TAGS.map((tag, i) => {
+                        const selected = selectedTags.includes(tag.value);
+                        return (
+                          <motion.button key={tag.value} onClick={() => toggleTag(tag.value)} className={`px-4 py-2 rounded-xl text-xs font-bold border-2 transition-all ${selected ? 'bg-warm-olive text-white border-warm-olive' : 'bg-white text-foreground border-border/60 hover:border-warm-olive/40'}`}>
+                            {tag.label}
+                          </motion.button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Interests tags */}
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                       <div className="flex items-center gap-2">
+                          <Zap className="w-4 h-4 text-terracotta-deep" />
+                          <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">Интересы</h3>
+                       </div>
+                       <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${selectedInterests.length >= 3 ? 'bg-green-100 text-green-600' : 'bg-red-50 text-red-400'}`}>
+                         {selectedInterests.length < 3 ? `выбери ещё ${3 - selectedInterests.length}` : 'Готово!'}
+                       </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {INTERESTS_TAGS.map((tag, i) => {
+                        const selected = selectedInterests.includes(tag.value);
+                        return (
+                          <motion.button key={tag.value} onClick={() => toggleInterest(tag.value)} className={`px-4 py-2 rounded-xl text-xs font-bold border-2 transition-all ${selected ? 'bg-terracotta-deep text-white border-terracotta-deep' : 'bg-white text-foreground border-border/60 hover:border-terracotta-deep/40'}`}>
+                            {tag.label}
+                          </motion.button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
-                {/* Сохрани свой путь - moved higher as requested */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-gradient-to-br from-dusty-indigo/90 to-terracotta-deep rounded-[24px] sm:rounded-[28px] p-6 sm:p-8 text-white text-center shadow-xl w-full">
-                  <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🌿</div>
-                  <h3 className="text-xl sm:text-2xl font-extrabold mb-2 sm:mb-3 leading-tight">Сохрани свой путь</h3>
-                  <p className="text-sm sm:text-base opacity-85 mb-2 leading-relaxed">Без аккаунта прогресс, контакты и настройки не сохранятся.</p>
-                  <div className="space-y-2.5 sm:space-y-3">
-                    <Button size="lg" onClick={() => onFinish(city)} className="w-full bg-white text-terracotta-deep hover:bg-white/90 rounded-full h-12 sm:h-14 font-bold text-sm sm:text-base shadow-lg">Создать профиль и сохранить →</Button>
-                    <button onClick={() => onSkipAuth(city)} className="w-full text-center text-[10px] sm:text-sm opacity-70 hover:opacity-100 py-1.5 transition-opacity">Продолжить без сохранения</button>
+
+                <div className="h-10" />
+
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-[32px] p-8 border border-border/40 shadow-xl w-full text-center">
+                  <div className="w-16 h-16 bg-soft-sand rounded-[24px] flex items-center justify-center mx-auto mb-6 text-3xl">🌿</div>
+                  <h3 className="text-2xl font-black mb-3">Сохрани свой путь</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed mb-8">Без аккаунта твои интересы и настройки не сохранятся.</p>
+                  
+                  <div className="space-y-3">
+                    <Button 
+                      size="lg" 
+                      disabled={selectedInterests.length < 3}
+                      onClick={() => onFinish(city)} 
+                      className="w-full bg-terracotta-deep text-white rounded-full h-14 font-black shadow-lg shadow-terracotta-deep/20 disabled:opacity-50"
+                    >
+                      Сохранить и войти →
+                    </Button>
+                    <button onClick={() => onSkipAuth(city)} className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors py-2 font-medium">
+                      Продолжить без сохранения
+                    </button>
                   </div>
                 </motion.div>
               </div>
