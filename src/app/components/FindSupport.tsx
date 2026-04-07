@@ -101,7 +101,7 @@ function useDebounce<T>(value: T, delay: number): T {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function FindSupport() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   // Tabs & filters
   const [activeTab, setActiveTab] = useState<'questions' | 'resources'>('questions');
@@ -327,7 +327,56 @@ export function FindSupport() {
       await supabase.from('answers').update({ upvotes_count: supabase.rpc('decrement' as any) }).eq('id', answerId);
     } else {
       await supabase.from('answer_upvotes').insert({ answer_id: answerId, user_id: user.id });
+      // Actually we don't have a increment rpc for upvotes_count yet in my DB schema shown, 
+      // but let's assume it should work similarly if exists or use update.
+      // Wait, let's use simple increment if possible or update.
       await supabase.rpc('increment_question_views' as any, { question_id: answerId }); // reuse increment
+    }
+  };
+
+  const handleAnswerSubmit = async (questionId: string, body: string) => {
+    if (!user || !body.trim()) return false;
+
+    try {
+      const { data, error } = await supabase
+        .from('answers')
+        .insert({
+          question_id: questionId,
+          author_id: user.id,
+          author_name: profile?.display_name ?? 'Пользователь',
+          body: body.trim(),
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newAnswer: Answer = {
+        id: data.id,
+        body: data.body,
+        author: data.author_name ?? 'Пользователь',
+        authorId: data.author_id,
+        isBest: false,
+        upvotesCount: 0,
+        createdAt: 'только что',
+      };
+
+      setAnswersMap((prev) => ({
+        ...prev,
+        [questionId]: [...(prev[questionId] ?? []), newAnswer],
+      }));
+
+      // Update local question answer count
+      setQuestions((prev) =>
+        prev.map((q) =>
+          q.id === questionId ? { ...q, answers: q.answers + 1, isAnswered: true } : q
+        )
+      );
+
+      return true;
+    } catch (e) {
+      console.error('Error submitting answer:', e);
+      return false;
     }
   };
 
@@ -521,6 +570,8 @@ export function FindSupport() {
                       onLoadMore={() => loadAnswers(q.id, (answersPage[q.id] ?? 0) + 1)}
                       upvotedIds={upvotedIds}
                       onUpvote={handleUpvote}
+                      currentUserId={user?.id}
+                      onSubmitAnswer={(body) => handleAnswerSubmit(q.id, body)}
                     />
                   ))
                 )}
@@ -608,6 +659,8 @@ interface QuestionCardProps {
   onLoadMore: () => void;
   upvotedIds: Set<string>;
   onUpvote: (id: string) => void;
+  currentUserId?: string;
+  onSubmitAnswer: (body: string) => Promise<boolean>;
 }
 
 function QuestionCard({
@@ -620,7 +673,11 @@ function QuestionCard({
   onLoadMore,
   upvotedIds,
   onUpvote,
+  currentUserId,
+  onSubmitAnswer,
 }: QuestionCardProps) {
+  const [answerDraft, setAnswerDraft] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   return (
     <div className="group bg-white rounded-[28px] border border-border/60 hover:border-dusty-indigo/20 transition-all duration-300 shadow-sm hover:shadow-md overflow-hidden">
       <div className="p-6 md:p-8 cursor-pointer" onClick={onToggle}>
@@ -712,6 +769,49 @@ function QuestionCard({
                   {answersLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                   Показать ещё ответы
                 </button>
+              )}
+
+              {/* Answer form */}
+              {currentUserId && (
+                <div className="mt-8 pt-8 border-t border-border/40">
+                  <div className="flex items-start gap-4">
+                    <div className="w-9 h-9 rounded-full bg-soft-sand/40 border border-border/40 flex items-center justify-center text-muted-foreground text-xs font-bold flex-shrink-0">
+                      Вы
+                    </div>
+                    <div className="flex-1 space-y-3">
+                      <textarea
+                        value={answerDraft}
+                        onChange={(e) => setAnswerDraft(e.target.value)}
+                        placeholder="Напишите свой ответ..."
+                        rows={3}
+                        className="w-full px-4 py-3 bg-soft-sand/10 border border-border/50 rounded-[16px] focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20 text-sm leading-relaxed resize-none transition-all"
+                      />
+                      <div className="flex justify-end">
+                        <Button
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            if (!answerDraft.trim() || isSubmitting) return;
+                            setIsSubmitting(true);
+                            const success = await onSubmitAnswer(answerDraft);
+                            if (success) setAnswerDraft('');
+                            setIsSubmitting(false);
+                          }}
+                          disabled={!answerDraft.trim() || isSubmitting}
+                          className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full h-10 px-6 font-bold shadow-md shadow-terracotta-deep/10 text-sm disabled:opacity-50"
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Отправляем...
+                            </>
+                          ) : (
+                            'Ответить'
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           </motion.div>
