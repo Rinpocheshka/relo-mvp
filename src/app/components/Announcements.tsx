@@ -51,7 +51,7 @@ export function Announcements() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const categories = [
-    { name: 'Все', icon: '/assets/icons/custom/signpost.png' },
+    { name: 'Все', icon: '/assets/icons/custom/luggage.png' },
     { name: 'Жильё', icon: '/assets/icons/custom/luggage.png' },
     { name: 'Вещи', icon: '/assets/icons/custom/travel.png' },
     { name: 'Услуги', icon: '/assets/icons/custom/tickets.png' },
@@ -174,7 +174,7 @@ export function Announcements() {
           className="text-center mb-12"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-terracotta-deep/10 rounded-full mb-4">
-            <img src="/assets/icons/custom/signpost.png" className="w-5 h-5 object-contain" alt="" />
+            <img src="/assets/icons/custom/luggage.png" className="w-5 h-5 object-contain" alt="" />
             <span className="text-terracotta-deep font-medium">Объявления</span>
           </div>
           <h1 className="text-4xl font-bold mb-4">Жильё, вещи, услуги</h1>

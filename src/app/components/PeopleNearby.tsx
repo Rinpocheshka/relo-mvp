@@ -31,7 +31,7 @@ export function PeopleNearby() {
   const [authOpen, setAuthOpen] = useState(false);
 
   const filters = [
-    { name: 'Все', icon: '/assets/icons/custom/danang_symbol.png' },
+    { name: 'Все', icon: '/assets/icons/custom/palm_tree_bw.png' },
     { name: 'Уже здесь', icon: '/assets/icons/custom/luggage.png' },
     { name: 'Проводники', icon: '/assets/icons/custom/path_arrow.png' },
     { name: 'Ищут друзей', icon: '/assets/icons/custom/message.png' }
@@ -82,7 +82,7 @@ export function PeopleNearby() {
           className="text-center mb-12"
         >
           <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-4">
-            <img src="/assets/icons/custom/danang_symbol.png" className="w-6 h-6 object-contain" alt="" />
+            <img src="/assets/icons/custom/palm_tree_bw.png" className="w-6 h-6 object-contain" alt="" />
             <span className="text-dusty-indigo font-bold text-sm">Люди рядом</span>
           </div>
           <h1 className="text-4xl font-bold mb-4">Здесь уже есть люди, которые проходят тот же путь</h1>
