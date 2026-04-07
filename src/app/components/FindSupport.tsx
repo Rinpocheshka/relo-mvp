@@ -695,7 +695,7 @@ function QuestionCard({
               )}
             </div>
 
-            <h3 className="text-lg md:text-xl font-bold text-foreground mb-3 leading-snug group-hover:text-dusty-indigo transition-colors">
+            <h3 className="text-lg md:text-xl font-bold text-foreground mb-3 leading-snug group-hover:text-dusty-indigo transition-colors break-words">
               {q.question}
             </h3>
 
@@ -853,7 +853,7 @@ function AnswerCard({
               <span className="text-xs text-muted-foreground/60">{a.createdAt}</span>
             )}
           </div>
-          <p className="text-sm text-foreground leading-relaxed">{a.body}</p>
+          <p className="text-sm text-foreground leading-relaxed break-words">{a.body}</p>
           <button
             onClick={onUpvote}
             className={`mt-3 flex items-center gap-1.5 text-xs font-semibold transition-colors ${
@@ -898,7 +898,7 @@ function ResourceCard({ resource: res }: { resource: Resource }) {
         </div>
       </div>
       {res.description && (
-        <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">{res.description}</p>
+        <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1 break-words">{res.description}</p>
       )}
       <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/30">
         <span className="text-xs font-bold text-terracotta-deep group-hover:underline">Перейти на сайт</span>
