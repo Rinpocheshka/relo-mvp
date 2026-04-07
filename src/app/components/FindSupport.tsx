@@ -540,7 +540,9 @@ export function FindSupport() {
               </div>
             )}
 
-            <div className="flex gap-2.5 overflow-x-auto pb-1 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+            <div className="relative w-full faded-scroller">
+              <div className="flex gap-2.5 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+                <div className="flex gap-2.5 pr-10 md:pr-0">
               {categories.map((cat) => (
                 <button
                   key={cat}
@@ -561,6 +563,8 @@ export function FindSupport() {
                   {cat}
                 </button>
               ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -104,8 +104,9 @@ export function PeopleNearby() {
         </div>
 
         {/* Filters */}
-        <div className="mb-10">
+        <div className="mb-10 relative w-full faded-scroller">
           <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 justify-center">
+            <div className="flex gap-2 pr-10 md:pr-0">
             {filters.map((f) => (
               <button
                 key={f.name}
@@ -124,6 +125,7 @@ export function PeopleNearby() {
                 {f.name}
               </button>
             ))}
+            </div>
           </div>
         </div>
 

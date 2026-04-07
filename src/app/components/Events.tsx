@@ -217,53 +217,63 @@ export function Events() {
         </div>
 
         {/* Filters */}
-        <div className="mb-10 space-y-6">
-          <div>
-            <div className="flex items-center gap-2 mb-4 px-1">
+        <div className="mb-10 space-y-8">
+          {/* Category Filter */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 px-1">
               <Filter className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Категория</span>
             </div>
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-1">
-              {eventTypes.map((type) => (
-                <button
-                  key={type.name}
-                  onClick={() => setSelectedType(type.name)}
-                  className={`flex items-center gap-2.5 px-5 py-3 rounded-full whitespace-nowrap transition-all font-semibold border ${
-                    selectedType === type.name
-                      ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-lg shadow-dusty-indigo/20 scale-105 active:scale-95'
-                      : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
-                  }`}
-                >
-                  <img 
-                    src={type.icon} 
-                    className={`w-5 h-5 object-contain transition-all duration-300 ${selectedType === type.name ? 'brightness-0 invert' : ''}`} 
-                    alt="" 
-                  />
-                  <span className="text-sm">{type.name}</span>
-                </button>
-              ))}
+            <div className="relative w-full faded-scroller">
+              <div className="flex gap-2.5 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+                <div className="flex gap-2.5 pr-12 md:pr-0">
+                  {eventTypes.map((type) => (
+                    <button
+                      key={type.name}
+                      onClick={() => setSelectedType(type.name)}
+                      className={`flex items-center gap-2.5 px-5 py-3 rounded-full whitespace-nowrap transition-all font-bold border ${
+                        selectedType === type.name
+                          ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-lg shadow-dusty-indigo/20 scale-105 active:scale-95'
+                          : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
+                      }`}
+                    >
+                      <img 
+                        src={type.icon} 
+                        className={`w-6 h-6 object-contain transition-all duration-300 ${selectedType === type.name ? 'brightness-0 invert' : ''}`} 
+                        alt="" 
+                      />
+                      <span className="text-sm">{type.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div>
-            <div className="flex items-center gap-2 mb-4 px-1">
+          {/* Time Filter */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 px-1">
               <Clock className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Когда</span>
             </div>
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-1">
-              {timeFilters.map((filter) => (
-                <button
-                  key={filter}
-                  onClick={() => setTimeFilter(filter)}
-                  className={`px-5 py-2.5 rounded-full whitespace-nowrap transition-all font-medium border ${
-                    timeFilter === filter
-                      ? 'bg-warm-olive text-white border-warm-olive shadow-md'
-                      : 'bg-white text-muted-foreground hover:bg-soft-sand/30 border-border/50 hover:text-foreground shadow-sm'
-                  }`}
-                >
-                  {filter}
-                </button>
-              ))}
+            <div className="relative w-full faded-scroller">
+              <div className="flex gap-2.5 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+                <div className="flex gap-2.5 pr-12 md:pr-0">
+                  {timeFilters.map((filter) => (
+                    <button
+                      key={filter}
+                      onClick={() => setTimeFilter(filter)}
+                      className={`px-6 py-3 rounded-full whitespace-nowrap transition-all font-bold border ${
+                        timeFilter === filter
+                          ? 'bg-warm-olive text-white border-warm-olive shadow-lg shadow-warm-olive/20 scale-105 active:scale-95'
+                          : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
+                      }`}
+                    >
+                      {filter}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
