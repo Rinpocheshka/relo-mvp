@@ -32,6 +32,7 @@ interface Question {
   isAnswered: boolean;
   createdAt?: string;
   viewsCount?: number;
+  isAnonymous?: boolean;
 }
 
 interface Answer {
@@ -166,6 +167,7 @@ export function FindSupport() {
           isAnswered: (Number(cnt) || 0) > 0,
           createdAt: row.created_at ? formatRelativeRu(new Date(row.created_at as string)) : undefined,
           viewsCount: (row as any).views_count ?? 0,
+          isAnonymous: (row as any).is_anonymous as boolean,
         };
       });
 
@@ -700,7 +702,9 @@ function QuestionCard({
             </h3>
 
             <div className="flex items-center gap-3 text-xs text-muted-foreground/60">
-              <span className="font-medium">от {q.askedBy}</span>
+              <span className="font-medium">
+                {q.isAnonymous ? 'Анонимно' : `от ${q.askedBy}`}
+              </span>
               {q.createdAt && (
                 <>
                   <span className="w-1 h-1 bg-border rounded-full" />
