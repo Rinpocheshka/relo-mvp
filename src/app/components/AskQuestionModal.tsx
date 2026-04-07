@@ -16,6 +16,7 @@ interface AskQuestionModalProps {
     answers: number;
     isAnswered: boolean;
     createdAt?: string;
+    isAnonymous?: boolean;
   }) => void;
 }
 
@@ -63,7 +64,7 @@ export function AskQuestionModal({ isOpen, onClose, onSuccess }: AskQuestionModa
           is_anonymous: isAnonymous,
           status: 'open',
         })
-        .select('id, question, category, asked_by_name, created_at')
+        .select('id, question, category, asked_by_name, created_at, is_anonymous')
         .single();
 
       if (insertError) throw insertError;
@@ -76,6 +77,7 @@ export function AskQuestionModal({ isOpen, onClose, onSuccess }: AskQuestionModa
         answers: 0,
         isAnswered: false,
         createdAt: 'только что',
+        isAnonymous: data.is_anonymous,
       });
 
       setQuestionText('');
@@ -118,7 +120,7 @@ export function AskQuestionModal({ isOpen, onClose, onSuccess }: AskQuestionModa
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-foreground">Задать вопрос</h2>
-                  <p className="text-xs text-muted-foreground">Проводники города ответят вам</p>
+
                 </div>
               </div>
               <button
@@ -184,7 +186,7 @@ export function AskQuestionModal({ isOpen, onClose, onSuccess }: AskQuestionModa
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">Задать анонимно</p>
-                  <p className="text-xs text-muted-foreground">Вместо имени будет показано «Пользователь»</p>
+
                 </div>
               </label>
 
