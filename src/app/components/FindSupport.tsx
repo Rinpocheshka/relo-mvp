@@ -40,6 +40,7 @@ interface Answer {
   body: string;
   author: string;
   authorId: string | null;
+  authorAvatarUrl: string | null;
   isBest: boolean;
   upvotesCount: number;
   createdAt?: string;
@@ -260,7 +261,16 @@ export function FindSupport() {
     try {
       const { data, error } = await supabase
         .from('answers')
-        .select('id, body, author_name, author_id, is_best, upvotes_count, created_at')
+        .select(`
+          id, 
+          body, 
+          author_name, 
+          author_id, 
+          is_best, 
+          upvotes_count, 
+          created_at,
+          profiles:author_id(avatar_url)
+        `)
         .eq('question_id', questionId)
         .order('is_best', { ascending: false })
         .order('upvotes_count', { ascending: false })
@@ -273,6 +283,7 @@ export function FindSupport() {
         body: a.body ?? '',
         author: (a as any).author_name ?? 'Проводник',
         authorId: (a as any).author_id,
+        authorAvatarUrl: (a as any).profiles?.avatar_url,
         isBest: (a as any).is_best ?? false,
         upvotesCount: (a as any).upvotes_count ?? 0,
         createdAt: a.created_at ? formatRelativeRu(new Date(a.created_at)) : undefined,
@@ -358,6 +369,7 @@ export function FindSupport() {
         body: data.body,
         author: data.author_name ?? 'Пользователь',
         authorId: data.author_id,
+        authorAvatarUrl: profile?.avatar_url ?? null,
         isBest: false,
         upvotesCount: 0,
         createdAt: 'только что',
@@ -847,9 +859,17 @@ function AnswerCard({
         </div>
       )}
       <div className="flex items-start gap-3">
-        <div className="w-9 h-9 rounded-full bg-dusty-indigo/30 flex-shrink-0 border-2 border-white shadow-sm flex items-center justify-center">
-          <span className="text-dusty-indigo font-bold text-sm">{a.author.charAt(0)}</span>
-        </div>
+        {a.authorAvatarUrl ? (
+          <img
+            src={a.authorAvatarUrl}
+            alt={a.author}
+            className="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm flex-shrink-0"
+          />
+        ) : (
+          <div className="w-9 h-9 rounded-full bg-dusty-indigo/30 flex-shrink-0 border-2 border-white shadow-sm flex items-center justify-center">
+            <span className="text-dusty-indigo font-bold text-sm">{a.author.charAt(0)}</span>
+          </div>
+        )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5">
             <span className="font-bold text-sm text-foreground">{a.author}</span>
