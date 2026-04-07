@@ -746,7 +746,7 @@ function QuestionCard({
               ) : answers.length === 0 ? (
                 <div className="bg-soft-sand/10 rounded-[20px] p-6 text-center border border-dashed border-border/40">
                   <p className="text-muted-foreground text-sm">
-                    Проводники ещё не ответили на этот вопрос. Оставайтесь на связи!
+                    Пока ответов нет.
                   </p>
                 </div>
               ) : (
