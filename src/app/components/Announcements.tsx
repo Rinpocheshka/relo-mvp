@@ -51,11 +51,11 @@ export function Announcements() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const categories = [
-    { name: 'Все', icon: Megaphone },
-    { name: 'Жильё', icon: Home },
-    { name: 'Вещи', icon: Package },
-    { name: 'Услуги', icon: Briefcase },
-    { name: 'Бесплатно', icon: Heart },
+    { name: 'Все', icon: '/assets/icons/custom/signpost.png' },
+    { name: 'Жильё', icon: '/assets/icons/custom/luggage.png' },
+    { name: 'Вещи', icon: '/assets/icons/custom/travel.png' },
+    { name: 'Услуги', icon: '/assets/icons/custom/tickets.png' },
+    { name: 'Бесплатно', icon: '/assets/icons/custom/message.png' },
   ];
 
   const itemsSubcategories = [
@@ -174,7 +174,7 @@ export function Announcements() {
           className="text-center mb-12"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-terracotta-deep/10 rounded-full mb-4">
-            <Megaphone className="w-5 h-5 text-terracotta-deep" />
+            <img src="/assets/icons/custom/signpost.png" className="w-5 h-5 object-contain" alt="" />
             <span className="text-terracotta-deep font-medium">Объявления</span>
           </div>
           <h1 className="text-4xl font-bold mb-4">Жильё, вещи, услуги</h1>
@@ -195,14 +195,18 @@ export function Announcements() {
                     setSelectedCategory(category.name);
                     setSelectedSubcategory('');
                   }}
-                  className={`flex items-center gap-2 px-4 py-3 rounded-[12px] whitespace-nowrap transition-all ${
+                  className={`flex items-center gap-2.5 px-5 py-3.5 rounded-[18px] whitespace-nowrap transition-all duration-300 ${
                     selectedCategory === category.name
-                      ? 'bg-terracotta-deep text-white shadow-md'
-                      : 'bg-white text-foreground hover:bg-soft-sand/30 border border-border'
+                      ? 'bg-terracotta-deep text-white shadow-xl shadow-terracotta-deep/20 scale-105 active:scale-95'
+                      : 'bg-white text-foreground hover:bg-soft-sand/40 border border-border/60 hover:border-terracotta-deep/30'
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
-                  <span className="font-medium">{category.name}</span>
+                  <img 
+                    src={category.icon as string} 
+                    className={`w-5 h-5 object-contain transition-all duration-300 ${selectedCategory === category.name ? 'brightness-0 invert' : ''}`} 
+                    alt="" 
+                  />
+                  <span className="font-semibold text-sm">{category.name}</span>
                 </button>
               );
             })}

@@ -48,9 +48,9 @@ const stageContent = {
       { text: 'Написать местным', icon: '/assets/icons/custom/danang_symbol.png', link: '/people' },
     ],
     sections: [
-      { icon: Heart, title: 'Ответы на вопросы «А как проще…»', subtitle: 'Найти опору', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
-      { icon: Megaphone, title: 'Актуальные объявления: жильё, услуги', subtitle: 'Объявления', link: '/announcements', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
-      { icon: Calendar, title: 'Что происходит в Дананге?', subtitle: 'Афиша', link: '/events', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
+      { icon: '/assets/icons/custom/message.png', title: 'Ответы на вопросы «А как проще…»', subtitle: 'Найти опору', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
+      { icon: '/assets/icons/custom/signpost.png', title: 'Актуальные объявления: жильё, услуги', subtitle: 'Объявления', link: '/announcements', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
+      { icon: '/assets/icons/custom/kite.png', title: 'Что происходит в Дананге?', subtitle: 'Афиша', link: '/events', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
     ],
   },
   living: {
@@ -63,9 +63,9 @@ const stageContent = {
       { text: 'Получить совет', icon: '/assets/icons/custom/message.png', link: '/support' },
     ],
     sections: [
-      { icon: Megaphone, title: 'Самое актуальное на первое время', subtitle: 'Объявления', link: '/announcements', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
-      { icon: Heart, title: 'Честные вопросы и ответы на них', subtitle: 'Найти опору', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
-      { icon: Calendar, title: 'Всегда есть куда сходить', subtitle: 'Афиша', link: '/events', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
+      { icon: '/assets/icons/custom/signpost.png', title: 'Самое актуальное на первое время', subtitle: 'Объявления', link: '/announcements', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
+      { icon: '/assets/icons/custom/message.png', title: 'Честные вопросы и ответы на них', subtitle: 'Найти опору', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
+      { icon: '/assets/icons/custom/kite.png', title: 'Всегда есть куда сходить', subtitle: 'Афиша', link: '/events', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
     ],
   },
   helping: {
@@ -78,9 +78,9 @@ const stageContent = {
       { text: 'Ответить на вопросы', icon: '/assets/icons/custom/message.png', link: '/support' },
     ],
     sections: [
-      { icon: Users, title: 'Люди, которым ты можешь помочь', subtitle: 'Люди рядом', link: '/people', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
-      { icon: Calendar, title: 'Организовать свою встречу', subtitle: 'Афиша', link: '/events', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
-      { icon: Heart, title: 'Ответить на вопросы новичков', subtitle: 'Найти опору', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
+      { icon: '/assets/icons/custom/danang_symbol.png', title: 'Люди, которым ты можешь помочь', subtitle: 'Люди рядом', link: '/people', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
+      { icon: '/assets/icons/custom/kite.png', title: 'Организовать свою встречу', subtitle: 'Афиша', link: '/events', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
+      { icon: '/assets/icons/custom/message.png', title: 'Ответить на вопросы новичков', subtitle: 'Найти опору', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
     ],
   },
   leaving: {
@@ -93,9 +93,9 @@ const stageContent = {
       { text: 'Сохранить контакты', icon: '/assets/icons/custom/danang_symbol.png', link: '/people' },
     ],
     sections: [
-      { icon: Megaphone, title: 'Продать то, что не влезет в чемодан', subtitle: 'Объявления', link: '/announcements', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
-      { icon: Calendar, title: 'Сделать отвальную или встречу', subtitle: 'Афиша', link: '/events', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
-      { icon: Heart, title: 'Поделиться своими лайфхаками', subtitle: 'Найти опору', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
+      { icon: '/assets/icons/custom/signpost.png', title: 'Продать то, что не влезет в чемодан', subtitle: 'Объявления', link: '/announcements', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
+      { icon: '/assets/icons/custom/kite.png', title: 'Сделать отвальную или встречу', subtitle: 'Афиша', link: '/events', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
+      { icon: '/assets/icons/custom/message.png', title: 'Поделиться своими лайфхаками', subtitle: 'Найти опору', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
     ],
   },
 };
@@ -283,8 +283,8 @@ export function HomePage() {
                       transition={{ delay: i * 0.1 }}
                       className="bg-white p-6 rounded-[24px] border border-border/40 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all h-full flex flex-col"
                     >
-                      <div className={`w-12 h-12 ${section.bg} ${section.color} rounded-2xl flex items-center justify-center mb-4`}>
-                        <Icon className="w-6 h-6" />
+                      <div className={`w-14 h-14 rounded-2xl ${section.bg} flex items-center justify-center mb-6`}>
+                        <img src={section.icon as string} className="w-8 h-8 object-contain" alt="" />
                       </div>
                       <p className={`text-xs font-semibold uppercase tracking-wider ${section.color} mb-2`}>{section.subtitle}</p>
                       <h3 className="text-base font-semibold leading-snug flex-1">{section.title}</h3>

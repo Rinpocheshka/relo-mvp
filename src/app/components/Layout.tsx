@@ -168,11 +168,11 @@ export function Layout() {
   }, [user, loading, location.pathname, navigate]);
 
   const navItems = [
-    { path: '/home', icon: Home, label: 'Главная' },
-    { path: '/announcements', icon: Megaphone, label: 'Объявления' },
-    { path: '/events', icon: Calendar, label: 'Афиша' },
-    { path: '/support', icon: Heart, label: 'Найти опору' },
-    { path: '/people', icon: Users, label: 'Люди рядом' },
+    { path: '/home', icon: '/assets/icons/custom/danang_symbol.png', label: 'Главная' },
+    { path: '/announcements', icon: '/assets/icons/custom/luggage.png', label: 'Объявления' },
+    { path: '/events', icon: '/assets/icons/custom/kite.png', label: 'Афиша' },
+    { path: '/support', icon: '/assets/icons/custom/message.png', label: 'Найти опору' },
+    { path: '/people', icon: '/assets/icons/custom/palm_tree_bw.png', label: 'Люди рядом' },
   ];
 
   useEffect(() => {
@@ -253,7 +253,7 @@ export function Layout() {
                         : 'text-muted-foreground hover:text-foreground hover:bg-soft-sand/40'
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <img src={item.icon as string} className="w-4 h-4 object-contain" alt="" />
                     {item.label}
                     {active && (
                       <motion.div
@@ -409,7 +409,7 @@ export function Layout() {
                     : 'text-muted-foreground hover:bg-soft-sand/20'
                 }`}
               >
-                <Icon className="w-5 h-5" />
+                <img src={item.icon as string} className="w-5 h-5 object-contain" alt="" />
                 <span className="text-[10px] font-medium">{item.label}</span>
               </Link>
             );
