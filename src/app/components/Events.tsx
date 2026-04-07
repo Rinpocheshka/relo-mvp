@@ -70,12 +70,12 @@ export function Events() {
   };
 
   const eventTypes = [
-    'Все',
-    'Развлечения',
-    'Деловые и язык',
-    'Спорт и экскурсии',
-    'Для детей',
-    'Иное'
+    { name: 'Все', icon: '/assets/icons/custom/kite.png' },
+    { name: 'Развлечения', icon: '/assets/icons/custom/kite.png' },
+    { name: 'Деловые и язык', icon: '/assets/icons/custom/signpost.png' },
+    { name: 'Спорт и экскурсии', icon: '/assets/icons/custom/sandcastle.png' },
+    { name: 'Для детей', icon: '/assets/icons/custom/umbrella.png' },
+    { name: 'Иное', icon: '/assets/icons/custom/clouds.png' }
   ];
 
   const timeFilters = ['Все', 'Сегодня', 'Эта неделя', 'Этот месяц'];
@@ -185,7 +185,7 @@ export function Events() {
           className="text-center mb-12"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-4">
-            <Calendar className="w-5 h-5 text-dusty-indigo" />
+            <img src="/assets/icons/custom/kite.png" className="w-5 h-5 object-contain" alt="" />
             <span className="text-dusty-indigo font-medium">Афиша</span>
           </div>
           <h1 className="text-4xl font-bold mb-4">События и встречи</h1>
@@ -226,15 +226,20 @@ export function Events() {
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-1">
               {eventTypes.map((type) => (
                 <button
-                  key={type}
-                  onClick={() => setSelectedType(type)}
-                  className={`px-5 py-2.5 rounded-full whitespace-nowrap transition-all font-medium border ${
-                    selectedType === type
-                      ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-md'
-                      : 'bg-white text-muted-foreground hover:bg-soft-sand/30 border-border/50 hover:text-foreground shadow-sm'
+                  key={type.name}
+                  onClick={() => setSelectedType(type.name)}
+                  className={`flex items-center gap-2.5 px-5 py-3 rounded-full whitespace-nowrap transition-all font-semibold border ${
+                    selectedType === type.name
+                      ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-lg shadow-dusty-indigo/20 scale-105 active:scale-95'
+                      : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
                   }`}
                 >
-                  {type}
+                  <img 
+                    src={type.icon} 
+                    className={`w-5 h-5 object-contain transition-all duration-300 ${selectedType === type.name ? 'brightness-0 invert' : ''}`} 
+                    alt="" 
+                  />
+                  <span className="text-sm">{type.name}</span>
                 </button>
               ))}
             </div>

@@ -30,7 +30,12 @@ export function PeopleNearby() {
   const [loading, setLoading] = useState(true);
   const [authOpen, setAuthOpen] = useState(false);
 
-  const filters = ['Все', 'Уже здесь', 'Проводники', 'Ищут друзей'];
+  const filters = [
+    { name: 'Все', icon: '/assets/icons/custom/danang_symbol.png' },
+    { name: 'Уже здесь', icon: '/assets/icons/custom/luggage.png' },
+    { name: 'Проводники', icon: '/assets/icons/custom/path_arrow.png' },
+    { name: 'Ищут друзей', icon: '/assets/icons/custom/message.png' }
+  ];
 
   useEffect(() => {
     if (!session) {
@@ -76,9 +81,9 @@ export function PeopleNearby() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-4">
-            <Users className="w-5 h-5 text-dusty-indigo" />
-            <span className="text-dusty-indigo font-medium">Люди рядом</span>
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-4">
+            <img src="/assets/icons/custom/danang_symbol.png" className="w-6 h-6 object-contain" alt="" />
+            <span className="text-dusty-indigo font-bold text-sm">Люди рядом</span>
           </div>
           <h1 className="text-4xl font-bold mb-4">Здесь уже есть люди, которые проходят тот же путь</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -99,19 +104,24 @@ export function PeopleNearby() {
         </div>
 
         {/* Filters */}
-        <div className="mb-8">
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {filters.map((filter) => (
+        <div className="mb-10">
+          <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 justify-center">
+            {filters.map((f) => (
               <button
-                key={filter}
-                onClick={() => setSelectedFilter(filter)}
-                className={`px-5 py-2.5 rounded-full whitespace-nowrap transition-all font-medium ${
-                  selectedFilter === filter
-                    ? 'bg-dusty-indigo text-white shadow-md'
-                    : 'bg-white text-foreground hover:bg-soft-sand/30 border border-border/50 shadow-sm'
+                key={f.name}
+                onClick={() => setSelectedFilter(f.name)}
+                className={`flex items-center gap-2.5 px-6 py-3 rounded-full whitespace-nowrap text-sm font-bold transition-all duration-300 border ${
+                  selectedFilter === f.name
+                    ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-lg shadow-dusty-indigo/20 scale-105 active:scale-95'
+                    : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
                 }`}
               >
-                {filter}
+                <img 
+                  src={f.icon} 
+                  className={`w-6 h-6 object-contain transition-all duration-300 ${selectedFilter === f.name ? 'brightness-0 invert' : ''}`} 
+                  alt="" 
+                />
+                {f.name}
               </button>
             ))}
           </div>

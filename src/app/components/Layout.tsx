@@ -253,7 +253,7 @@ export function Layout() {
                         : 'text-muted-foreground hover:text-foreground hover:bg-soft-sand/40'
                     }`}
                   >
-                    <img src={item.icon as string} className="w-4 h-4 object-contain" alt="" />
+                    <img src={item.icon as string} className="w-6 h-6 object-contain" alt="" />
                     {item.label}
                     {active && (
                       <motion.div
@@ -409,7 +409,7 @@ export function Layout() {
                     : 'text-muted-foreground hover:bg-soft-sand/20'
                 }`}
               >
-                <img src={item.icon as string} className="w-5 h-5 object-contain" alt="" />
+                <img src={item.icon as string} className="w-6 h-6 object-contain" alt="" />
                 <span className="text-[10px] font-medium">{item.label}</span>
               </Link>
             );

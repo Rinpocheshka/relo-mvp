@@ -203,7 +203,7 @@ export function Announcements() {
                 >
                   <img 
                     src={category.icon as string} 
-                    className={`w-5 h-5 object-contain transition-all duration-300 ${selectedCategory === category.name ? 'brightness-0 invert' : ''}`} 
+                    className={`w-6 h-6 object-contain transition-all duration-300 ${selectedCategory === category.name ? 'brightness-0 invert' : ''}`} 
                     alt="" 
                   />
                   <span className="font-semibold text-sm">{category.name}</span>

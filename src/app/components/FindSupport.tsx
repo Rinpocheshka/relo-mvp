@@ -456,9 +456,9 @@ export function FindSupport() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-4">
-            <Heart className="w-5 h-5 text-dusty-indigo" />
-            <span className="text-dusty-indigo font-medium">Найти опору</span>
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-4">
+            <img src="/assets/icons/custom/message.png" className="w-6 h-6 object-contain" alt="" />
+            <span className="text-dusty-indigo font-bold text-sm">Найти опору</span>
           </div>
           <h1 className="text-4xl font-bold mb-3">Вопросы и ответы</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -545,14 +545,18 @@ export function FindSupport() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-5 py-2.5 rounded-full whitespace-nowrap text-sm font-semibold transition-all duration-200 border flex-shrink-0 flex items-center gap-2 ${
+                  className={`px-5 py-3 rounded-full whitespace-nowrap text-sm font-bold transition-all duration-300 border flex-shrink-0 flex items-center gap-2.5 ${
                     selectedCategory === cat
-                      ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-md'
-                      : 'bg-white text-muted-foreground hover:bg-soft-sand/20 border-border/50'
+                      ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-lg shadow-dusty-indigo/20 scale-105 active:scale-95'
+                      : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
                   }`}
                 >
                   {CATEGORY_ICON_MAP[cat] && (
-                    <img src={CATEGORY_ICON_MAP[cat]} className={`w-4 h-4 object-contain ${selectedCategory === cat ? 'brightness-200 grayscale-0' : ''}`} alt="" />
+                    <img 
+                      src={CATEGORY_ICON_MAP[cat]} 
+                      className={`w-6 h-6 object-contain transition-all duration-300 ${selectedCategory === cat ? 'brightness-0 invert' : ''}`} 
+                      alt="" 
+                    />
                   )}
                   {cat}
                 </button>
