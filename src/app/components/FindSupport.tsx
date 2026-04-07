@@ -82,6 +82,23 @@ const RESOURCE_CATEGORIES = [
   'Здоровье', 'Банки и финансы', 'Шопинг', 'Образование',
 ];
 
+const CATEGORY_ICON_MAP: Record<string, string> = {
+  'Жилье, документы': '/assets/icons/custom/passport.png',
+  'Жилье': '/assets/icons/custom/luggage.png',
+  'Легализация': '/assets/icons/custom/passport.png',
+  'Дети': '/assets/icons/custom/kite.png',
+  'Образование': '/assets/icons/custom/kite.png',
+  'Куда сходить': '/assets/icons/custom/sandcastle.png',
+  'Шопинг': '/assets/icons/custom/luggage.png',
+  'Здоровье': '/assets/icons/custom/umbrella.png',
+  'Транспорт': '/assets/icons/custom/tickets.png',
+  'Переезд и транспорт': '/assets/icons/custom/travel.png',
+  'Банки и финансы': '/assets/icons/custom/passport.png',
+  'О городе': '/assets/icons/custom/danang_symbol.png',
+  'О платформе': '/assets/icons/custom/message.png',
+  'Для бизнеса': '/assets/icons/custom/signpost.png',
+};
+
 const GUIDE_COLORS = [
   'bg-dusty-indigo/40', 'bg-warm-olive/40', 'bg-terracotta-deep/40',
   'bg-[#7C9D8E]/40', 'bg-[#9B8EA8]/40',
@@ -528,12 +545,15 @@ export function FindSupport() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-5 py-2.5 rounded-full whitespace-nowrap text-sm font-semibold transition-all duration-200 border flex-shrink-0 ${
+                  className={`px-5 py-2.5 rounded-full whitespace-nowrap text-sm font-semibold transition-all duration-200 border flex-shrink-0 flex items-center gap-2 ${
                     selectedCategory === cat
                       ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-md'
                       : 'bg-white text-muted-foreground hover:bg-soft-sand/20 border-border/50'
                   }`}
                 >
+                  {CATEGORY_ICON_MAP[cat] && (
+                    <img src={CATEGORY_ICON_MAP[cat]} className={`w-4 h-4 object-contain ${selectedCategory === cat ? 'brightness-200 grayscale-0' : ''}`} alt="" />
+                  )}
                   {cat}
                 </button>
               ))}

@@ -88,11 +88,11 @@ const INTERESTS_TAGS = [
 ];
 
 const STAGES = [
-  { value: 'planning', label: 'планирую переезд', icon: '🗓️' },
-  { value: 'just_arrived', label: 'только приехал', icon: '🛬' },
-  { value: 'settling', label: 'осваиваюсь', icon: '🏠' },
-  { value: 'sharing', label: 'делюсь опытом', icon: '🤝' },
-  { value: 'moving_on', label: 'переезжаю дальше', icon: '🚀' },
+  { value: 'planning', label: 'планирую переезд', icon: '/assets/icons/custom/airplane_bw.png' },
+  { value: 'just_arrived', label: 'только приехал', icon: '/assets/icons/custom/luggage.png' },
+  { value: 'settling', label: 'осваиваюсь', icon: '/assets/icons/custom/path_arrow.png' },
+  { value: 'sharing', label: 'делюсь опытом', icon: '/assets/icons/custom/message.png' },
+  { value: 'moving_on', label: 'переезжаю дальше', icon: '/assets/icons/custom/travel.png' },
 ];
 
 export function Profile() {
@@ -373,8 +373,11 @@ export function Profile() {
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
                     <div>
                       <h1 className="text-3xl font-bold mb-2">{profile?.display_name || 'Аноним'}</h1>
-                      <p className="text-lg text-muted-foreground mb-3">
-                        {STAGES.find(s => s.value === profile?.stage)?.icon} {STAGES.find(s => s.value === profile?.stage)?.label || 'Участник сообщества'}
+                      <p className="text-lg text-muted-foreground mb-3 flex items-center gap-2">
+                        {STAGES.find(s => s.value === profile?.stage)?.icon && (
+                          <img src={STAGES.find(s => s.value === profile?.stage)?.icon} className="w-5 h-5 object-contain" alt="" />
+                        )}
+                        {STAGES.find(s => s.value === profile?.stage)?.label || 'Участник сообщества'}
                       </p>
                       
                       <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
@@ -484,7 +487,7 @@ export function Profile() {
                         >
                           <option value="" disabled>Выберите ваш статус</option>
                           {STAGES.map(s => (
-                            <option key={s.value} value={s.value}>{s.icon} {s.label}</option>
+                            <option key={s.value} value={s.value}>{s.label}</option>
                           ))}
                         </select>
                       </div>

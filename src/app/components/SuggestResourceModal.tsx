@@ -22,7 +22,20 @@ const RESOURCE_CATEGORIES = [
   'Другое',
 ];
 
-const ICON_OPTIONS = ['🌐', '🏠', '🚌', '📄', '🏥', '🏦', '💳', '🛍️', '📚', '✈️', '🔗'];
+const ICON_OPTIONS = [
+  '/assets/icons/custom/danang_symbol.png',
+  '/assets/icons/custom/luggage.png',
+  '/assets/icons/custom/travel.png',
+  '/assets/icons/custom/passport.png',
+  '/assets/icons/custom/umbrella.png',
+  '/assets/icons/custom/kite.png',
+  '/assets/icons/custom/sandcastle.png',
+  '/assets/icons/custom/tickets.png',
+  '/assets/icons/custom/message.png',
+  '/assets/icons/custom/airplane_bw.png',
+  '/assets/icons/custom/camera.png',
+  '/assets/icons/custom/photo.png',
+];
 
 export function SuggestResourceModal({ isOpen, onClose, onSuccess }: SuggestResourceModalProps) {
   const { user, profile } = useAuth();
@@ -30,7 +43,7 @@ export function SuggestResourceModal({ isOpen, onClose, onSuccess }: SuggestReso
   const [url, setUrl] = useState('');
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
-  const [icon, setIcon] = useState('🌐');
+  const [icon, setIcon] = useState('/assets/icons/custom/danang_symbol.png');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
@@ -65,7 +78,7 @@ export function SuggestResourceModal({ isOpen, onClose, onSuccess }: SuggestReso
       setDone(true);
       setTimeout(() => {
         setDone(false);
-        setName(''); setUrl(''); setCategory(''); setDescription(''); setIcon('🌐');
+        setName(''); setUrl(''); setCategory(''); setDescription(''); setIcon('/assets/icons/custom/danang_symbol.png');
         onSuccess();
         onClose();
       }, 1800);
@@ -133,11 +146,11 @@ export function SuggestResourceModal({ isOpen, onClose, onSuccess }: SuggestReso
                         <button
                           key={em}
                           onClick={() => setIcon(em)}
-                          className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center transition-all border-2 ${
+                          className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all border-2 overflow-hidden p-2 ${
                             icon === em ? 'border-dusty-indigo bg-dusty-indigo/5' : 'border-transparent bg-soft-sand/20 hover:bg-soft-sand/40'
                           }`}
                         >
-                          {em}
+                          <img src={em} className="w-full h-full object-contain" alt="" />
                         </button>
                       ))}
                     </div>

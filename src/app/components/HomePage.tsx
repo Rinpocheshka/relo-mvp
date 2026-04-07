@@ -42,10 +42,10 @@ const stageContent = {
     greeting: 'Переезд — это не про чемоданы.\nЭто про то, как создать новую жизнь.',
     warmth: 'Ты выбираешь куда переехать. Посмотри, что происходит в Дананге, пообщайся с теми, кто уже там.',
     quickLinks: [
-      { text: '🏠 Найти жильё', link: '/announcements?category=housing' },
-      { text: '❓ Найти ответы', link: '/support' },
-      { text: '📍 События', link: '/events' },
-      { text: '👥 Написать местным', link: '/people' },
+      { text: 'Найти жильё', icon: '/assets/icons/custom/luggage.png', link: '/announcements?category=housing' },
+      { text: 'Найти ответы', icon: '/assets/icons/custom/message.png', link: '/support' },
+      { text: 'События', icon: '/assets/icons/custom/kite.png', link: '/events' },
+      { text: 'Написать местным', icon: '/assets/icons/custom/danang_symbol.png', link: '/people' },
     ],
     sections: [
       { icon: Heart, title: 'Ответы на вопросы «А как проще…»', subtitle: 'Найти опору', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
@@ -57,10 +57,10 @@ const stageContent = {
     greeting: 'Здесь есть люди, которые проходят тот же путь.',
     warmth: 'Первые дни в новом городе — давай разберёмся вместе.',
     quickLinks: [
-      { text: '🏠 Жильё и сервисы', link: '/announcements?category=housing' },
-      { text: '🎉 Куда сходить', link: '/events' },
-      { text: '👥 Найти своих', link: '/people' },
-      { text: '💙 Получить совет', link: '/support' },
+      { text: 'Жильё и сервисы', icon: '/assets/icons/custom/luggage.png', link: '/announcements?category=housing' },
+      { text: 'Куда сходить', icon: '/assets/icons/custom/kite.png', link: '/events' },
+      { text: 'Найти своих', icon: '/assets/icons/custom/danang_symbol.png', link: '/people' },
+      { text: 'Получить совет', icon: '/assets/icons/custom/message.png', link: '/support' },
     ],
     sections: [
       { icon: Megaphone, title: 'Самое актуальное на первое время', subtitle: 'Объявления', link: '/announcements', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
@@ -72,10 +72,10 @@ const stageContent = {
     greeting: 'Ты уже часть этого города —\nтебе есть чем поделиться 🌿',
     warmth: 'Активные пользователи видны лучше и помогают сообществу расти. Спасибо, что ты здесь!',
     quickLinks: [
-      { text: '🤝 Помочь новичкам', link: '/people?filter=newcomers' },
-      { text: '🎪 Провести событие', link: '/events/create' },
-      { text: '📦 Продать вещи', link: '/announcements' },
-      { text: '💬 Ответить на вопросы', link: '/support' },
+      { text: 'Помочь новичкам', icon: '/assets/icons/custom/danang_symbol.png', link: '/people?filter=newcomers' },
+      { text: 'Провести событие', icon: '/assets/icons/custom/kite.png', link: '/events/create' },
+      { text: 'Продать вещи', icon: '/assets/icons/custom/luggage.png', link: '/announcements' },
+      { text: 'Ответить на вопросы', icon: '/assets/icons/custom/message.png', link: '/support' },
     ],
     sections: [
       { icon: Users, title: 'Люди, которым ты можешь помочь', subtitle: 'Люди рядом', link: '/people', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
@@ -87,10 +87,10 @@ const stageContent = {
     greeting: 'Освободи место\nдля нового опыта 👋',
     warmth: 'Уезжать — это тоже начало. Продай ненужное, сохрани контакты и передай эстафету.',
     quickLinks: [
-      { text: '📦 Продать вещи', link: '/announcements?category=items' },
-      { text: '🏠 Пересдать квартиру', link: '/announcements?category=housing' },
-      { text: '🎉 Сделать отвальную', link: '/events' },
-      { text: '👥 Сохранить контакты', link: '/people' },
+      { text: 'Продать вещи', icon: '/assets/icons/custom/luggage.png', link: '/announcements?category=items' },
+      { text: 'Пересдать квартиру', icon: '/assets/icons/custom/luggage.png', link: '/announcements?category=housing' },
+      { text: 'Сделать отвальную', icon: '/assets/icons/custom/kite.png', link: '/events' },
+      { text: 'Сохранить контакты', icon: '/assets/icons/custom/danang_symbol.png', link: '/people' },
     ],
     sections: [
       { icon: Megaphone, title: 'Продать то, что не влезет в чемодан', subtitle: 'Объявления', link: '/announcements', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
@@ -198,7 +198,8 @@ export function HomePage() {
                   <div className="flex flex-wrap gap-3">
                     {content.quickLinks.map((link, i) => (
                       <Link key={i} to={link.link}>
-                        <button className="px-6 py-3 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-2xl text-sm font-semibold transition-all text-foreground border border-transparent hover:border-terracotta-deep/20">
+                        <button className="flex items-center gap-2.5 px-6 py-3 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-2xl text-sm font-semibold transition-all text-foreground border border-transparent hover:border-terracotta-deep/20">
+                          {(link as any).icon && <img src={(link as any).icon} className="w-5 h-5 object-contain" alt="" />}
                           {link.text}
                         </button>
                       </Link>

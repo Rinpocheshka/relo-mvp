@@ -555,11 +555,11 @@ function OnboardingFlow({
   };
 
   const STAGES: { value: UserPath; label: string; icon: string }[] = [
-    { value: 'planning', label: 'планирую переезд', icon: '🗓️' },
-    { value: 'just_arrived', label: 'только приехал', icon: '🛬' },
-    { value: 'settling', label: 'осваиваюсь', icon: '🏠' },
-    { value: 'sharing', label: 'делюсь опытом', icon: '🤝' },
-    { value: 'moving_on', label: 'переезжаю дальше', icon: '🚀' },
+    { value: 'planning', label: 'планирую переезд', icon: '/assets/icons/custom/airplane_bw.png' },
+    { value: 'just_arrived', label: 'только приехал', icon: '/assets/icons/custom/luggage.png' },
+    { value: 'settling', label: 'осваиваюсь', icon: '/assets/icons/custom/path_arrow.png' },
+    { value: 'sharing', label: 'делюсь опытом', icon: '/assets/icons/custom/message.png' },
+    { value: 'moving_on', label: 'переезжаю дальше', icon: '/assets/icons/custom/travel.png' },
   ];
 
   return (
@@ -624,7 +624,13 @@ function OnboardingFlow({
                       onClick={() => { setUserPath(s.value); onNext(); }}
                       className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${userPath === s.value ? 'bg-terracotta-deep text-white border-terracotta-deep shadow-md' : 'bg-white border-border hover:border-terracotta-deep/40 hover:bg-terracotta-deep/5'}`}
                     >
-                      <span className="text-2xl">{s.icon}</span>
+                      <span className="text-2xl flex-shrink-0">
+                        {s.icon.startsWith('/') || s.icon.includes('.jpg') ? (
+                          <img src={s.icon} alt="" className="w-8 h-8 object-contain rounded-lg bg-white/10" />
+                        ) : (
+                          s.icon
+                        )}
+                      </span>
                       <span className="font-bold">{s.label}</span>
                     </motion.button>
                   ))}

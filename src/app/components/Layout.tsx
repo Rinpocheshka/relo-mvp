@@ -233,7 +233,7 @@ export function Layout() {
               }}
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-soft-sand/40 hover:bg-soft-sand/60 transition-colors rounded-full border border-border/40 text-xs font-medium text-muted-foreground flex-shrink-0 cursor-pointer"
             >
-              <span className="text-terracotta-deep">📍</span>
+              <img src="/assets/icons/custom/map_pin.png" alt="location" className="w-4 h-4 object-contain" />
               {user ? (city || 'Не указано') : (city || 'Выберите место')}
             </button>
             {!user && <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />}
