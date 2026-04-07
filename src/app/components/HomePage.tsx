@@ -54,7 +54,7 @@ const stageContent = {
     ],
   },
   living: {
-    greeting: 'Ты в Дананге 🌿\nЗдесь есть люди, которые проходят тот же путь.',
+    greeting: 'Здесь есть люди, которые проходят тот же путь.',
     warmth: 'Первые дни в новом городе — давай разберёмся вместе.',
     quickLinks: [
       { text: '🏠 Жильё и сервисы', link: '/announcements?category=housing' },
