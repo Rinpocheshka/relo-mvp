@@ -784,9 +784,13 @@ function QuestionCard({
                         onChange={(e) => setAnswerDraft(e.target.value)}
                         placeholder="Напишите свой ответ..."
                         rows={3}
+                        maxLength={500}
                         className="w-full px-4 py-3 bg-soft-sand/10 border border-border/50 rounded-[16px] focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20 text-sm leading-relaxed resize-none transition-all"
                       />
-                      <div className="flex justify-end">
+                      <div className="flex items-center justify-between">
+                        <span className={`text-[10px] font-bold ${answerDraft.length >= 450 ? 'text-terracotta-deep' : 'text-muted-foreground/40'}`}>
+                          {answerDraft.length}/500
+                        </span>
                         <Button
                           onClick={async (e) => {
                             e.stopPropagation();
