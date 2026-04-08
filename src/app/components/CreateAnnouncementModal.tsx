@@ -14,10 +14,12 @@ interface Props {
 }
 
 const CATEGORIES = [
-  { name: 'Жильё', icon: '🏠' },
-  { name: 'Вещи', icon: '📦' },
-  { name: 'Услуги', icon: '💼' },
-  { name: 'Бесплатно', icon: '💝' },
+  { name: 'Жильё', icon: '/assets/icons/custom/luggage.png' },
+  { name: 'Вещи', icon: '/assets/icons/custom/travel.png' },
+  { name: 'Услуги', icon: '/assets/icons/custom/tickets.png' },
+  { name: 'Документы/визы', icon: '/assets/icons/custom/passport.png' },
+  { name: 'Обмен/деньги', icon: '/assets/icons/custom/travel.png' },
+  { name: 'Бесплатно', icon: '/assets/icons/custom/message.png' },
 ];
 
 const SUBCATEGORIES: Record<string, string[]> = {
@@ -43,6 +45,19 @@ const SUBCATEGORIES: Record<string, string[]> = {
     'Красота',
     'Перевозки',
     'Юристы',
+    'Другое',
+  ],
+  'Документы/визы': [
+    'Визы (TRC, E-visa)',
+    'Паспорта',
+    'Нотариус / Перевод',
+    'Права',
+    'Другое',
+  ],
+  'Обмен/деньги': [
+    'Обмен валюты',
+    'Денежные переводы',
+    'Криптовалюта',
     'Другое',
   ]
 };
@@ -281,7 +296,9 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                             : 'bg-white border-border hover:border-terracotta-deep/30'
                         }`}
                       >
-                        <span className="text-2xl">{cat.icon}</span>
+                        <div className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all ${form.category === cat.name ? 'brightness-0 invert' : ''}`}>
+                          <img src={cat.icon} className="w-8 h-8 object-contain" alt="" />
+                        </div>
                         <span className="text-xs font-semibold">{cat.name}</span>
                       </button>
                     ))}

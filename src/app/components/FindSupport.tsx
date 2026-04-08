@@ -13,6 +13,7 @@ import {
   SortDesc,
   Loader2,
   Eye,
+  Filter,
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { supabase } from '@/lib/supabaseClient';
@@ -448,7 +449,7 @@ export function FindSupport() {
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-warm-milk py-8 pb-32">
+    <div className="min-h-screen bg-warm-milk py-8 pb-32 overflow-x-hidden">
       {/* ── Header ── */}
       <div className="max-w-7xl mx-auto px-4 text-center">
         <motion.div
@@ -520,50 +521,60 @@ export function FindSupport() {
             )}
           </div>
 
-          {/* Sort + Categories row */}
-          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+          {/* Sort & Categories restructured for full visibility */}
+          <div className="space-y-6">
+            {/* Row 1: Sort Buttons */}
             {activeTab === 'questions' && (
-              <div className="flex gap-1.5 flex-shrink-0 bg-white border border-border/40 rounded-full px-1.5 py-1 shadow-sm">
-                {([['new', 'Новые'], ['unanswered', 'Без ответа'], ['popular', 'Популярные']] as [SortMode, string][]).map(([mode, label]) => (
-                  <button
-                    key={mode}
-                    onClick={() => setSortMode(mode)}
-                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                      sortMode === mode
-                        ? 'bg-dusty-indigo text-white shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 px-1">
+                  <SortDesc className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Сортировка</span>
+                </div>
+                <div className="flex gap-1.5 bg-white border border-border/40 rounded-full px-1.5 py-1 shadow-sm">
+                  {([['new', 'Новые'], ['unanswered', 'Без ответа'], ['popular', 'Популярные']] as [SortMode, string][]).map(([mode, label]) => (
+                    <button
+                      key={mode}
+                      onClick={() => setSortMode(mode)}
+                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+                        sortMode === mode
+                          ? 'bg-dusty-indigo text-white shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 
-            <div className="relative w-full faded-scroller">
-              <div className="flex gap-2.5 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-                <div className="flex gap-2.5 pr-10 md:pr-0">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-5 py-3 rounded-full whitespace-nowrap text-sm font-bold transition-all duration-300 border flex-shrink-0 flex items-center gap-2.5 ${
-                    selectedCategory === cat
-                      ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-lg shadow-dusty-indigo/20 scale-105 active:scale-95'
-                      : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
-                  }`}
-                >
-                  {CATEGORY_ICON_MAP[cat] && (
-                    <img 
-                      src={CATEGORY_ICON_MAP[cat]} 
-                      className={`w-6 h-6 object-contain transition-all duration-300 ${selectedCategory === cat ? 'brightness-0 invert' : ''}`} 
-                      alt="" 
-                    />
-                  )}
-                  {cat}
-                </button>
-              ))}
-                </div>
+            {/* Row 2: Categories (Now always wrapped for full visibility) */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 px-1">
+                <Filter className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Категории</span>
+              </div>
+              <div className="flex flex-wrap gap-2.5">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-4 py-2.5 sm:px-5 sm:py-3 rounded-full whitespace-nowrap text-[13px] sm:text-sm font-bold transition-all duration-300 border flex items-center gap-2 ${
+                      selectedCategory === cat
+                        ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-lg shadow-dusty-indigo/20 scale-105 active:scale-95'
+                        : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
+                    }`}
+                  >
+                    {CATEGORY_ICON_MAP[cat] && (
+                      <img 
+                        src={CATEGORY_ICON_MAP[cat]} 
+                        className={`w-5 h-5 sm:w-6 sm:h-6 object-contain transition-all duration-300 ${selectedCategory === cat ? 'brightness-0 invert' : ''}`} 
+                        alt="" 
+                      />
+                    )}
+                    {cat}
+                  </button>
+                ))}
               </div>
             </div>
           </div>

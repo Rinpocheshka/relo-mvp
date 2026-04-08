@@ -55,18 +55,43 @@ export function Announcements() {
     { name: 'Жильё', icon: '/assets/icons/custom/luggage.png' },
     { name: 'Вещи', icon: '/assets/icons/custom/travel.png' },
     { name: 'Услуги', icon: '/assets/icons/custom/tickets.png' },
+    { name: 'Документы/визы', icon: '/assets/icons/custom/passport.png' },
+    { name: 'Обмен/деньги', icon: '/assets/icons/custom/travel.png' },
     { name: 'Бесплатно', icon: '/assets/icons/custom/message.png' },
   ];
 
-  const itemsSubcategories = [
-    'Для дома',
-    'Одежда, обувь, аксессуары',
-    'Для детей',
-    'Спорт, хобби',
-    'Авто, мото',
-    'Красота и здоровье',
-    'Другое',
-  ];
+  const subcategoriesMap: Record<string, string[]> = {
+    'Вещи': [
+      'Для дома',
+      'Одежда, обувь, аксессуары',
+      'Для детей',
+      'Спорт, хобби',
+      'Авто, мото',
+      'Красота и здоровье',
+      'Другое',
+    ],
+    'Услуги': [
+      'Ремонт',
+      'Обучение',
+      'Красота',
+      'Перевозки',
+      'Юристы',
+      'Другое',
+    ],
+    'Документы/визы': [
+      'Визы (TRC, E-visa)',
+      'Паспорта',
+      'Нотариус / Перевод',
+      'Права',
+      'Другое',
+    ],
+    'Обмен/деньги': [
+      'Обмен валюты',
+      'Денежные переводы',
+      'Криптовалюта',
+      'Другое',
+    ]
+  };
 
   const housingFilterOptions = {
     format: ['Квартира', 'Дом', 'Отель', 'Бесплатное жилье (Couchsurfing)'],
@@ -313,33 +338,35 @@ export function Announcements() {
           </div>
         )}
 
-        {/* Items Subcategories */}
-        {selectedCategory === 'Вещи' && (
-          <div className="mb-8">
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              <button
-                onClick={() => setSelectedSubcategory('')}
-                className={`px-4 py-2 rounded-[12px] whitespace-nowrap text-sm transition-all ${
-                  !selectedSubcategory
-                    ? 'bg-terracotta-deep/10 text-terracotta-deep font-medium'
-                    : 'bg-white text-foreground hover:bg-soft-sand/30 border border-border'
-                }`}
-              >
-                Все вещи
-              </button>
-              {itemsSubcategories.map(sub => (
+        {/* Subcategories Filter */}
+        {subcategoriesMap[selectedCategory] && (
+          <div className="mb-8 overflow-hidden">
+            <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide faded-scroller overflow-y-hidden">
+              <div className="flex gap-2 min-w-max pr-12">
                 <button
-                  key={sub}
-                  onClick={() => setSelectedSubcategory(sub)}
-                  className={`px-4 py-2 rounded-[12px] whitespace-nowrap text-sm transition-all ${
-                    selectedSubcategory === sub
-                      ? 'bg-terracotta-deep/10 text-terracotta-deep font-medium'
-                      : 'bg-white text-foreground hover:bg-soft-sand/30 border border-border'
+                  onClick={() => setSelectedSubcategory('')}
+                  className={`px-5 py-2.5 rounded-[12px] whitespace-nowrap text-sm transition-all shadow-sm ${
+                    !selectedSubcategory
+                      ? 'bg-terracotta-deep text-white font-semibold'
+                      : 'bg-white text-muted-foreground hover:bg-soft-sand/30 border border-border shadow-sm'
                   }`}
                 >
-                  {sub}
+                  Все {selectedCategory.toLowerCase()}
                 </button>
-              ))}
+                {subcategoriesMap[selectedCategory].map((sub: string) => (
+                  <button
+                    key={sub}
+                    onClick={() => setSelectedSubcategory(sub)}
+                    className={`px-5 py-2.5 rounded-[12px] whitespace-nowrap text-sm transition-all shadow-sm ${
+                      selectedSubcategory === sub
+                        ? 'bg-terracotta-deep text-white font-semibold'
+                        : 'bg-white text-muted-foreground hover:bg-soft-sand/30 border border-border shadow-sm'
+                    }`}
+                  >
+                    {sub}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}

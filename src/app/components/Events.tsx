@@ -78,7 +78,7 @@ export function Events() {
     { name: 'Иное', icon: '/assets/icons/custom/clouds.png' }
   ];
 
-  const timeFilters = ['Все', 'Сегодня', 'Эта неделя', 'Этот месяц'];
+  const timeFilters = ['Все', 'Сегодня', 'Эта неделя', 'Этот месяц', 'Прошедшие'];
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -152,6 +152,8 @@ export function Events() {
           const nextMonth = new Date(today);
           nextMonth.setMonth(today.getMonth() + 1);
           dateMatch = eventDate >= today && eventDate < nextMonth;
+        } else if (timeFilter === 'Прошедшие') {
+          dateMatch = eventDate < today;
         }
       }
 

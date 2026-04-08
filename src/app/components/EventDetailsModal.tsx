@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
+import { Link } from 'react-router';
 import { X, Calendar, MapPin, Clock, Users, MessageCircle, Trash2, ShieldCheck, AlertTriangle, Edit, Wallet } from 'lucide-react';
 import { Button } from './ui/button';
 import { useState, useEffect } from 'react';
@@ -282,19 +283,25 @@ export function EventDetailsModal({
                     </div>
                     <div className="flex flex-wrap gap-2.5">
                       {participants.slice(0, 12).map((p, idx) => (
-                        <div key={idx} className="group relative" title={p.profiles?.display_name || 'Anonymous'}>
+                        <Link 
+                          key={p.user_id || idx} 
+                          to={`/profile/${p.user_id}`}
+                          onClick={onClose}
+                          className="group relative" 
+                          title={p.profiles?.display_name || 'Anonymous'}
+                        >
                            {p.profiles?.avatar_url ? (
                               <img 
                                 src={p.profiles.avatar_url} 
-                                className="w-12 h-12 rounded-2xl border-2 border-white shadow-md object-cover transition-transform group-hover:-translate-y-1" 
+                                className="w-12 h-12 rounded-2xl border-2 border-white shadow-md object-cover transition-all group-hover:-translate-y-1 group-hover:scale-105 active:scale-95" 
                                 alt="participant"
                               />
                            ) : (
-                              <div className="w-12 h-12 rounded-2xl border-2 border-white shadow-md bg-soft-sand text-dusty-indigo flex items-center justify-center text-sm font-black transition-transform group-hover:-translate-y-1">
+                              <div className="w-12 h-12 rounded-2xl border-2 border-white shadow-md bg-soft-sand text-dusty-indigo flex items-center justify-center text-sm font-black transition-all group-hover:-translate-y-1 group-hover:scale-105 active:scale-95">
                                 {(p.profiles?.display_name || 'U').charAt(0)}
                               </div>
                            )}
-                        </div>
+                        </Link>
                       ))}
                       {participants.length > 12 && (
                         <div className="w-12 h-12 rounded-2xl border-2 border-white shadow-md bg-warm-milk flex items-center justify-center text-xs font-black text-muted-foreground">

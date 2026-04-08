@@ -479,7 +479,7 @@ export function Profile() {
                        />
                      </div>
                      <div>
-                        <label className="text-sm font-medium text-muted-foreground ml-1">Статус (Шаг 1 онбординга)</label>
+                        <label className="text-sm font-medium text-muted-foreground ml-1">Статус</label>
                         <select 
                           className="w-full p-3 border border-border bg-white focus:ring-2 focus:ring-terracotta-deep/20 outline-none transition-all rounded-[14px] mt-1 shadow-sm" 
                           value={editForm.stage || ''} 
@@ -493,7 +493,7 @@ export function Profile() {
                       </div>
 
                       <div className="md:col-span-2">
-                        <label className="text-sm font-medium text-muted-foreground ml-1">Место (Шаг 2 онбординга)</label>
+                        <label className="text-sm font-medium text-muted-foreground ml-1">Место</label>
                         <div className="flex flex-col gap-4 mt-2">
                           <div className="relative">
                             <MapPin className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
