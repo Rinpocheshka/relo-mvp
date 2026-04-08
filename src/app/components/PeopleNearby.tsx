@@ -191,9 +191,9 @@ export function PeopleNearby() {
         </div>
 
         {/* Filters */}
-        <div className="mb-10 relative w-full">
-          <div className="flex gap-2 overflow-x-auto py-2 pb-6 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-            <div className="flex gap-2.5 items-center min-h-[60px] pr-12 md:pr-0">
+        <div className="mb-10 relative w-full overflow-visible">
+          <div className="flex flex-nowrap md:flex-wrap gap-3 overflow-x-auto md:overflow-visible py-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 justify-start md:justify-center">
+            <div className="flex flex-nowrap md:flex-wrap gap-3 items-center min-h-[60px] pr-12 md:pr-0 justify-start md:justify-center">
               {filters.map((f) => (
                 <button
                   key={f.name}
