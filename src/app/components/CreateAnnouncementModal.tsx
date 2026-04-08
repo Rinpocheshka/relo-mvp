@@ -22,46 +22,6 @@ const CATEGORIES = [
   { name: 'Бесплатно', icon: '/assets/icons/custom/message.png' },
 ];
 
-const SUBCATEGORIES: Record<string, string[]> = {
-  'Вещи': [
-    'Для дома',
-    'Одежда, обувь, аксессуары',
-    'Для детей',
-    'Спорт, хобби',
-    'Авто, мото',
-    'Красота и здоровье',
-    'Другое',
-  ],
-  'Жильё': [
-    'Квартира',
-    'Дом',
-    'Отель',
-    'Комната',
-    'Студия',
-  ],
-  'Услуги': [
-    'Ремонт',
-    'Обучение',
-    'Красота',
-    'Перевозки',
-    'Юристы',
-    'Другое',
-  ],
-  'Документы/визы': [
-    'Визы (TRC, E-visa)',
-    'Паспорта',
-    'Нотариус / Перевод',
-    'Права',
-    'Другое',
-  ],
-  'Обмен/деньги': [
-    'Обмен валюты',
-    'Денежные переводы',
-    'Криптовалюта',
-    'Другое',
-  ]
-};
-
 export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
   const { user, profile } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -73,7 +33,6 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
   const [form, setForm] = useState({
     title: '',
     category: 'Жильё',
-    subcategory: '',
     price_text: '',
     price_numeric: '',
     location_text: '',
@@ -195,7 +154,6 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
           .insert({
             title: form.title,
             category: form.category,
-            subcategory: form.subcategory || null,
             price_text: form.price_text,
             price_numeric: price_numeric,
             location_text: form.location_text,
@@ -218,7 +176,6 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
         setForm({
           title: '',
           category: 'Жильё',
-          subcategory: '',
           price_text: '',
           price_numeric: '',
           location_text: '',
@@ -289,7 +246,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                       <button
                         key={cat.name}
                         type="button"
-                        onClick={() => setForm({ ...form, category: cat.name, subcategory: '' })}
+                        onClick={() => setForm({ ...form, category: cat.name })}
                         className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${
                           form.category === cat.name
                             ? 'bg-terracotta-deep border-terracotta-deep text-white shadow-md'
@@ -304,23 +261,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                     ))}
                   </div>
 
-                  {/* Subcategory */}
-                  {SUBCATEGORIES[form.category] && (
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold ml-1">Подкатегория</label>
-                      <select
-                        value={form.subcategory}
-                        onChange={(e) => setForm({ ...form, subcategory: e.target.value })}
-                        className="w-full p-4 bg-soft-sand/20 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm appearance-none cursor-pointer"
-                        required
-                      >
-                        <option value="">Выберите подкатегорию</option>
-                        {SUBCATEGORIES[form.category].map(s => (
-                          <option key={s} value={s}>{s}</option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
+
 
                   {/* Image Upload */}
                   <div className="space-y-2">

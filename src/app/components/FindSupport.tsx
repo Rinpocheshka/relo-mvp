@@ -74,30 +74,25 @@ type SortMode = 'new' | 'unanswered' | 'popular';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const QUESTION_CATEGORIES = [
-  'Все', 'Жилье, документы', 'Дети', 'О городе',
-  'Куда сходить', 'Здоровье', 'Банки и финансы', 'О платформе', 'Для бизнеса',
+  'Все', 'жилье', 'документы/визы', 'обмен/деньги', 'дети',
+  'о городе', 'куда сходить', 'здоровье', 'для бизнеса', 'о платформе',
 ];
 
 const RESOURCE_CATEGORIES = [
-  'Все', 'Переезд и транспорт', 'Жилье', 'Легализация',
-  'Здоровье', 'Банки и финансы', 'Шопинг', 'Образование',
+  'Все', 'жилье', 'документы/визы', 'обмен/деньги', 'дети',
+  'о городе', 'куда сходить', 'здоровье', 'для бизнеса', 'о платформе',
 ];
 
 const CATEGORY_ICON_MAP: Record<string, string> = {
-  'Жилье, документы': '/assets/icons/custom/passport.png',
-  'Жилье': '/assets/icons/custom/luggage.png',
-  'Легализация': '/assets/icons/custom/passport.png',
-  'Дети': '/assets/icons/custom/kite.png',
-  'Образование': '/assets/icons/custom/kite.png',
-  'Куда сходить': '/assets/icons/custom/sandcastle.png',
-  'Шопинг': '/assets/icons/custom/luggage.png',
-  'Здоровье': '/assets/icons/custom/umbrella.png',
-  'Транспорт': '/assets/icons/custom/tickets.png',
-  'Переезд и транспорт': '/assets/icons/custom/travel.png',
-  'Банки и финансы': '/assets/icons/custom/passport.png',
-  'О городе': '/assets/icons/custom/danang_symbol.png',
-  'О платформе': '/assets/icons/custom/message.png',
-  'Для бизнеса': '/assets/icons/custom/signpost.png',
+  'жилье': '/assets/icons/custom/luggage.png',
+  'документы/визы': '/assets/icons/custom/passport.png',
+  'обмен/деньги': '/assets/icons/custom/travel.png',
+  'дети': '/assets/icons/custom/kite.png',
+  'о городе': '/assets/icons/custom/danang_symbol.png',
+  'куда сходить': '/assets/icons/custom/sandcastle.png',
+  'здоровье': '/assets/icons/custom/umbrella.png',
+  'для бизнеса': '/assets/icons/custom/signpost.png',
+  'о платформе': '/assets/icons/custom/message.png',
 };
 
 const GUIDE_COLORS = [
@@ -521,15 +516,11 @@ export function FindSupport() {
             )}
           </div>
 
-          {/* Sort & Categories restructured for full visibility */}
-          <div className="space-y-6">
+          {/* Sort & Categories restructured for full visibility without extra labels */}
+          <div className="flex flex-col gap-5">
             {/* Row 1: Sort Buttons */}
             {activeTab === 'questions' && (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 px-1">
-                  <SortDesc className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Сортировка</span>
-                </div>
+              <div className="flex flex-shrink-0">
                 <div className="flex gap-1.5 bg-white border border-border/40 rounded-full px-1.5 py-1 shadow-sm">
                   {([['new', 'Новые'], ['unanswered', 'Без ответа'], ['popular', 'Популярные']] as [SortMode, string][]).map(([mode, label]) => (
                     <button
@@ -548,34 +539,28 @@ export function FindSupport() {
               </div>
             )}
 
-            {/* Row 2: Categories (Now always wrapped for full visibility) */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 px-1">
-                <Filter className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Категории</span>
-              </div>
-              <div className="flex flex-wrap gap-2.5">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-2.5 sm:px-5 sm:py-3 rounded-full whitespace-nowrap text-[13px] sm:text-sm font-bold transition-all duration-300 border flex items-center gap-2 ${
-                      selectedCategory === cat
-                        ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-lg shadow-dusty-indigo/20 scale-105 active:scale-95'
-                        : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
-                    }`}
-                  >
-                    {CATEGORY_ICON_MAP[cat] && (
-                      <img 
-                        src={CATEGORY_ICON_MAP[cat]} 
-                        className={`w-5 h-5 sm:w-6 sm:h-6 object-contain transition-all duration-300 ${selectedCategory === cat ? 'brightness-0 invert' : ''}`} 
-                        alt="" 
-                      />
-                    )}
-                    {cat}
-                  </button>
-                ))}
-              </div>
+            {/* Row 2: Categories (Wrapped for full visibility) */}
+            <div className="flex flex-wrap gap-2.5">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-4 py-2.5 sm:px-5 sm:py-3 rounded-full whitespace-nowrap text-[13px] sm:text-sm font-bold transition-all duration-300 border flex items-center gap-2 ${
+                    selectedCategory === cat
+                      ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-lg shadow-dusty-indigo/20 scale-105 active:scale-95'
+                      : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
+                  }`}
+                >
+                  {CATEGORY_ICON_MAP[cat] && (
+                    <img 
+                      src={CATEGORY_ICON_MAP[cat]} 
+                      className={`w-5 h-5 sm:w-6 sm:h-6 object-contain transition-all duration-300 ${selectedCategory === cat ? 'brightness-0 invert' : ''}`} 
+                      alt="" 
+                    />
+                  )}
+                  {cat}
+                </button>
+              ))}
             </div>
           </div>
         </div>

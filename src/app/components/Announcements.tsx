@@ -15,7 +15,6 @@ export interface Announcement {
   id: string;
   title: string;
   category: string;
-  subcategory?: string;
   description: string;
   author_name: string; // From table
   price_text: string;  // From table
@@ -29,7 +28,6 @@ export interface Announcement {
 
 export function Announcements() {
   const [selectedCategory, setSelectedCategory] = useState('Все');
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string>('');
   const [showFilters, setShowFilters] = useState(false);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,12 +35,7 @@ export function Announcements() {
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<'newest' | 'price_asc' | 'price_desc'>('newest');
   const PAGE_SIZE = 27;
-  const [housingFilters, setHousingFilters] = useState({
-    format: [] as string[],
-    size: [] as string[],
-    district: [] as string[],
-    term: [] as string[],
-  });
+
 
   const { user } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -60,53 +53,9 @@ export function Announcements() {
     { name: 'Бесплатно', icon: '/assets/icons/custom/message.png' },
   ];
 
-  const subcategoriesMap: Record<string, string[]> = {
-    'Вещи': [
-      'Для дома',
-      'Одежда, обувь, аксессуары',
-      'Для детей',
-      'Спорт, хобби',
-      'Авто, мото',
-      'Красота и здоровье',
-      'Другое',
-    ],
-    'Услуги': [
-      'Ремонт',
-      'Обучение',
-      'Красота',
-      'Перевозки',
-      'Юристы',
-      'Другое',
-    ],
-    'Документы/визы': [
-      'Визы (TRC, E-visa)',
-      'Паспорта',
-      'Нотариус / Перевод',
-      'Права',
-      'Другое',
-    ],
-    'Обмен/деньги': [
-      'Обмен валюты',
-      'Денежные переводы',
-      'Криптовалюта',
-      'Другое',
-    ]
-  };
 
-  const housingFilterOptions = {
-    format: ['Квартира', 'Дом', 'Отель', 'Бесплатное жилье (Couchsurfing)'],
-    size: ['Комната', 'Студия', '1 спальня', '2 спальни', '3 и более спален'],
-    district: [
-      'My An (Туристический)',
-      'Hai Chau (Центральный)',
-      'Son Tra (Прибрежный)',
-      'Ngu Hanh Son (Мраморные горы)',
-      'Thanh Khe (Вьетнамский центр)',
-      'Cam Le (Отдаленный)',
-      'Hoa Vang (Пригород)',
-    ],
-    term: ['2 недели', '1 месяц', '3 месяца', '6 месяцев', 'Год'],
-  };
+
+
 
   const fetchData = async () => {
     setLoading(true);
@@ -138,7 +87,6 @@ export function Announcements() {
         id: row.id as string,
         title: (row.title ?? '') as string,
         category: (row.category ?? '') as string,
-        subcategory: (row.subcategory ?? undefined) as string | undefined,
         description: (row.description ?? '') as string,
         author_name: (row.author_name ?? 'Пользователь') as string,
         price_text: (row.price_text ?? '') as string,
@@ -164,13 +112,8 @@ export function Announcements() {
 
   const filteredAnnouncements = useMemo(() => {
     if (selectedCategory === 'Все') return announcements;
-    if (selectedSubcategory) {
-      return announcements.filter(
-        (a) => a.category === selectedCategory && a.subcategory === selectedSubcategory,
-      );
-    }
     return announcements.filter((a) => a.category === selectedCategory);
-  }, [announcements, selectedCategory, selectedSubcategory]);
+  }, [announcements, selectedCategory]);
 
   const getSubtitle = () => {
     if (selectedCategory === 'Жильё') return '🏠 Найди свой дом в новом городе';
@@ -180,14 +123,7 @@ export function Announcements() {
     return 'Все предложения от релокантов в одном месте';
   };
 
-  const toggleFilter = (filterType: keyof typeof housingFilters, value: string) => {
-    setHousingFilters(prev => ({
-      ...prev,
-      [filterType]: prev[filterType].includes(value)
-        ? prev[filterType].filter(v => v !== value)
-        : [...prev[filterType], value],
-    }));
-  };
+
 
   return (
     <div className="min-h-screen bg-warm-milk py-8">
@@ -219,7 +155,6 @@ export function Announcements() {
                   key={category.name}
                   onClick={() => {
                     setSelectedCategory(category.name);
-                    setSelectedSubcategory('');
                   }}
                   className={`flex items-center gap-2.5 px-5 py-3.5 rounded-[18px] whitespace-nowrap transition-all duration-300 ${
                     selectedCategory === category.name
@@ -249,127 +184,9 @@ export function Announcements() {
           </div>
         )}
 
-        {/* Housing Filters */}
-        {selectedCategory === 'Жильё' && (
-          <div className="mb-8 bg-white p-6 rounded-[16px] border border-border">
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 text-sm font-medium mb-4 hover:text-terracotta-deep transition-colors"
-            >
-              Фильтры
-              <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
-            </button>
-            
-            {showFilters && (
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/* Format Filter */}
-                <div>
-                  <h4 className="font-medium mb-3 text-sm">Формат</h4>
-                  <div className="space-y-2">
-                    {housingFilterOptions.format.map(option => (
-                      <label key={option} className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={housingFilters.format.includes(option)}
-                          onChange={() => toggleFilter('format', option)}
-                          className="rounded border-border"
-                        />
-                        <span className="text-sm">{option}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
 
-                {/* Size Filter */}
-                <div>
-                  <h4 className="font-medium mb-3 text-sm">Размер</h4>
-                  <div className="space-y-2">
-                    {housingFilterOptions.size.map(option => (
-                      <label key={option} className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={housingFilters.size.includes(option)}
-                          onChange={() => toggleFilter('size', option)}
-                          className="rounded border-border"
-                        />
-                        <span className="text-sm">{option}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
 
-                {/* District Filter */}
-                <div>
-                  <h4 className="font-medium mb-3 text-sm">Район</h4>
-                  <div className="space-y-2">
-                    {housingFilterOptions.district.map(option => (
-                      <label key={option} className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={housingFilters.district.includes(option)}
-                          onChange={() => toggleFilter('district', option)}
-                          className="rounded border-border"
-                        />
-                        <span className="text-sm">{option}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
 
-                {/* Term Filter */}
-                <div>
-                  <h4 className="font-medium mb-3 text-sm">Срок</h4>
-                  <div className="space-y-2">
-                    {housingFilterOptions.term.map(option => (
-                      <label key={option} className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={housingFilters.term.includes(option)}
-                          onChange={() => toggleFilter('term', option)}
-                          className="rounded border-border"
-                        />
-                        <span className="text-sm">{option}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Subcategories Filter */}
-        {subcategoriesMap[selectedCategory] && (
-          <div className="mb-8 overflow-hidden">
-            <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide faded-scroller overflow-y-hidden">
-              <div className="flex gap-2 min-w-max pr-12">
-                <button
-                  onClick={() => setSelectedSubcategory('')}
-                  className={`px-5 py-2.5 rounded-[12px] whitespace-nowrap text-sm transition-all shadow-sm ${
-                    !selectedSubcategory
-                      ? 'bg-terracotta-deep text-white font-semibold'
-                      : 'bg-white text-muted-foreground hover:bg-soft-sand/30 border border-border shadow-sm'
-                  }`}
-                >
-                  Все {selectedCategory.toLowerCase()}
-                </button>
-                {subcategoriesMap[selectedCategory].map((sub: string) => (
-                  <button
-                    key={sub}
-                    onClick={() => setSelectedSubcategory(sub)}
-                    className={`px-5 py-2.5 rounded-[12px] whitespace-nowrap text-sm transition-all shadow-sm ${
-                      selectedSubcategory === sub
-                        ? 'bg-terracotta-deep text-white font-semibold'
-                        : 'bg-white text-muted-foreground hover:bg-soft-sand/30 border border-border shadow-sm'
-                    }`}
-                  >
-                    {sub}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Sorting & Search & Add Button */}
         <div className="flex flex-col gap-4 mb-8">
