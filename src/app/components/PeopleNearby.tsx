@@ -70,6 +70,7 @@ export function PeopleNearby() {
   const [selectedInterest, setSelectedInterest] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [stats, setStats] = useState({ total: 0, newcomers: 0 });
   const PAGE_SIZE = 30;
 
   const filters = [
@@ -123,6 +124,27 @@ export function PeopleNearby() {
     
     fetchProfiles();
   }, [session, selectedFilter, selectedInterest, currentPage]);
+
+  useEffect(() => {
+    async function fetchStats() {
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+      const [totalRes, newcomersRes] = await Promise.all([
+        supabase.from('profiles').select('id', { count: 'exact', head: true }),
+        supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', oneWeekAgo.toISOString())
+      ]);
+
+      setStats({
+        total: totalRes.count || 0,
+        newcomers: newcomersRes.count || 0
+      });
+    }
+
+    if (session) {
+      fetchStats();
+    }
+  }, [session]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -345,7 +367,7 @@ export function PeopleNearby() {
 
             {/* Pagination */}
             {totalCount > PAGE_SIZE && (
-              <div className="flex items-center justify-center gap-4 py-8 border-t border-border/40 mt-8">
+              <div className="mt-12 flex items-center justify-center gap-4">
                 <Button
                   variant="outline"
                   onClick={() => {
@@ -353,27 +375,23 @@ export function PeopleNearby() {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   disabled={currentPage === 1}
-                  className="rounded-xl px-5 h-11"
+                  className="rounded-[16px] px-6 h-12 bg-white"
                 >
-                  <ChevronLeft className="w-4 h-4 mr-1" />
-                  Назад
+                  ← Назад
                 </Button>
-                
-                <span className="text-sm font-bold bg-white px-4 py-2 rounded-lg border border-border/50 text-muted-foreground">
-                  {currentPage} / {totalPages}
+                <span className="text-sm font-medium text-muted-foreground bg-white px-4 py-2 rounded-full border border-border shadow-sm">
+                  Страница {currentPage}
                 </span>
-
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setCurrentPage(p => Math.min(totalPages, p + 1));
+                    setCurrentPage(p => p + 1);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  disabled={currentPage === totalPages}
-                  className="rounded-xl px-5 h-11"
+                  disabled={currentPage * PAGE_SIZE >= totalCount}
+                  className="rounded-[16px] px-6 h-12 bg-white"
                 >
-                  Вперед
-                  <ChevronRight className="w-4 h-4 ml-1" />
+                  Вперед →
                 </Button>
               </div>
             )}
@@ -383,11 +401,11 @@ export function PeopleNearby() {
         {/* Stats Section */}
         <div className="grid md:grid-cols-3 gap-6 mt-20 pt-10 border-t border-border/40">
           <div className="bg-white/40 p-8 rounded-[24px] text-center backdrop-blur-sm">
-            <div className="text-3xl font-extrabold text-terracotta-deep mb-1">24</div>
+            <div className="text-3xl font-extrabold text-terracotta-deep mb-1">{stats.total}</div>
             <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Пользователей</p>
           </div>
           <div className="bg-white/40 p-8 rounded-[24px] text-center backdrop-blur-sm">
-            <div className="text-3xl font-extrabold text-dusty-indigo mb-1">8</div>
+            <div className="text-3xl font-extrabold text-dusty-indigo mb-1">{stats.newcomers}</div>
             <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Новичков</p>
           </div>
           <div className="bg-white/40 p-8 rounded-[24px] text-center backdrop-blur-sm">

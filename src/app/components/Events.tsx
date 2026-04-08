@@ -30,10 +30,12 @@ export function Events() {
   const { user } = useAuth();
   const [selectedType, setSelectedType] = useState('Все');
   const [timeFilter, setTimeFilter] = useState('Все');
-  const [searchTerm, setSearchTerm] = useState('');
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const PAGE_SIZE = 30;
 
   // Modal states
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -84,13 +86,42 @@ export function Events() {
     setLoading(true);
     setLoadError(null);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('events')
         .select(`
           *,
           event_participants(user_id)
-        `)
-        .order('created_at', { ascending: false });
+        `, { count: 'exact' });
+
+      // Apply filters
+      if (selectedType !== 'Все') {
+        query = query.eq('type', selectedType);
+      }
+
+      if (timeFilter !== 'Все') {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        
+        if (timeFilter === 'Сегодня') {
+          const tomorrow = new Date(today);
+          tomorrow.setDate(today.getDate() + 1);
+          query = query.gte('starts_at', today.toISOString()).lt('starts_at', tomorrow.toISOString());
+        } else if (timeFilter === 'Эта неделя') {
+          const nextWeek = new Date(today);
+          nextWeek.setDate(today.getDate() + 7);
+          query = query.gte('starts_at', today.toISOString()).lt('starts_at', nextWeek.toISOString());
+        } else if (timeFilter === 'Этот месяц') {
+          const nextMonth = new Date(today);
+          nextMonth.setMonth(today.getMonth() + 1);
+          query = query.gte('starts_at', today.toISOString()).lt('starts_at', nextMonth.toISOString());
+        } else if (timeFilter === 'Прошедшие') {
+          query = query.lt('starts_at', today.toISOString());
+        }
+      }
+
+      const { data, error, count } = await query
+        .order('starts_at', { ascending: timeFilter !== 'Прошедшие' })
+        .range((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE - 1);
 
       if (error) throw error;
 
@@ -116,50 +147,23 @@ export function Events() {
         };
       });
       setEvents(mapped);
+      setTotalCount(count || 0);
     } catch (e) {
       console.error('Fetch error:', e);
       setLoadError(e instanceof Error ? e.message : 'Не удалось загрузить данные');
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, currentPage, selectedType, timeFilter, PAGE_SIZE]);
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, [fetchData, currentPage, selectedType, timeFilter]);
 
-  const filteredEvents = useMemo(() => {
-    return events.filter((event) => {
-      const typeMatch = selectedType === 'Все' || event.type === selectedType;
-      const searchMatch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          event.description.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      let dateMatch = true;
-      if (timeFilter !== 'Все') {
-        const eventDate = new Date(event.starts_at);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        if (timeFilter === 'Сегодня') {
-          const tomorrow = new Date(today);
-          tomorrow.setDate(today.getDate() + 1);
-          dateMatch = eventDate >= today && eventDate < tomorrow;
-        } else if (timeFilter === 'Эта неделя') {
-          const nextWeek = new Date(today);
-          nextWeek.setDate(today.getDate() + 7);
-          dateMatch = eventDate >= today && eventDate < nextWeek;
-        } else if (timeFilter === 'Этот месяц') {
-          const nextMonth = new Date(today);
-          nextMonth.setMonth(today.getMonth() + 1);
-          dateMatch = eventDate >= today && eventDate < nextMonth;
-        } else if (timeFilter === 'Прошедшие') {
-          dateMatch = eventDate < today;
-        }
-      }
-
-      return typeMatch && searchMatch && dateMatch;
-    });
-  }, [events, selectedType, searchTerm, timeFilter]);
+  // Reset page on filter change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedType, timeFilter]);
 
   const handleCreate = () => {
     setEventToEdit(null);
@@ -196,27 +200,7 @@ export function Events() {
           </p>
         </motion.div>
 
-        {/* Search & Buttons */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Поиск событий..."
-              className="w-full pl-12 pr-4 py-4 bg-white border border-border/50 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20 shadow-sm"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <Button 
-            onClick={handleCreate}
-            size="lg"
-            className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[58px] px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Создать событие
-          </Button>
-        </div>
+
 
         {/* Filters */}
         <div className="mb-10 space-y-8">
@@ -252,31 +236,41 @@ export function Events() {
             </div>
           </div>
 
-          {/* Time Filter */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 px-1">
-              <Clock className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Когда</span>
-            </div>
-            <div className="relative w-full faded-scroller">
-              <div className="flex gap-2.5 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-                <div className="flex gap-2.5 pr-12 md:pr-0">
-                  {timeFilters.map((filter) => (
-                    <button
-                      key={filter}
-                      onClick={() => setTimeFilter(filter)}
-                      className={`px-6 py-3 rounded-full whitespace-nowrap transition-all font-bold border ${
-                        timeFilter === filter
-                          ? 'bg-warm-olive text-white border-warm-olive shadow-lg shadow-warm-olive/20 scale-105 active:scale-95'
-                          : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
-                      }`}
-                    >
-                      {filter}
-                    </button>
-                  ))}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-4 flex-1">
+              <div className="flex items-center gap-2 px-1">
+                <Clock className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Когда</span>
+              </div>
+              <div className="relative w-full faded-scroller">
+                <div className="flex gap-2.5 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+                  <div className="flex gap-2.5 pr-12 md:pr-0">
+                    {timeFilters.map((filter) => (
+                      <button
+                        key={filter}
+                        onClick={() => setTimeFilter(filter)}
+                        className={`px-6 py-3 rounded-full whitespace-nowrap transition-all font-bold border ${
+                          timeFilter === filter
+                            ? 'bg-warm-olive text-white border-warm-olive shadow-lg shadow-warm-olive/20 scale-105 active:scale-95'
+                            : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
+                        }`}
+                      >
+                        {filter}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
+
+            <Button 
+              onClick={handleCreate}
+              size="lg"
+              className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[20px] h-[58px] px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95 mb-4 shrink-0"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Создать событие
+            </Button>
           </div>
         </div>
 
@@ -294,7 +288,7 @@ export function Events() {
                <p className="text-red-500 text-sm">{loadError}</p>
             </div>
           )}
-          {!loading && !loadError && filteredEvents.map((event, i) => (
+          {!loading && !loadError && events.map((event, i) => (
             <motion.div
               key={event.id}
               initial={{ opacity: 0, y: 20 }}
@@ -380,8 +374,39 @@ export function Events() {
           ))}
         </div>
 
+        {/* Pagination Controls */}
+        {!loading && events.length > 0 && totalCount > PAGE_SIZE && (
+          <div className="mt-12 flex items-center justify-center gap-4">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setCurrentPage(p => Math.max(1, p - 1));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              disabled={currentPage === 1}
+              className="rounded-[16px] px-6 h-12 bg-white"
+            >
+              ← Назад
+            </Button>
+            <span className="text-sm font-medium text-muted-foreground bg-white px-4 py-2 rounded-full border border-border shadow-sm">
+              Страница {currentPage}
+            </span>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setCurrentPage(p => p + 1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              disabled={currentPage * PAGE_SIZE >= totalCount}
+              className="rounded-[16px] px-6 h-12 bg-white"
+            >
+              Вперед →
+            </Button>
+          </div>
+        )}
+
         {/* Empty State */}
-        {!loading && !loadError && filteredEvents.length === 0 && (
+        {!loading && !loadError && events.length === 0 && (
           <div className="bg-white border border-border/40 rounded-[32px] p-16 text-center my-8 shadow-sm">
             <div className="w-24 h-24 bg-soft-sand/50 rounded-full flex items-center justify-center mx-auto mb-6">
               <Calendar className="w-12 h-12 text-dusty-indigo/40" />
