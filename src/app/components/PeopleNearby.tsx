@@ -191,8 +191,8 @@ export function PeopleNearby() {
 
         {/* Filters */}
         <div className="mb-10 relative w-full overflow-visible">
-          <div className="flex flex-nowrap md:flex-wrap gap-3 overflow-x-auto md:overflow-visible py-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 justify-start md:justify-center">
-            <div className="flex flex-nowrap md:flex-wrap gap-3 items-center min-h-[60px] pr-12 md:pr-0 justify-start md:justify-center">
+          <div className="flex overflow-x-auto md:overflow-visible py-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:justify-center">
+            <div className="flex flex-nowrap gap-2.5 items-center min-h-[60px] pr-12 md:pr-0">
               {filters.map((f) => (
                 <button
                   key={f.name}
@@ -200,7 +200,7 @@ export function PeopleNearby() {
                     setSelectedFilter(f.value);
                     setCurrentPage(1);
                   }}
-                  className={`flex items-center gap-3 px-6 h-12 rounded-full whitespace-nowrap text-sm font-bold transition-all duration-300 border ${
+                  className={`flex items-center gap-2.5 px-5 h-12 rounded-full whitespace-nowrap text-sm font-bold transition-all duration-300 border ${
                     selectedFilter === f.value
                       ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-lg shadow-dusty-indigo/20 scale-105 active:scale-95'
                       : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
