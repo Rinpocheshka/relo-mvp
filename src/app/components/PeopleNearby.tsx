@@ -75,7 +75,6 @@ export function PeopleNearby() {
 
   const filters = [
     { name: 'Все', value: 'Все', icon: '/assets/icons/custom/kite.png' },
-    { name: 'Проводники', value: 'guide', icon: '/assets/icons/custom/signpost.png' },
     { name: 'Планирую переезд', value: 'planning', icon: '/assets/icons/custom/airplane_bw.png' },
     { name: 'Только приехал', value: 'just_arrived', icon: '/assets/icons/custom/luggage.png' },
     { name: 'Осваиваюсь', value: 'settling', icon: '/assets/icons/custom/path_arrow.png' },
