@@ -366,7 +366,7 @@ export function PeopleNearby() {
             </div>
 
             {/* Pagination */}
-            {totalCount > PAGE_SIZE && (
+            {!loading && totalCount > 0 && (
               <div className="mt-12 flex items-center justify-center gap-4">
                 <Button
                   variant="outline"

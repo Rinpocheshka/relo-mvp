@@ -375,7 +375,7 @@ export function Events() {
         </div>
 
         {/* Pagination Controls */}
-        {!loading && events.length > 0 && totalCount > PAGE_SIZE && (
+        {!loading && totalCount > 0 && (
           <div className="mt-12 flex items-center justify-center gap-4">
             <Button
               variant="outline"
