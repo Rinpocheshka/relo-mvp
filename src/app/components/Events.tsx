@@ -210,8 +210,8 @@ export function Events() {
               <Filter className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Категория</span>
             </div>
-            <div className="relative w-full">
-              <div className="flex gap-2.5 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+            <div className="relative w-full overflow-visible">
+              <div className="flex gap-2.5 overflow-x-auto py-3 scrollbar-hide -mx-4 px-4">
                 <div className="flex gap-2.5 pr-12 md:pr-0">
                   {eventTypes.map((type) => (
                     <button
@@ -242,8 +242,8 @@ export function Events() {
                 <Clock className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Когда</span>
               </div>
-              <div className="relative w-full">
-                <div className="flex gap-2.5 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+              <div className="relative w-full overflow-visible">
+                <div className="flex gap-2.5 overflow-x-auto py-3 scrollbar-hide -mx-4 px-4">
                   <div className="flex gap-2.5 pr-12 md:pr-0">
                     {timeFilters.map((filter) => (
                       <button

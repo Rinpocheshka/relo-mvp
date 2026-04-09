@@ -70,7 +70,7 @@ export function PeopleNearby() {
   const [selectedInterest, setSelectedInterest] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [stats, setStats] = useState({ total: 0, newcomers: 0 });
+  const [stats, setStats] = useState({ total: 0, newcomers: 0, guides: 0 });
   const PAGE_SIZE = 30;
 
   const filters = [
@@ -129,20 +129,20 @@ export function PeopleNearby() {
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-      const [totalRes, newcomersRes] = await Promise.all([
+      const [totalRes, newcomersRes, guidesRes] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact', head: true }),
-        supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', oneWeekAgo.toISOString())
+        supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', oneWeekAgo.toISOString()),
+        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('is_guide', true)
       ]);
 
       setStats({
         total: totalRes.count || 0,
-        newcomers: newcomersRes.count || 0
+        newcomers: newcomersRes.count || 0,
+        guides: guidesRes.count || 0
       });
     }
 
-    if (session) {
-      fetchStats();
-    }
+    fetchStats();
   }, [session]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
@@ -191,7 +191,7 @@ export function PeopleNearby() {
 
         {/* Filters */}
         <div className="mb-10 relative w-full overflow-visible">
-          <div className="flex overflow-x-auto md:overflow-visible py-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:justify-center">
+          <div className="flex overflow-x-auto md:overflow-visible py-3 scrollbar-hide -mx-4 px-4 md:justify-center">
             <div className="flex flex-nowrap gap-2.5 items-center min-h-[60px] pr-12 md:pr-0">
               {filters.map((f) => (
                 <button
@@ -406,7 +406,7 @@ export function PeopleNearby() {
             <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Новичков</p>
           </div>
           <div className="bg-white/40 p-8 rounded-[24px] text-center backdrop-blur-sm">
-            <div className="text-3xl font-extrabold text-warm-olive mb-1">5</div>
+            <div className="text-3xl font-extrabold text-warm-olive mb-1">{stats.guides}</div>
             <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Проводников</p>
           </div>
         </div>

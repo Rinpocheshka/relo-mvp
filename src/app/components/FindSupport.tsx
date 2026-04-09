@@ -137,6 +137,9 @@ export function FindSupport() {
   const [answersHasMore, setAnswersHasMore] = useState<Record<string, boolean>>({});
   const [answersPage, setAnswersPage] = useState<Record<string, number>>({});
   const [upvotedIds, setUpvotedIds] = useState<Set<string>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+  const ITEMS_PER_PAGE = 20;
 
   // Resources
   const [resources, setResources] = useState<Resource[]>([]);
@@ -159,14 +162,25 @@ export function FindSupport() {
     try {
       let q = supabase
         .from('questions')
-        .select('id, question, category, asked_by_name, created_at, views_count, answers(count)');
+        .select('id, question, category, asked_by_name, created_at, views_count, answers(count)', { count: 'exact' });
+
+      // Server-side filtering
+      if (selectedCategory !== 'Все') q = q.eq('category', selectedCategory);
+      if (searchQuery.trim()) q = q.ilike('question', `%${searchQuery}%`);
 
       if (sortMode === 'new') q = q.order('created_at', { ascending: false });
       if (sortMode === 'unanswered') q = q.order('created_at', { ascending: false });
       if (sortMode === 'popular') q = q.order('views_count', { ascending: false });
 
-      const { data, error } = await q;
+      // Pagination
+      const from = (currentPage - 1) * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+      q = q.range(from, to);
+
+      const { data, error, count } = await q;
       if (error) throw error;
+
+      setTotalQuestions(count || 0);
 
       let mapped: Question[] = (data ?? []).map((row) => {
         const cnt = Array.isArray((row as any).answers)
@@ -193,7 +207,11 @@ export function FindSupport() {
     } finally {
       setLoadingQ(false);
     }
-  }, [sortMode]);
+  }, [sortMode, selectedCategory, searchQuery, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sortMode, selectedCategory, searchQuery]);
 
   useEffect(() => { void fetchQuestions(); }, [fetchQuestions]);
 
@@ -429,6 +447,11 @@ export function FindSupport() {
     return list;
   }, [resources, selectedCategory, searchQuery]);
 
+  // Pagination helper
+  const totalPages = Math.ceil(totalQuestions / ITEMS_PER_PAGE);
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const visiblePages = pages.filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1);
+
   // ── Handlers ───────────────────────────────────────────────────────────────
 
   const handleTabChange = (tab: 'questions' | 'resources') => {
@@ -593,28 +616,84 @@ export function FindSupport() {
                   <div className="bg-red-50 p-6 rounded-[24px] border border-red-100 text-red-600 font-medium">
                     Ошибка загрузки: {loadErrorQ}
                   </div>
-                ) : filteredQuestions.length === 0 ? (
-                  <EmptyState onAsk={() => setAskModalOpen(true)} />
-                ) : (
-                  filteredQuestions.map((q) => (
-                    <QuestionCard
-                      key={q.id}
-                      question={q}
-                      expanded={expandedQuestion === q.id}
-                      onToggle={() => toggleExpanded(q.id)}
-                      answers={answersMap[q.id] ?? []}
-                      answersLoading={answersLoading[q.id] ?? false}
-                      hasMoreAnswers={answersHasMore[q.id] ?? false}
-                      onLoadMore={() => loadAnswers(q.id, (answersPage[q.id] ?? 0) + 1)}
-                      upvotedIds={upvotedIds}
-                      onUpvote={handleUpvote}
-                      currentUserId={user?.id}
-                      onSubmitAnswer={(body) => handleAnswerSubmit(q.id, body)}
-                    />
-                  ))
-                )}
-              </>
-            ) : (
+                  ) : (
+                    <>
+                      <div className="space-y-4">
+                        {filteredQuestions.map((q) => (
+                          <QuestionCard
+                            key={q.id}
+                            question={q}
+                            expanded={expandedQuestion === q.id}
+                            onToggle={() => toggleExpanded(q.id)}
+                            answers={answersMap[q.id] ?? []}
+                            answersLoading={answersLoading[q.id] ?? false}
+                            hasMoreAnswers={answersHasMore[q.id] ?? false}
+                            onLoadMore={() => loadAnswers(q.id, (answersPage[q.id] ?? 0) + 1)}
+                            upvotedIds={upvotedIds}
+                            onUpvote={handleUpvote}
+                            currentUserId={user?.id}
+                            onSubmitAnswer={(body) => handleAnswerSubmit(q.id, body)}
+                          />
+                        ))}
+                      </div>
+
+                      {/* Pagination Pager */}
+                      {totalPages > 1 && (
+                        <div className="flex justify-center items-center gap-1.5 mt-10 mb-6">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={currentPage === 1}
+                            onClick={() => {
+                              setCurrentPage(prev => Math.max(1, prev - 1));
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            className="rounded-xl border-border/40 text-muted-foreground hover:bg-white h-10 w-10 p-0"
+                          >
+                            <SortDesc className="w-4 h-4 rotate-90" />
+                          </Button>
+
+                          {visiblePages.map((p, idx) => (
+                            <div key={p} className="flex items-center gap-1.5">
+                              {idx > 0 && visiblePages[idx - 1] !== p - 1 && (
+                                <span className="text-muted-foreground px-1">...</span>
+                              )}
+                              <Button
+                                variant={currentPage === p ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => {
+                                  setCurrentPage(p);
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                                className={`rounded-xl h-10 w-10 p-0 font-bold ${
+                                  currentPage === p
+                                    ? 'bg-dusty-indigo text-white shadow-md shadow-dusty-indigo/20 border-dusty-indigo'
+                                    : 'border-border/40 text-muted-foreground hover:bg-white'
+                                }`}
+                              >
+                                {p}
+                              </Button>
+                            </div>
+                          ))}
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={currentPage === totalPages}
+                            onClick={() => {
+                              setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            className="rounded-xl border-border/40 text-muted-foreground hover:bg-white h-10 w-10 p-0"
+                          >
+                            <SortDesc className="w-4 h-4 -rotate-90" />
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </>
+              ) : (
               <>
                 <div className="flex items-center justify-between mb-1">
                   <h2 className="text-2xl font-black text-foreground">Проверенные ресурсы</h2>
