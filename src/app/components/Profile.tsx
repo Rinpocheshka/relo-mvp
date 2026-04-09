@@ -118,6 +118,7 @@ export function Profile() {
   const [isEventDetailsModalOpen, setIsEventDetailsModalOpen] = useState(false);
   const [isEventFormModalOpen, setIsEventFormModalOpen] = useState(false);
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
+  const [isUpdatingPrivileges, setIsUpdatingPrivileges] = useState(false);
 
   const isOwnProfile = !id || id === user?.id;
   const targetId = isOwnProfile ? session?.user?.id : id;
@@ -273,6 +274,27 @@ export function Profile() {
     }
   };
 
+  const handleUpdatePrivileges = async (updates: Partial<UserData>) => {
+    if (!targetId || globalProfile?.role !== 'admin') return;
+    
+    setIsUpdatingPrivileges(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', targetId);
+
+      if (error) throw error;
+      
+      setProfile(prev => prev ? { ...prev, ...updates } : null);
+      if (isOwnProfile) refreshProfile();
+    } catch (error: any) {
+      alert('Ошибка при обновлении прав: ' + error.message);
+    } finally {
+      setIsUpdatingPrivileges(false);
+    }
+  };
+
   if (loading || authLoading) {
     return <div className="min-h-screen bg-warm-milk py-16 flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dusty-indigo"></div></div>;
   }
@@ -337,6 +359,77 @@ export function Profile() {
   return (
     <div className="min-h-screen bg-warm-milk py-8">
       <div className="max-w-5xl mx-auto px-4">
+        {/* Admin Controls - Floating Panel */}
+        {globalProfile?.role === 'admin' && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 bg-white border-2 border-dusty-indigo/20 rounded-[24px] p-6 shadow-xl shadow-dusty-indigo/5 relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-dusty-indigo/5 rounded-full -mr-16 -mt-16" />
+            
+            <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-dusty-indigo/10 rounded-full flex items-center justify-center">
+                  <Settings className="w-6 h-6 text-dusty-indigo" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    Управление пользователем
+                    <span className="px-2 py-0.5 bg-dusty-indigo text-white text-[10px] font-black uppercase rounded-md tracking-wider">Admin</span>
+                  </h3>
+                  <p className="text-xs text-muted-foreground mr-1">Панель администратора для управления привилегиями</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-4 md:gap-8 bg-soft-sand/20 p-4 rounded-[20px] border border-soft-sand/30">
+                {/* Guide Toggle */}
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col items-end">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Проводник</span>
+                    <span className="text-xs font-bold">{profile.is_guide ? 'Включен' : 'Выключен'}</span>
+                  </div>
+                  <button
+                    disabled={isUpdatingPrivileges}
+                    onClick={() => handleUpdatePrivileges({ is_guide: !profile.is_guide })}
+                    className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all focus:outline-none disabled:opacity-50 ${
+                      profile.is_guide ? 'bg-warm-olive' : 'bg-muted-foreground/30'
+                    }`}
+                  >
+                    <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${profile.is_guide ? 'translate-x-6' : 'translate-x-1'}`} />
+                  </button>
+                </div>
+
+                <div className="h-8 w-px bg-border/40 hidden md:block" />
+
+                {/* Admin Toggle */}
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col items-end">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Администратор</span>
+                    <span className="text-xs font-bold">{profile.role === 'admin' ? 'Да' : 'Нет'}</span>
+                  </div>
+                  <button
+                    disabled={isUpdatingPrivileges}
+                    onClick={() => handleUpdatePrivileges({ role: profile.role === 'admin' ? 'user' : 'admin' })}
+                    className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all focus:outline-none disabled:opacity-50 ${
+                      profile.role === 'admin' ? 'bg-terracotta-deep' : 'bg-muted-foreground/30'
+                    }`}
+                  >
+                    <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${profile.role === 'admin' ? 'translate-x-6' : 'translate-x-1'}`} />
+                  </button>
+                </div>
+              </div>
+
+              {isUpdatingPrivileges && (
+                <div className="flex items-center gap-2 text-dusty-indigo font-bold animate-pulse text-sm">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Обновляем...
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+
         {/* Profile Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

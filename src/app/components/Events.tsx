@@ -72,8 +72,8 @@ export function Events() {
   };
 
   const eventTypes = [
-    { name: 'Все', icon: '/assets/icons/custom/kite.png' },
-    { name: 'Развлечения', icon: '/assets/icons/custom/kite.png' },
+    { name: 'Все', icon: '/assets/icons/custom/afisha.png' },
+    { name: 'Развлечения', icon: '/assets/icons/custom/afisha.png' },
     { name: 'Деловые и язык', icon: '/assets/icons/custom/signpost.png' },
     { name: 'Спорт и экскурсии', icon: '/assets/icons/custom/sandcastle.png' },
     { name: 'Для детей', icon: '/assets/icons/custom/umbrella.png' },
@@ -191,7 +191,7 @@ export function Events() {
           className="text-center mb-12"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-4">
-            <img src="/assets/icons/custom/kite.png" className="w-5 h-5 object-contain" alt="" />
+            <img src="/assets/icons/custom/afisha.png" className="w-5 h-5 object-contain" alt="" />
             <span className="text-dusty-indigo font-medium">Афиша</span>
           </div>
           <h1 className="text-4xl font-bold mb-4">События и встречи</h1>

@@ -170,7 +170,7 @@ export function Layout() {
   const navItems = [
     { path: '/home', icon: '/assets/icons/custom/danang_symbol.png', label: 'Главная' },
     { path: '/announcements', icon: '/assets/icons/custom/luggage.png', label: 'Объявления' },
-    { path: '/events', icon: '/assets/icons/custom/kite.png', label: 'Афиша' },
+    { path: '/events', icon: '/assets/icons/custom/afisha.png', label: 'Афиша' },
     { path: '/support', icon: '/assets/icons/custom/message.png', label: 'Найти опору' },
     { path: '/people', icon: '/assets/icons/custom/palm_tree_bw.png', label: 'Люди рядом' },
   ];
