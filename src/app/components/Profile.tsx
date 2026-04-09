@@ -234,6 +234,8 @@ export function Profile() {
         avatar_url: editForm.avatar_url,
         contact_telegram: editForm.contact_telegram,
         contact_whatsapp: editForm.contact_whatsapp,
+        // Only allow admins to update is_guide
+        ...(globalProfile?.role === 'admin' ? { is_guide: editForm.is_guide } : {})
       });
 
     if (!error) {
