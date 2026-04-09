@@ -312,11 +312,7 @@ export function PeopleNearby() {
                         </h3>
                       </Link>
                       <p className="text-sm font-medium text-muted-foreground mt-0.5">
-                        {person.stage === 'planning' ? 'Планирует переезд' : 
-                         person.stage === 'just_arrived' ? 'Только приехал' : 
-                         person.stage === 'settling' ? 'Осваиваюсь' : 
-                         person.stage === 'sharing' ? 'Делится опытом' :
-                         person.stage === 'moving_on' ? 'Переезжает дальше' : person.stage || 'Участник'}
+                        {translateTag(person.stage) || (person.is_guide ? 'Проводник' : 'Участник')}
                       </p>
                     </div>
                   </div>

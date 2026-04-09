@@ -14,6 +14,15 @@ const TAG_TRANSLATIONS: Record<string, string> = {
   'looking_friends': 'ищу друзей',
   'local_business': 'строю местный бизнес',
 
+  // Relocation Stages
+  'planning': 'Планирует переезд',
+  'just_arrived': 'Только приехал',
+  'settling': 'Осваивается',
+  'sharing': 'Делится опытом',
+  'moving_on': 'Переезжает дальше',
+  'settled': 'Уже на месте',
+  'resident': 'Местный житель',
+
   // Interests
   'english': 'учу английский',
   'philosopher': 'философ',
