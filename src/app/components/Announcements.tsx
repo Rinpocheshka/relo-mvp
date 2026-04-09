@@ -145,7 +145,7 @@ export function Announcements() {
         </motion.div>
 
         {/* Categories */}
-        <div className="mb-8 relative w-full faded-scroller">
+        <div className="mb-8 relative w-full">
           <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
             <div className="flex gap-3 pr-12 md:pr-0">
             {categories.map((category) => {

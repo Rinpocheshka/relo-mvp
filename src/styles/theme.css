@@ -209,14 +209,4 @@
 }
 
 @layer components {
-  .faded-scroller {
-    mask-image: linear-gradient(to right, transparent, black 2rem, black calc(100% - 2rem), transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 2rem, black calc(100% - 2rem), transparent);
-  }
-
-  /* Optional: scroller with fade only on the right */
-  .faded-scroller-right {
-    mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
-    -webkit-mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
-  }
 }
