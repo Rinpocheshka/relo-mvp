@@ -563,13 +563,13 @@ export function FindSupport() {
               </div>
             )}
 
-            {/* Row 2: Categories */}
-            <div className="flex flex-wrap gap-2 md:gap-2.5">
+            {/* Row 2: Categories with horizontal scroll on mobile */}
+            <div className="flex overflow-x-auto gap-2 md:gap-2.5 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap scrollbar-hide">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-3.5 py-2 md:px-5 md:py-3 rounded-full whitespace-nowrap text-[12px] md:text-sm font-bold transition-all duration-300 border flex items-center gap-1.5 md:gap-2 ${
+                  className={`flex-shrink-0 px-3.5 py-2 md:px-5 md:py-3 rounded-full whitespace-nowrap text-[12px] md:text-sm font-bold transition-all duration-300 border flex items-center gap-1.5 md:gap-2 ${
                     selectedCategory === cat
                       ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-md shadow-dusty-indigo/10'
                       : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
