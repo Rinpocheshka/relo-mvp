@@ -145,33 +145,30 @@ export function Announcements() {
         </motion.div>
 
         {/* Categories */}
-        <div className="mb-8 relative w-full overflow-visible">
-          <div className="flex gap-3 overflow-x-auto py-3 scrollbar-hide -mx-4 px-4">
-            <div className="flex gap-3 pr-12 md:pr-0">
+        <div className="mb-6 md:mb-8 -mx-3 sm:mx-0">
+          <div className="flex gap-2 sm:gap-3 overflow-x-auto py-2 px-3 sm:px-0 scrollbar-hide">
             {categories.map((category) => {
-              const Icon = category.icon;
               return (
                 <button
                   key={category.name}
                   onClick={() => {
                     setSelectedCategory(category.name);
                   }}
-                  className={`flex items-center gap-2.5 px-5 py-3 rounded-full whitespace-nowrap transition-all duration-300 ${
+                  className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-3 rounded-full whitespace-nowrap transition-all duration-300 ${
                     selectedCategory === category.name
-                      ? 'bg-terracotta-deep text-white shadow-xl shadow-terracotta-deep/20 scale-105 active:scale-95'
+                      ? 'bg-terracotta-deep text-white shadow-md shadow-terracotta-deep/20'
                       : 'bg-white text-foreground hover:bg-soft-sand/40 border border-border/60 hover:border-terracotta-deep/30'
                   }`}
                 >
                   <img 
                     src={category.icon as string} 
-                    className={`w-6 h-6 object-contain transition-all duration-300 ${selectedCategory === category.name ? 'brightness-0 invert' : ''}`} 
+                    className={`w-5 h-5 sm:w-6 sm:h-6 object-contain transition-all duration-300 ${selectedCategory === category.name ? 'brightness-0 invert' : ''}`} 
                     alt="" 
                   />
                   <span className="font-semibold text-sm">{category.name}</span>
                 </button>
               );
             })}
-            </div>
           </div>
         </div>
 

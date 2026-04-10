@@ -105,9 +105,9 @@ function MobileUserButton({ isActive }: { isActive: boolean }) {
   if (user) {
     return (
       <>
-        <Link to="/profile" className={`flex flex-col items-center gap-1 p-2 flex-1 rounded-[14px] transition-colors ${isActive ? 'text-terracotta-deep bg-terracotta-deep/8' : 'text-muted-foreground'}`}>
+        <Link to="/profile" className={`flex flex-col items-center justify-center gap-0.5 p-1 flex-1 min-w-0 rounded-[12px] transition-colors ${isActive ? 'text-terracotta-deep bg-terracotta-deep/8' : 'text-muted-foreground'}`}>
           <UserAvatar profile={profile} />
-          <span className="text-[10px] font-medium">Профиль</span>
+          <span className="text-[9px] sm:text-[10px] font-medium leading-none text-center truncate w-full">Профиль</span>
         </Link>
       </>
     );
@@ -117,10 +117,10 @@ function MobileUserButton({ isActive }: { isActive: boolean }) {
     <>
       <button
         onClick={() => setAuthOpen(true)}
-        className="flex flex-col items-center gap-1 p-2 flex-1 rounded-[14px] text-muted-foreground hover:text-terracotta-deep transition-colors"
+        className="flex flex-col items-center justify-center gap-0.5 p-1 flex-1 min-w-0 rounded-[12px] text-muted-foreground hover:text-terracotta-deep transition-colors"
       >
-        <User className="w-5 h-5" />
-        <span className="text-[10px] font-medium">Войти</span>
+        <User className="w-5 h-5 sm:w-6 sm:h-6" />
+        <span className="text-[9px] sm:text-[10px] font-medium leading-none text-center truncate w-full">Войти</span>
       </button>
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
     </>
@@ -394,8 +394,8 @@ export function Layout() {
       </footer>
 
       {/* ── Mobile Bottom Navigation ── */}
-      <nav className="md:hidden fixed bottom-4 left-4 right-4 bg-white/90 backdrop-blur-xl shadow-xl border border-border/40 rounded-2xl z-50 p-1.5 safe-area-bottom">
-        <div className="flex items-center">
+      <nav className="md:hidden fixed bottom-3 left-3 right-3 bg-white/90 backdrop-blur-xl shadow-xl border border-border/40 rounded-[20px] z-50 p-1 safe-area-bottom">
+        <div className="flex items-center justify-between">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -403,18 +403,18 @@ export function Layout() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex flex-col items-center justify-center gap-1 py-2 flex-1 rounded-[14px] transition-all ${
+                className={`flex flex-col items-center justify-center gap-0.5 p-1 flex-1 min-w-0 rounded-[12px] transition-all ${
                   active
                     ? 'text-terracotta-deep bg-terracotta-deep/8'
                     : 'text-muted-foreground hover:bg-soft-sand/20'
                 }`}
               >
-                <img src={item.icon as string} className="w-6 h-6 object-contain" alt="" />
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <img src={item.icon as string} className="w-5 h-5 sm:w-6 sm:h-6 object-contain" alt="" />
+                <span className="text-[8.5px] sm:text-[10px] font-medium leading-none text-center truncate w-full px-0.5">{item.label}</span>
               </Link>
             );
           })}
-          {/* Profile / Login as 5th item */}
+          {/* Profile / Login as 6th item */}
           <MobileUserButton isActive={isActive('/profile')} />
         </div>
       </nav>
