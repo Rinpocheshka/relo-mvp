@@ -126,20 +126,20 @@ export function Announcements() {
 
 
   return (
-    <div className="min-h-screen bg-warm-milk py-8">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen bg-warm-milk py-4 md:py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-6 md:mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-terracotta-deep/10 rounded-full mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-terracotta-deep/10 rounded-full mb-3 md:mb-4">
             <img src="/assets/icons/custom/luggage.png" className="w-5 h-5 object-contain" alt="" />
-            <span className="text-terracotta-deep font-medium">Объявления</span>
+            <span className="text-terracotta-deep font-medium text-sm md:text-base">Объявления</span>
           </div>
-          <h1 className="text-4xl font-bold mb-4">Жильё, вещи, услуги</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-4">Жильё, вещи, услуги</h1>
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
             {getSubtitle()}
           </p>
         </motion.div>
@@ -189,40 +189,39 @@ export function Announcements() {
 
 
         {/* Sorting & Search & Add Button */}
-        <div className="flex flex-col gap-4 mb-8">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Поиск объявлений..."
-                className="w-full pl-12 pr-4 py-4 bg-white border border-border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 shadow-sm"
-              />
-            </div>
-            <div className="flex gap-2">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="px-4 py-4 bg-white border border-border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm font-medium shadow-sm cursor-pointer min-w-[160px]"
-              >
-                <option value="newest">Сначала новые</option>
-                <option value="price_asc">Дешевле</option>
-                <option value="price_desc">Дороже</option>
-              </select>
-              <Button
-                size="lg"
-                onClick={() => user ? setIsCreateModalOpen(true) : setIsAuthModalOpen(true)}
-                className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[58px] px-8 shadow-md shadow-terracotta-deep/20 transition-all active:scale-[0.98]"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Разместить
-              </Button>
-            </div>
+        <div className="flex flex-col gap-3 mb-6 md:mb-8">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Поиск объявлений..."
+              className="w-full pl-12 pr-4 py-3 md:py-4 bg-white border border-border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 shadow-sm text-sm md:text-base"
+            />
+          </div>
+          {/* Sort + Button */}
+          <div className="flex gap-2">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="flex-1 px-3 py-3 md:py-4 bg-white border border-border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm font-medium shadow-sm cursor-pointer"
+            >
+              <option value="newest">Сначала новые</option>
+              <option value="price_asc">Дешевле</option>
+              <option value="price_desc">Дороже</option>
+            </select>
+            <Button
+              onClick={() => user ? setIsCreateModalOpen(true) : setIsAuthModalOpen(true)}
+              className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[50px] md:h-[58px] px-4 sm:px-8 shadow-md shadow-terracotta-deep/20 transition-all active:scale-[0.98] text-sm md:text-base whitespace-nowrap"
+            >
+              <Plus className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
+              Разместить
+            </Button>
           </div>
         </div>
 
         {/* Announcements Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {loading && (
             <div className="col-span-full text-center text-muted-foreground py-10">
               Загружаем объявления…
@@ -243,10 +242,10 @@ export function Announcements() {
                 setSelectedAnnouncement(announcement);
                 setIsDetailsModalOpen(true);
               }}
-              className="bg-white rounded-[24px] border border-border hover:shadow-xl transition-all cursor-pointer overflow-hidden group flex flex-col h-full active:scale-[0.98]"
+              className="bg-white rounded-[16px] md:rounded-[24px] border border-border hover:shadow-xl transition-all cursor-pointer overflow-hidden group flex flex-col h-full active:scale-[0.98]"
             >
               {/* Image */}
-              <div className="h-56 bg-soft-sand/10 relative overflow-hidden">
+              <div className="h-40 sm:h-48 md:h-56 bg-soft-sand/10 relative overflow-hidden">
                 {announcement.images && announcement.images.length > 0 ? (
                   <img 
                     src={announcement.images[0]} 
@@ -271,7 +270,7 @@ export function Announcements() {
               </div>
 
               {/* Content */}
-              <div className="p-6">
+              <div className="p-4 md:p-6">
                 <div className="flex items-start justify-between mb-3">
                   <span className={`px-3 py-1 text-xs rounded-full ${
                     announcement.category === 'Жильё' ? 'bg-terracotta-deep/10 text-terracotta-deep' :
@@ -286,10 +285,10 @@ export function Announcements() {
                   )}
                 </div>
 
-                <h3 className="font-semibold text-lg mb-2 group-hover:text-terracotta-deep transition-colors">
+                <h3 className="font-semibold text-base md:text-lg mb-2 group-hover:text-terracotta-deep transition-colors">
                   {announcement.title}
                 </h3>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                <p className="text-sm text-muted-foreground mb-3 md:mb-4 line-clamp-2">
                   {announcement.description}
                 </p>
 
@@ -307,7 +306,7 @@ export function Announcements() {
 
         {/* Pagination Controls */}
         {!loading && announcements.length > 0 && (
-          <div className="mt-12 flex items-center justify-center gap-4">
+          <div className="mt-8 md:mt-12 flex items-center justify-center gap-3">
             <Button
               variant="outline"
               onClick={() => {
@@ -315,12 +314,12 @@ export function Announcements() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               disabled={page === 1}
-              className="rounded-[16px] px-6 h-12 bg-white"
+              className="rounded-[14px] px-4 md:px-6 h-10 md:h-12 bg-white text-sm"
             >
               ← Назад
             </Button>
-            <span className="text-sm font-medium text-muted-foreground bg-white px-4 py-2 rounded-full border border-border shadow-sm">
-              Страница {page}
+            <span className="text-sm font-medium text-muted-foreground bg-white px-3 md:px-4 py-2 rounded-full border border-border shadow-sm">
+              Стр. {page}
             </span>
             <Button
               variant="outline"
@@ -329,7 +328,7 @@ export function Announcements() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               disabled={announcements.length < PAGE_SIZE}
-              className="rounded-[16px] px-6 h-12 bg-white"
+              className="rounded-[14px] px-4 md:px-6 h-10 md:h-12 bg-white text-sm"
             >
               Вперед →
             </Button>
