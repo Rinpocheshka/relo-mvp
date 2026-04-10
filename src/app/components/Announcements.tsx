@@ -41,6 +41,7 @@ export function Announcements() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
+  const [announcementToEdit, setAnnouncementToEdit] = useState<Announcement | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const categories = [
@@ -359,14 +360,24 @@ export function Announcements() {
         
         <CreateAnnouncementModal 
           isOpen={isCreateModalOpen} 
-          onClose={() => setIsCreateModalOpen(false)}
+          onClose={() => {
+            setIsCreateModalOpen(false);
+            setAnnouncementToEdit(null);
+          }}
           onSuccess={() => void fetchData()}
+          announcementToEdit={announcementToEdit}
         />
 
         <AnnouncementDetailsModal 
           announcement={selectedAnnouncement}
           isOpen={isDetailsModalOpen}
           onClose={() => setIsDetailsModalOpen(false)}
+          onEdited={(announcement) => {
+            setAnnouncementToEdit(announcement);
+            setIsDetailsModalOpen(false);
+            setIsCreateModalOpen(true);
+          }}
+          onDeleted={() => void fetchData()}
         />
       </div>
     </div>

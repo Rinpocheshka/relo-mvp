@@ -11,6 +11,7 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  announcementToEdit?: any; // If provided, we are in Edit mode
 }
 
 const CATEGORIES = [
@@ -38,6 +39,33 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
     location_text: '',
     description: '',
   });
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (announcementToEdit) {
+      setForm({
+        title: announcementToEdit.title || '',
+        category: announcementToEdit.category || 'Жильё',
+        price_text: announcementToEdit.price_text || '',
+        price_numeric: announcementToEdit.price_numeric?.toString() || '',
+        location_text: announcementToEdit.location_text || '',
+        description: announcementToEdit.description || '',
+      });
+      setExistingImages(announcementToEdit.images || []);
+      setSelectedAttachments([]);
+    } else {
+      setForm({
+        title: '',
+        category: 'Жильё',
+        price_text: '',
+        price_numeric: '',
+        location_text: '',
+        description: '',
+      });
+      setExistingImages([]);
+      setSelectedAttachments([]);
+    }
+  }, [announcementToEdit, isOpen]);
 
   const [selectedAttachments, setSelectedAttachments] = useState<{file: File, preview: string}[]>([]);
 
@@ -108,6 +136,10 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
     });
   };
 
+  const removeExistingImage = (index: number) => {
+    setExistingImages(prev => prev.filter((_, i) => i !== index));
+  };
+
   // No special cleanup needed for Base64 strings in state
 
   const uploadImages = async (): Promise<string[]> => {
@@ -146,26 +178,29 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
         imageUrls = await uploadImages();
       }
 
+        const finalImages = [...existingImages, ...imageUrls];
         const priceMatch = form.price_text.replace(/\s/g, '').match(/\d+/);
         const price_numeric = priceMatch ? parseInt(priceMatch[0], 10) : null;
 
-        const { error: insertError } = await supabase
-          .from('announcements')
-          .insert({
-            title: form.title,
-            category: form.category,
-            price_text: form.price_text,
-            price_numeric: price_numeric,
-            location_text: form.location_text,
-            description: form.description,
-            author_id: user.id,
-            author_name: profile.display_name || 'Пользователь',
-            city: profile.city || 'Дананг',
-            status: 'active',
-            images: imageUrls
-          });
+        const payload = {
+          title: form.title,
+          category: form.category,
+          price_text: form.price_text,
+          price_numeric: price_numeric,
+          location_text: form.location_text,
+          description: form.description,
+          author_id: user.id,
+          author_name: profile.display_name || 'Пользователь',
+          city: profile.city || 'Дананг',
+          status: 'active',
+          images: finalImages
+        };
 
-      if (insertError) throw insertError;
+        const { error: dbError } = announcementToEdit
+          ? await supabase.from('announcements').update(payload).eq('id', announcementToEdit.id)
+          : await supabase.from('announcements').insert(payload);
+
+      if (dbError) throw dbError;
 
       setSuccess(true);
       setTimeout(() => {
@@ -215,8 +250,8 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                   <Megaphone className="w-5 h-5 text-terracotta-deep" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">Новое объявление</h2>
-                  <p className="text-xs text-muted-foreground">Его увидят сотни релокантов в этом городе</p>
+                  <h2 className="text-xl font-bold">{announcementToEdit ? 'Редактировать объявление' : 'Новое объявление'}</h2>
+                  <p className="text-xs text-muted-foreground">{announcementToEdit ? 'Внесите нужные изменения' : 'Его увидят сотни релокантов в этом городе'}</p>
                 </div>
               </div>
               <button 
@@ -267,6 +302,20 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                   <div className="space-y-2">
                     <label className="text-sm font-semibold ml-1">Фотографии (до 5)</label>
                     <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                      {/* Existing Images */}
+                      {existingImages.map((url, index) => (
+                        <div key={url} className="relative aspect-square rounded-xl overflow-hidden group border border-border">
+                          <img src={url} alt="existing preview" className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => removeExistingImage(index)}
+                            className="absolute inset-0 bg-red-600/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Trash2 className="w-5 h-5 text-white" />
+                          </button>
+                        </div>
+                      ))}
+
                       {selectedAttachments.map((item, index) => (
                         <div key={item.preview} className="relative aspect-square rounded-xl overflow-hidden group border border-border">
                           <img src={item.preview} alt="preview" className="w-full h-full object-cover" />
@@ -279,7 +328,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                           </button>
                         </div>
                       ))}
-                      {selectedAttachments.length < 5 && (
+                      {selectedAttachments.length + existingImages.length < 5 && (
                         <button
                           type="button"
                           disabled={processingFiles}
@@ -415,7 +464,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
                       Публикуем...
                     </>
                   ) : (
-                    'Опубликовать →'
+                    announcementToEdit ? 'Сохранить изменения' : 'Опубликовать →'
                   )}
                 </Button>
               </div>

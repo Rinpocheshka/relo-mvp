@@ -10,6 +10,7 @@ import { AnnouncementDetailsModal } from './AnnouncementDetailsModal';
 import { Announcement } from './Announcements';
 import { EventDetailsModal } from './EventDetailsModal';
 import { EventFormModal } from './EventFormModal';
+import { CreateAnnouncementModal } from './CreateAnnouncementModal';
 
 interface Event {
   id: string;
@@ -112,7 +113,9 @@ export function Profile() {
   const [userAnnouncements, setUserAnnouncements] = useState<Announcement[]>([]);
   const [announcementsCount, setAnnouncementsCount] = useState<number>(0);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
+  const [announcementToEdit, setAnnouncementToEdit] = useState<Announcement | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isCreateAnnouncementModalOpen, setIsCreateAnnouncementModalOpen] = useState(false);
   const [userEvents, setUserEvents] = useState<Event[]>([]);
   const [eventsCount, setEventsCount] = useState<number>(0);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -944,6 +947,26 @@ export function Profile() {
             setAnnouncementsCount(prev => prev - 1);
             setIsDetailsModalOpen(false);
           }}
+          onEdited={(announcement) => {
+            setAnnouncementToEdit(announcement);
+            setIsDetailsModalOpen(false);
+            setIsCreateAnnouncementModalOpen(true);
+          }}
+        />
+      )}
+
+      {isCreateAnnouncementModalOpen && (
+        <CreateAnnouncementModal
+          isOpen={isCreateAnnouncementModalOpen}
+          onClose={() => {
+            setIsCreateAnnouncementModalOpen(false);
+            setAnnouncementToEdit(null);
+          }}
+          onSuccess={() => {
+            // Refresh local data
+            window.location.reload();
+          }}
+          announcementToEdit={announcementToEdit}
         />
       )}
 

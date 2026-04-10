@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, MapPin, Calendar, User, CornerUpRight, Trash2, Loader2 } from 'lucide-react';
+import { X, MapPin, Calendar, User, CornerUpRight, Trash2, Loader2, Edit } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '../SupabaseAuthProvider';
 import { supabase } from '@/lib/supabaseClient';
@@ -13,14 +13,15 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onDeleted?: () => void;
+  onEdited?: (announcement: Announcement) => void;
 }
 
-export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDeleted }: Props) {
+export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDeleted, onEdited }: Props) {
   const { user, profile } = useAuth();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const canDelete = user && (user.id === announcement?.author_id || profile?.role === 'admin');
+  const canManage = user && (user.id === announcement?.author_id || profile?.role === 'admin');
 
   // Reset active image when announcement changes
   useEffect(() => {
@@ -29,7 +30,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
   }, [announcement?.id]);
 
   const handleDelete = async () => {
-    if (!announcement || !canDelete) return;
+    if (!announcement || !canManage) return;
     if (!confirm('Вы уверены, что хотите удалить это объявление?')) return;
 
     setIsDeleting(true);
@@ -183,15 +184,28 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
                       Написать автору
                     </Button>
                     
-                    {canDelete && (
-                      <button
-                        onClick={handleDelete}
-                        disabled={isDeleting}
-                        className="w-full mt-4 flex items-center justify-center gap-2 text-red-600 hover:text-red-700 font-bold py-3 transition-colors disabled:opacity-50"
-                      >
-                        {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                        Удалить объявление
-                      </button>
+                    {canManage && (
+                      <div className="flex gap-2 mt-4">
+                        <button
+                          onClick={() => {
+                            if (announcement && onEdited) {
+                              onEdited(announcement);
+                            }
+                          }}
+                          className="flex-1 flex items-center justify-center gap-2 bg-soft-sand hover:bg-soft-sand/80 text-foreground font-bold py-3 rounded-2xl transition-colors"
+                        >
+                          <Edit className="w-4 h-4" />
+                          Изменить
+                        </button>
+                        <button
+                          onClick={handleDelete}
+                          disabled={isDeleting}
+                          className="flex-1 flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-2xl transition-colors disabled:opacity-50"
+                        >
+                          {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                          Удалить
+                        </button>
+                      </div>
                     )}
 
                     <p className="text-center text-[10px] text-muted-foreground mt-4 uppercase tracking-widest font-bold">
