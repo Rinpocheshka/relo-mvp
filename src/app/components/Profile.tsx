@@ -383,42 +383,40 @@ export function Profile() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 md:gap-8 bg-soft-sand/20 p-4 rounded-[20px] border border-soft-sand/30">
+              <div className="grid grid-cols-[1fr_auto] items-center gap-x-6 gap-y-4 bg-soft-sand/20 p-4 rounded-[20px] border border-soft-sand/30 w-full md:w-auto">
                 {/* Guide Toggle */}
-                <div className="flex items-center gap-3">
-                  <div className="flex flex-col items-end">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Проводник</span>
-                    <span className="text-xs font-bold">{profile.is_guide ? 'Включен' : 'Выключен'}</span>
-                  </div>
-                  <button
-                    disabled={isUpdatingPrivileges}
-                    onClick={() => handleUpdatePrivileges({ is_guide: !profile.is_guide })}
-                    className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all focus:outline-none disabled:opacity-50 ${
-                      profile.is_guide ? 'bg-warm-olive' : 'bg-muted-foreground/30'
-                    }`}
-                  >
-                    <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${profile.is_guide ? 'translate-x-6' : 'translate-x-1'}`} />
-                  </button>
+                <div col-span-1 className="flex flex-col">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Проводник</span>
+                  <span className="text-xs font-bold text-foreground">{profile.is_guide ? 'Включен' : 'Выключен'}</span>
                 </div>
+                <button
+                  disabled={isUpdatingPrivileges}
+                  onClick={() => handleUpdatePrivileges({ is_guide: !profile.is_guide })}
+                  className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all focus:outline-none disabled:opacity-50 ${
+                    profile.is_guide ? 'bg-warm-olive' : 'bg-muted-foreground/30'
+                  }`}
+                >
+                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${profile.is_guide ? 'translate-x-6' : 'translate-x-1'}`} />
+                </button>
 
+                {/* Separator - Horizontal on mobile, vertical on desktop */}
+                <div className="md:col-span-2 h-px bg-border/20 md:hidden" />
                 <div className="h-8 w-px bg-border/40 hidden md:block" />
 
                 {/* Admin Toggle */}
-                <div className="flex items-center gap-3">
-                  <div className="flex flex-col items-end">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Администратор</span>
-                    <span className="text-xs font-bold">{profile.role === 'admin' ? 'Да' : 'Нет'}</span>
-                  </div>
-                  <button
-                    disabled={isUpdatingPrivileges}
-                    onClick={() => handleUpdatePrivileges({ role: profile.role === 'admin' ? 'user' : 'admin' })}
-                    className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all focus:outline-none disabled:opacity-50 ${
-                      profile.role === 'admin' ? 'bg-terracotta-deep' : 'bg-muted-foreground/30'
-                    }`}
-                  >
-                    <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${profile.role === 'admin' ? 'translate-x-6' : 'translate-x-1'}`} />
-                  </button>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Администратор</span>
+                  <span className="text-xs font-bold text-foreground">{profile.role === 'admin' ? 'Да' : 'Нет'}</span>
                 </div>
+                <button
+                  disabled={isUpdatingPrivileges}
+                  onClick={() => handleUpdatePrivileges({ role: profile.role === 'admin' ? 'user' : 'admin' })}
+                  className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all focus:outline-none disabled:opacity-50 ${
+                    profile.role === 'admin' ? 'bg-terracotta-deep' : 'bg-muted-foreground/30'
+                  }`}
+                >
+                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${profile.role === 'admin' ? 'translate-x-6' : 'translate-x-1'}`} />
+                </button>
               </div>
 
               {isUpdatingPrivileges && (
@@ -508,31 +506,31 @@ export function Profile() {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 md:mt-0">
                       {isOwnProfile ? (
                         <Button 
-                          className="bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full shadow-md px-8 h-11 font-semibold transition-all active:scale-95 min-w-[200px]"
+                          className="w-full sm:w-auto bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full shadow-md px-8 h-11 font-semibold transition-all active:scale-95 sm:min-w-[200px]"
                           onClick={() => setIsEditing(true)}
                         >
                           <Edit className="w-4 h-4 mr-2" />
                           Редактировать профиль
                         </Button>
                       ) : (globalProfile?.role === 'admin' || user?.id === 'admin-id-fallback') ? (
-                        <div className="flex gap-2">
+                        <>
                           <Button 
-                            className="bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full shadow-md px-8 h-11 font-semibold transition-all active:scale-95 min-w-[200px]"
+                            className="w-full sm:w-auto bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full shadow-md px-8 h-11 font-semibold transition-all active:scale-95 sm:min-w-[200px]"
                             onClick={() => setIsEditing(true)}
                           >
                             <Edit className="w-4 h-4 mr-2" />
                             Редактировать (Админ)
                           </Button>
-                          <Button className="bg-soft-sand hover:bg-soft-sand/80 text-foreground rounded-full shadow-sm px-8 h-11 font-medium transition-all active:scale-95">
+                          <Button className="w-full sm:w-auto bg-soft-sand hover:bg-soft-sand/80 text-foreground rounded-full shadow-sm px-8 h-11 font-medium transition-all active:scale-95">
                              <MessageCircle className="w-4 h-4 mr-2" />
                              Написать
                           </Button>
-                        </div>
+                        </>
                       ) : user ? (
-                        <Button className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-6 h-11 font-medium">
+                        <Button className="w-full sm:w-auto bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-8 h-11 font-medium">
                            <MessageCircle className="w-4 h-4 mr-2" />
                            Написать
                         </Button>
