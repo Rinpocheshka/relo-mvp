@@ -76,8 +76,8 @@ export function PeopleNearby() {
   const filters = [
     { name: 'Все', value: 'Все', icon: '/assets/icons/custom/people_all.png' },
     { name: 'Планирую переезд', value: 'planning', icon: '/assets/icons/custom/people_planning.png' },
-    { name: 'Только приехал', value: 'just_arrived', icon: '/assets/icons/custom/luggage.png' },
-    { name: 'Осваиваюсь', value: 'settling', icon: '/assets/icons/custom/category_bus.png' },
+    { name: 'Только приехал', value: 'just_arrived', icon: '/assets/icons/custom/category_bus.png' },
+    { name: 'Осваиваюсь', value: 'settling', icon: '/assets/icons/custom/people_settling.png' },
     { name: 'Делюсь опытом', value: 'sharing', icon: '/assets/icons/custom/people_sharing.png' },
     { name: 'Переезжаю дальше', value: 'moving_on', icon: '/assets/icons/custom/people_moving.png' },
   ];
