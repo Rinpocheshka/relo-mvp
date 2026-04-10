@@ -123,6 +123,7 @@ export function Profile() {
   const [isEventFormModalOpen, setIsEventFormModalOpen] = useState(false);
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
   const [isUpdatingPrivileges, setIsUpdatingPrivileges] = useState(false);
+  const [isRevokeAdminModalOpen, setIsRevokeAdminModalOpen] = useState(false);
 
   const isOwnProfile = !id || id === user?.id;
   const targetId = isOwnProfile ? session?.user?.id : id;
@@ -281,6 +282,16 @@ export function Profile() {
   const handleUpdatePrivileges = async (updates: Partial<UserData>) => {
     if (!targetId || globalProfile?.role !== 'admin') return;
     
+    // Safety check: if user is revoking their own admin rights
+    if (isOwnProfile && updates.role === 'user' && profile?.role === 'admin') {
+      setIsRevokeAdminModalOpen(true);
+      return;
+    }
+
+    await executePrivilegeUpdate(updates);
+  };
+
+  const executePrivilegeUpdate = async (updates: Partial<UserData>) => {
     setIsUpdatingPrivileges(true);
     try {
       const { error } = await supabase
@@ -1080,6 +1091,46 @@ export function Profile() {
             window.location.reload(); 
           }}
         />
+      )}
+
+      {/* Admin Revoke Confirmation Modal */}
+      {isRevokeAdminModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-[32px] w-full max-w-sm overflow-hidden shadow-2xl border border-soft-sand/20"
+          >
+            <div className="p-8 text-center">
+              <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Lock className="w-8 h-8 text-red-500" />
+              </div>
+              <h3 className="text-xl font-bold text-foreground mb-3">Опасная зона</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+                Вы уверены, что хотите лишить себя прав администратора? Это действие <span className="text-red-500 font-bold uppercase underline">необратимо</span> через интерфейс профиля. Вы потеряете доступ к управлению другими пользователями.
+              </p>
+              
+              <div className="flex flex-col gap-3">
+                <Button
+                  onClick={() => {
+                    executePrivilegeUpdate({ role: 'user' });
+                    setIsRevokeAdminModalOpen(false);
+                  }}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white h-12 rounded-2xl font-bold shadow-lg shadow-red-500/20"
+                >
+                  Да, лишить меня прав
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setIsRevokeAdminModalOpen(false)}
+                  className="w-full h-12 rounded-2xl font-bold text-muted-foreground hover:bg-soft-sand/30"
+                >
+                  Отмена
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       )}
     </div>
   );
