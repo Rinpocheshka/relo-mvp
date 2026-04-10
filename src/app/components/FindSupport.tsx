@@ -93,7 +93,7 @@ const CATEGORY_ICON_MAP: Record<string, string> = {
   'Здоровье': '/assets/icons/custom/category_health.png',
   'Для бизнеса': '/assets/icons/custom/category_write.png',
   'О платформе': '/assets/icons/custom/message.png',
-  'Другое': '/assets/icons/custom/luggage.png',
+  'Другое': '/assets/icons/custom/coconut.png',
 };
 
 const GUIDE_COLORS = [
