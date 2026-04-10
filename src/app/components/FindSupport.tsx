@@ -74,25 +74,26 @@ type SortMode = 'new' | 'unanswered' | 'popular';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const QUESTION_CATEGORIES = [
-  'Все', 'жилье', 'документы/визы', 'обмен/деньги', 'дети',
-  'о городе', 'куда сходить', 'здоровье', 'для бизнеса', 'о платформе',
+  'Все', 'Жильё', 'Документы/визы', 'Обмен/деньги', 'Дети',
+  'О городе', 'Куда сходить', 'Здоровье', 'Для бизнеса', 'О платформе', 'Другое',
 ];
 
 const RESOURCE_CATEGORIES = [
-  'Все', 'жилье', 'документы/визы', 'обмен/деньги', 'дети',
-  'о городе', 'куда сходить', 'здоровье', 'для бизнеса', 'о платформе',
+  'Все', 'Жильё', 'Документы/визы', 'Обмен/деньги', 'Дети',
+  'О городе', 'Куда сходить', 'Здоровье', 'Для бизнеса', 'О платформе', 'Другое',
 ];
 
 const CATEGORY_ICON_MAP: Record<string, string> = {
-  'жилье': '/assets/icons/custom/category_housing.png',
-  'документы/визы': '/assets/icons/custom/passport.png',
-  'обмен/деньги': '/assets/icons/custom/category_finance.png',
-  'дети': '/assets/icons/custom/category_kids_support.png',
-  'о городе': '/assets/icons/custom/category_city.png',
-  'куда сходить': '/assets/icons/custom/category_places.jpg',
-  'здоровье': '/assets/icons/custom/category_health.png',
-  'для бизнеса': '/assets/icons/custom/category_write.png',
-  'о платформе': '/assets/icons/custom/message.png',
+  'Жильё': '/assets/icons/custom/category_housing.png',
+  'Документы/визы': '/assets/icons/custom/passport.png',
+  'Обмен/деньги': '/assets/icons/custom/category_finance.png',
+  'Дети': '/assets/icons/custom/category_kids_support.png',
+  'О городе': '/assets/icons/custom/category_city.png',
+  'Куда сходить': '/assets/icons/custom/category_places.jpg',
+  'Здоровье': '/assets/icons/custom/category_health.png',
+  'Для бизнеса': '/assets/icons/custom/category_write.png',
+  'О платформе': '/assets/icons/custom/message.png',
+  'Другое': '/assets/icons/custom/luggage.png',
 };
 
 const GUIDE_COLORS = [
