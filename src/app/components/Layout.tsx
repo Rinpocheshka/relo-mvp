@@ -142,7 +142,10 @@ export function Layout() {
       navigate('/home', { replace: true });
     }
 
-    // 2. Sync onboarding data if exists
+    // 2. Scroll to top on navigation
+    window.scrollTo(0, 0);
+
+    // 3. Sync onboarding data if exists
     if (!loading && user) {
       const stored = localStorage.getItem('reloOnboarding');
       if (stored) {

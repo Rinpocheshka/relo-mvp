@@ -23,7 +23,7 @@ const CATEGORIES = [
   { name: 'Бесплатно', icon: '/assets/icons/custom/message.png' },
 ];
 
-export function CreateAnnouncementModal({ isOpen, onClose, onSuccess }: Props) {
+export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announcementToEdit }: Props) {
   const { user, profile } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
