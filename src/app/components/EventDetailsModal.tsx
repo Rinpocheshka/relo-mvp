@@ -140,7 +140,7 @@ export function EventDetailsModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -152,10 +152,10 @@ export function EventDetailsModal({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-5xl bg-white rounded-[32px] overflow-hidden shadow-2xl flex flex-col lg:flex-row h-full max-h-[90vh] lg:max-h-[85vh]"
+            className="relative w-full max-w-5xl bg-white rounded-[24px] md:rounded-[32px] overflow-hidden shadow-2xl flex flex-col lg:flex-row h-full max-h-[92dvh] lg:max-h-[85vh]"
           >
             {/* Left Column (Images) - Desktop only (fixed area) */}
-            <div className="relative h-64 sm:h-80 lg:h-full lg:w-[42%] bg-soft-sand/10 shrink-0">
+            <div className="relative h-48 sm:h-64 md:h-80 lg:h-auto lg:w-[42%] bg-soft-sand/10 shrink-0">
               {event.images && event.images.length > 0 ? (
                 <img src={event.images[0]} alt={event.title} className="w-full h-full object-cover" />
               ) : (
@@ -187,7 +187,7 @@ export function EventDetailsModal({
             </div>
 
             {/* Right Column (Content) */}
-            <div className="flex-1 flex flex-col min-w-0 bg-white relative">
+            <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-white relative">
               {/* Desktop Close Button */}
               <button
                 onClick={onClose}
@@ -197,7 +197,7 @@ export function EventDetailsModal({
               </button>
 
               {/* Scrollable Content Area */}
-              <div className="flex-1 overflow-y-auto p-6 sm:p-10 custom-scrollbar lg:pt-12">
+              <div className="flex-1 overflow-y-auto p-5 sm:p-10 custom-scrollbar lg:pt-12 min-h-0">
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
                   <div>
                     <h2 className="text-3xl sm:text-4xl font-black text-foreground mb-3 leading-[1.1] tracking-tight">
@@ -314,7 +314,7 @@ export function EventDetailsModal({
               </div>
 
               {/* Footer Actions */}
-              <div className="p-6 bg-white border-t border-border/50 flex flex-col sm:flex-row gap-3">
+              <div className="p-4 sm:p-6 bg-white border-t border-border/50 flex flex-col sm:flex-row gap-3 shrink-0">
                 {!user ? (
                   <div className="flex-1 flex items-center gap-3 p-3 bg-red-50 rounded-2xl">
                     <AlertTriangle className="w-5 h-5 text-red-500 shrink-0" />

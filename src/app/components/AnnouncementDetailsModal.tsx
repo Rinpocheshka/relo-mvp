@@ -89,7 +89,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto min-h-0">
               <div className="grid lg:grid-cols-2 h-full">
                 {/* Visuals */}
                 <div className="bg-soft-sand/5 relative min-h-[350px] lg:min-h-0 border-r border-border/40 flex flex-col">
