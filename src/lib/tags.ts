@@ -15,14 +15,14 @@ const TAG_TRANSLATIONS: Record<string, string> = {
   'local_business': 'строю местный бизнес',
 
   // Relocation Stages
-  'planning': 'Планирует переезд',
+  'planning': 'Планирую переезд',
   'just_arrived': 'Только приехал',
-  'settling': 'Осваивается',
-  'sharing': 'Делится опытом',
-  'moving_on': 'Переезжает дальше',
+  'settling': 'Осваиваюсь',
+  'sharing': 'Делюсь опытом',
+  'moving_on': 'Переезжаю дальше',
+  'living': 'Живу здесь',
   'settled': 'Уже на месте',
   'resident': 'Местный житель',
-  'living': 'Уже на месте',
 
   // Interests
   'english': 'учу английский',
