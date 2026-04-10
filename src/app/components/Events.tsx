@@ -182,20 +182,20 @@ export function Events() {
   };
 
   return (
-    <div className="min-h-screen bg-warm-milk py-8 pb-32">
+    <div className="min-h-screen bg-warm-milk py-4 md:py-8 pb-24 md:pb-32">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-6 md:mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-3 md:mb-4">
             <img src="/assets/icons/custom/events_all.png" className="w-5 h-5 object-contain" alt="" />
-            <span className="text-dusty-indigo font-medium">Афиша</span>
+            <span className="text-dusty-indigo font-medium text-sm md:text-base">Афиша</span>
           </div>
-          <h1 className="text-4xl font-bold mb-4">События и встречи</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-4">События и встречи</h1>
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
             Находи интересные мероприятия и знакомься с новыми людьми
           </p>
         </motion.div>
@@ -203,79 +203,74 @@ export function Events() {
 
 
         {/* Filters */}
-        <div className="mb-10 space-y-8">
+        <div className="mb-6 md:mb-10 space-y-6 md:space-y-8">
           {/* Category Filter */}
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             <div className="flex items-center gap-2 px-1">
               <Filter className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Категория</span>
+              <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Категория</span>
             </div>
-            <div className="relative w-full overflow-visible">
-              <div className="flex gap-2.5 overflow-x-auto py-3 scrollbar-hide -mx-4 px-4">
-                <div className="flex gap-2.5 pr-12 md:pr-0">
-                  {eventTypes.map((type) => (
-                    <button
-                      key={type.name}
-                      onClick={() => setSelectedType(type.name)}
-                      className={`flex items-center gap-2.5 px-5 py-3 rounded-full whitespace-nowrap transition-all font-bold border ${
-                        selectedType === type.name
-                          ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-lg shadow-dusty-indigo/20 scale-105 active:scale-95'
-                          : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
-                      }`}
-                    >
-                      <img 
-                        src={type.icon} 
-                        className={`w-6 h-6 object-contain transition-all duration-300 ${selectedType === type.name ? 'brightness-0 invert' : ''}`} 
-                        alt="" 
-                      />
-                      <span className="text-sm">{type.name}</span>
-                    </button>
-                  ))}
-                </div>
+            <div className="relative w-full overflow-visible -mx-4">
+              <div className="flex gap-2 overflow-x-auto py-2 px-4 scrollbar-hide">
+                {eventTypes.map((type) => (
+                  <button
+                    key={type.name}
+                    onClick={() => setSelectedType(type.name)}
+                    className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full whitespace-nowrap transition-all font-bold border shadow-sm ${
+                      selectedType === type.name
+                        ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-md shadow-dusty-indigo/10'
+                        : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground'
+                    }`}
+                  >
+                    <img 
+                      src={type.icon} 
+                      className={`w-5 h-5 sm:w-6 sm:h-6 object-contain transition-all duration-300 ${selectedType === type.name ? 'brightness-0 invert' : ''}`} 
+                      alt="" 
+                    />
+                    <span className="text-xs sm:text-sm">{type.name}</span>
+                  </button>
+                ))}
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="space-y-4 flex-1">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
+            <div className="space-y-3 md:space-y-4 flex-1">
               <div className="flex items-center gap-2 px-1">
                 <Clock className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Когда</span>
+                <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Когда</span>
               </div>
-              <div className="relative w-full overflow-visible">
-                <div className="flex gap-2.5 overflow-x-auto py-3 scrollbar-hide -mx-4 px-4">
-                  <div className="flex gap-2.5 pr-12 md:pr-0">
-                    {timeFilters.map((filter) => (
-                      <button
-                        key={filter}
-                        onClick={() => setTimeFilter(filter)}
-                        className={`px-6 py-3 rounded-full whitespace-nowrap transition-all font-bold border ${
-                          timeFilter === filter
-                            ? 'bg-warm-olive text-white border-warm-olive shadow-lg shadow-warm-olive/20 scale-105 active:scale-95'
-                            : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
-                        }`}
-                      >
-                        {filter}
-                      </button>
-                    ))}
-                  </div>
+              <div className="relative w-full overflow-visible -mx-4">
+                <div className="flex gap-2.5 overflow-x-auto py-2 px-4 scrollbar-hide">
+                  {timeFilters.map((filter) => (
+                    <button
+                      key={filter}
+                      onClick={() => setTimeFilter(filter)}
+                      className={`flex-shrink-0 px-5 md:px-6 py-2.5 sm:py-3 rounded-full whitespace-nowrap transition-all font-bold border shadow-sm ${
+                        timeFilter === filter
+                          ? 'bg-warm-olive text-white border-warm-olive shadow-md shadow-warm-olive/10'
+                          : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground'
+                      }`}
+                    >
+                      <span className="text-xs sm:text-sm">{filter}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
 
             <Button 
               onClick={handleCreate}
-              size="lg"
-              className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[20px] h-[58px] px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95 mb-4 shrink-0"
+              className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] md:rounded-[20px] h-[52px] md:h-[58px] px-6 md:px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95 mb-0 md:mb-4 shrink-0 text-sm md:text-base font-bold"
             >
-              <Plus className="w-5 h-5 mr-2" />
+              <Plus className="w-5 h-5 mr-1 md:mr-2" />
               Создать событие
             </Button>
           </div>
         </div>
 
         {/* Events Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {loading && (
             <div className="col-span-full text-center text-muted-foreground py-20 flex flex-col items-center">
               <div className="w-10 h-10 border-4 border-terracotta-deep/20 border-t-terracotta-deep rounded-full animate-spin mb-4" />
@@ -295,9 +290,9 @@ export function Events() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
               onClick={() => handleCardClick(event)}
-              className="bg-white rounded-[32px] border border-border/40 hover:shadow-xl transition-all cursor-pointer group overflow-hidden flex flex-col h-full shadow-sm hover:-translate-y-1 active:scale-[0.98]"
+              className="bg-white rounded-[24px] md:rounded-[32px] border border-border/40 hover:shadow-xl transition-all cursor-pointer group overflow-hidden flex flex-col h-full shadow-sm hover:-translate-y-1 active:scale-[0.98]"
             >
-              <div className="relative h-48 sm:h-56 overflow-hidden">
+              <div className="relative h-40 sm:h-48 md:h-56 overflow-hidden">
                 {event.images && event.images.length > 0 ? (
                   <img 
                     src={event.images[0]} 
@@ -313,7 +308,7 @@ export function Events() {
                 )}
               </div>
 
-              <div className="p-6 flex flex-col flex-1 gap-3">
+              <div className="p-4 md:p-6 flex flex-col flex-1 gap-2 md:gap-3">
                 {/* Category & Price */}
                 <div className="flex items-center justify-between">
                   <span className="px-3 py-1 bg-soft-sand/80 text-terracotta-deep text-[10px] font-bold tracking-widest uppercase rounded-full border border-terracotta-deep/5">
@@ -325,7 +320,7 @@ export function Events() {
                     {formatPrice(event.price)}
                   </span>
                 </div>
-                <h3 className="font-bold text-xl text-dusty-indigo leading-tight group-hover:underline decoration-dusty-indigo/30 transition-all line-clamp-1">
+                <h3 className="font-bold text-lg md:text-xl text-dusty-indigo leading-tight group-hover:underline decoration-dusty-indigo/30 transition-all line-clamp-1">
                   {event.title}
                 </h3>
                 
@@ -360,7 +355,7 @@ export function Events() {
                       e.stopPropagation();
                       handleToggleAttendance(event);
                     }}
-                    className={`rounded-2xl px-5 h-10 font-bold text-sm shadow-md transition-all active:scale-[0.97] ${
+                    className={`rounded-xl md:rounded-2xl px-4 md:px-5 h-9 md:h-10 font-bold text-xs md:text-sm shadow-md transition-all active:scale-[0.97] ${
                       event.is_attending
                         ? 'bg-soft-sand text-dusty-indigo hover:bg-soft-sand/80 shadow-soft-sand/10'
                         : 'bg-dusty-indigo text-white hover:bg-dusty-indigo/90 shadow-dusty-indigo/20'
@@ -376,7 +371,7 @@ export function Events() {
 
         {/* Pagination Controls */}
         {!loading && totalCount > 0 && (
-          <div className="mt-12 flex items-center justify-center gap-4">
+          <div className="mt-8 md:mt-12 flex items-center justify-center gap-3 md:gap-4">
             <Button
               variant="outline"
               onClick={() => {
@@ -384,12 +379,12 @@ export function Events() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               disabled={currentPage === 1}
-              className="rounded-[16px] px-6 h-12 bg-white"
+              className="rounded-[14px] md:rounded-[16px] px-4 md:px-6 h-10 md:h-12 bg-white text-sm"
             >
               ← Назад
             </Button>
-            <span className="text-sm font-medium text-muted-foreground bg-white px-4 py-2 rounded-full border border-border shadow-sm">
-              Страница {currentPage}
+            <span className="text-xs md:text-sm font-medium text-muted-foreground bg-white px-3 md:px-4 py-2 rounded-full border border-border shadow-sm">
+              Стр. {currentPage}
             </span>
             <Button
               variant="outline"
@@ -398,7 +393,7 @@ export function Events() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               disabled={currentPage * PAGE_SIZE >= totalCount}
-              className="rounded-[16px] px-6 h-12 bg-white"
+              className="rounded-[14px] md:rounded-[16px] px-4 md:px-6 h-10 md:h-12 bg-white text-sm"
             >
               Вперед →
             </Button>
@@ -427,22 +422,22 @@ export function Events() {
 
         {/* Stats */}
         {events.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-16">
-            <div className="bg-white p-8 rounded-[32px] border border-border/40 text-center shadow-sm">
-              <div className="text-4xl font-black text-dusty-indigo mb-2">{events.length}</div>
-              <p className="text-muted-foreground font-bold text-sm uppercase tracking-widest">Мероприятий</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 my-10 md:my-16">
+            <div className="bg-white p-6 md:p-8 rounded-[24px] md:rounded-[32px] border border-border/40 text-center shadow-sm">
+              <div className="text-3xl md:text-4xl font-black text-dusty-indigo mb-1 md:mb-2">{events.length}</div>
+              <p className="text-[10px] md:text-sm text-muted-foreground font-bold uppercase tracking-widest">Мероприятий</p>
             </div>
-            <div className="bg-white p-8 rounded-[32px] border border-border/40 text-center shadow-sm">
-              <div className="text-4xl font-black text-terracotta-deep mb-2">
+            <div className="bg-white p-6 md:p-8 rounded-[24px] md:rounded-[32px] border border-border/40 text-center shadow-sm">
+              <div className="text-3xl md:text-4xl font-black text-terracotta-deep mb-1 md:mb-2">
                 {events.reduce((sum, e) => sum + e.attendees, 0)}
               </div>
-              <p className="text-muted-foreground font-bold text-sm uppercase tracking-widest">Участников</p>
+              <p className="text-[10px] md:text-sm text-muted-foreground font-bold uppercase tracking-widest">Участников</p>
             </div>
-            <div className="bg-white p-8 rounded-[32px] border border-border/40 text-center shadow-sm">
-              <div className="text-4xl font-black text-warm-olive mb-2">
+            <div className="bg-white p-6 md:p-8 rounded-[24px] md:rounded-[32px] border border-border/40 text-center shadow-sm">
+              <div className="text-3xl md:text-4xl font-black text-warm-olive mb-1 md:mb-2">
                 {events.filter(e => e.price.toLowerCase().includes('бесплатно')).length}
               </div>
-              <p className="text-muted-foreground font-bold text-sm uppercase tracking-widest">Бесплатных встреч</p>
+              <p className="text-[10px] md:text-sm text-muted-foreground font-bold uppercase tracking-widest">Бесплатных встреч</p>
             </div>
           </div>
         )}
