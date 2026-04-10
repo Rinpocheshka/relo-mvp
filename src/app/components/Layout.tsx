@@ -171,8 +171,8 @@ export function Layout() {
     { path: '/home', icon: '/assets/icons/custom/danang_symbol.png', label: 'Главная' },
     { path: '/announcements', icon: '/assets/icons/custom/luggage.png', label: 'Объявления' },
     { path: '/events', icon: '/assets/icons/custom/afisha.png', label: 'Афиша' },
-    { path: '/support', icon: '/assets/icons/custom/message.png', label: 'Найти опору' },
-    { path: '/people', icon: '/assets/icons/custom/palm_tree_bw.png', label: 'Люди рядом' },
+    { path: '/support', icon: '/assets/icons/custom/support_tab.png', label: 'Найти опору' },
+    { path: '/people', icon: '/assets/icons/custom/people_tab.png', label: 'Люди рядом' },
   ];
 
   useEffect(() => {

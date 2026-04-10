@@ -84,14 +84,14 @@ const RESOURCE_CATEGORIES = [
 ];
 
 const CATEGORY_ICON_MAP: Record<string, string> = {
-  'жилье': '/assets/icons/custom/luggage.png',
+  'жилье': '/assets/icons/custom/category_housing.png',
   'документы/визы': '/assets/icons/custom/passport.png',
-  'обмен/деньги': '/assets/icons/custom/travel.png',
-  'дети': '/assets/icons/custom/kite.png',
-  'о городе': '/assets/icons/custom/danang_symbol.png',
-  'куда сходить': '/assets/icons/custom/sandcastle.png',
-  'здоровье': '/assets/icons/custom/umbrella.png',
-  'для бизнеса': '/assets/icons/custom/signpost.png',
+  'обмен/деньги': '/assets/icons/custom/category_finance.png',
+  'дети': '/assets/icons/custom/category_kids_support.png',
+  'о городе': '/assets/icons/custom/category_city.png',
+  'куда сходить': '/assets/icons/custom/category_places.jpg',
+  'здоровье': '/assets/icons/custom/category_health.png',
+  'для бизнеса': '/assets/icons/custom/category_write.png',
   'о платформе': '/assets/icons/custom/message.png',
 };
 
@@ -476,7 +476,7 @@ export function FindSupport() {
           className="text-center mb-10"
         >
           <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-4">
-            <img src="/assets/icons/custom/message.png" className="w-6 h-6 object-contain" alt="" />
+            <img src="/assets/icons/custom/support_tab.png" className="w-6 h-6 object-contain" alt="" />
             <span className="text-dusty-indigo font-bold text-sm">Найти опору</span>
           </div>
           <h1 className="text-4xl font-bold mb-3">Вопросы и ответы</h1>

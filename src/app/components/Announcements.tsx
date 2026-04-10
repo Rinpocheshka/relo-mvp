@@ -45,12 +45,12 @@ export function Announcements() {
 
   const categories = [
     { name: 'Все', icon: '/assets/icons/custom/luggage.png' },
-    { name: 'Жильё', icon: '/assets/icons/custom/luggage.png' },
-    { name: 'Вещи', icon: '/assets/icons/custom/travel.png' },
-    { name: 'Услуги', icon: '/assets/icons/custom/tickets.png' },
+    { name: 'Жильё', icon: '/assets/icons/custom/category_housing.png' },
+    { name: 'Вещи', icon: '/assets/icons/custom/category_stuff.png' },
+    { name: 'Услуги', icon: '/assets/icons/custom/category_services.png' },
     { name: 'Документы/визы', icon: '/assets/icons/custom/passport.png' },
-    { name: 'Обмен/деньги', icon: '/assets/icons/custom/travel.png' },
-    { name: 'Бесплатно', icon: '/assets/icons/custom/message.png' },
+    { name: 'Обмен/деньги', icon: '/assets/icons/custom/category_finance.png' },
+    { name: 'Бесплатно', icon: '/assets/icons/custom/category_free.png' },
   ];
 
 

@@ -74,12 +74,12 @@ export function PeopleNearby() {
   const PAGE_SIZE = 30;
 
   const filters = [
-    { name: 'Все', value: 'Все', icon: '/assets/icons/custom/kite.png' },
-    { name: 'Планирую переезд', value: 'planning', icon: '/assets/icons/custom/airplane_bw.png' },
+    { name: 'Все', value: 'Все', icon: '/assets/icons/custom/people_all.png' },
+    { name: 'Планирую переезд', value: 'planning', icon: '/assets/icons/custom/people_planning.png' },
     { name: 'Только приехал', value: 'just_arrived', icon: '/assets/icons/custom/luggage.png' },
-    { name: 'Осваиваюсь', value: 'settling', icon: '/assets/icons/custom/path_arrow.png' },
-    { name: 'Делюсь опытом', value: 'sharing', icon: '/assets/icons/custom/message.png' },
-    { name: 'Переезжаю дальше', value: 'moving_on', icon: '/assets/icons/custom/travel.png' },
+    { name: 'Осваиваюсь', value: 'settling', icon: '/assets/icons/custom/category_bus.png' },
+    { name: 'Делюсь опытом', value: 'sharing', icon: '/assets/icons/custom/people_sharing.png' },
+    { name: 'Переезжаю дальше', value: 'moving_on', icon: '/assets/icons/custom/people_moving.png' },
   ];
 
   useEffect(() => {
@@ -157,7 +157,7 @@ export function PeopleNearby() {
           className="text-center mb-12"
         >
           <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-4">
-            <img src="/assets/icons/custom/palm_tree_bw.png" className="w-6 h-6 object-contain" alt="" />
+            <img src="/assets/icons/custom/people_tab.png" className="w-6 h-6 object-contain" alt="" />
             <span className="text-dusty-indigo font-bold text-sm">Люди рядом</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-4">Здесь уже есть люди, которые проходят тот же путь</h1>
