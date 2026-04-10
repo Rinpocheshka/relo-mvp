@@ -88,11 +88,12 @@ const INTERESTS_TAGS = [
 ];
 
 const STAGES = [
-  { value: 'planning', label: 'планирую переезд', icon: '/assets/icons/custom/airplane_bw.png' },
-  { value: 'just_arrived', label: 'только приехал', icon: '/assets/icons/custom/luggage.png' },
-  { value: 'settling', label: 'осваиваюсь', icon: '/assets/icons/custom/path_arrow.png' },
-  { value: 'sharing', label: 'делюсь опытом', icon: '/assets/icons/custom/message.png' },
-  { value: 'moving_on', label: 'переезжаю дальше', icon: '/assets/icons/custom/travel.png' },
+  { value: 'planning', label: 'Планирую переезд', icon: '/assets/icons/custom/people_planning.png' },
+  { value: 'just_arrived', label: 'Только приехал', icon: '/assets/icons/custom/category_bus.png' },
+  { value: 'settling', label: 'Осваиваюсь', icon: '/assets/icons/custom/people_settling.png' },
+  { value: 'sharing', label: 'Делюсь опытом', icon: '/assets/icons/custom/people_sharing.png' },
+  { value: 'moving_on', label: 'Переезжаю дальше', icon: '/assets/icons/custom/people_moving.png' },
+  { value: 'living', label: 'Живу здесь', icon: '/assets/icons/custom/people_sharing.png' },
 ];
 
 export function Profile() {
