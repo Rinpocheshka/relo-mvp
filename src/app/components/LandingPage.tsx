@@ -555,11 +555,11 @@ function OnboardingFlow({
   };
 
   const STAGES: { value: UserPath; label: string; icon: string }[] = [
-    { value: 'planning', label: 'планирую переезд', icon: '/assets/icons/custom/airplane_bw.png' },
-    { value: 'just_arrived', label: 'только приехал', icon: '/assets/icons/custom/luggage.png' },
-    { value: 'settling', label: 'осваиваюсь', icon: '/assets/icons/custom/path_arrow.png' },
-    { value: 'sharing', label: 'делюсь опытом', icon: '/assets/icons/custom/message.png' },
-    { value: 'moving_on', label: 'переезжаю дальше', icon: '/assets/icons/custom/travel.png' },
+    { value: 'planning', label: 'планирую переезд', icon: '/assets/icons/custom/people_planning.png' },
+    { value: 'just_arrived', label: 'только приехал', icon: '/assets/icons/custom/category_bus.png' },
+    { value: 'settling', label: 'осваиваюсь', icon: '/assets/icons/custom/people_settling.png' },
+    { value: 'sharing', label: 'делюсь опытом', icon: '/assets/icons/custom/people_sharing.png' },
+    { value: 'moving_on', label: 'переезжаю дальше', icon: '/assets/icons/custom/people_moving.png' },
   ];
 
   return (
