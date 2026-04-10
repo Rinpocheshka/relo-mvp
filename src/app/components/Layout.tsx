@@ -403,19 +403,17 @@ export function Layout() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex flex-col items-center justify-center gap-0.5 p-1 flex-1 min-w-0 rounded-[12px] transition-all ${
+                className={`flex flex-col items-center justify-center gap-1 py-1 flex-1 min-w-0 rounded-[12px] transition-all ${
                   active
                     ? 'text-terracotta-deep bg-terracotta-deep/8'
                     : 'text-muted-foreground hover:bg-soft-sand/20'
                 }`}
               >
-                <img src={item.icon as string} className="w-5 h-5 sm:w-6 sm:h-6 object-contain" alt="" />
-                <span className="text-[8.5px] sm:text-[10px] font-medium leading-none text-center truncate w-full px-0.5">{item.label}</span>
+                <img src={item.icon as string} className="w-6 h-6 object-contain" alt="" />
+                <span className="text-[10px] font-medium leading-none text-center w-full px-0.5">{item.label}</span>
               </Link>
             );
           })}
-          {/* Profile / Login as 6th item */}
-          <MobileUserButton isActive={isActive('/profile')} />
         </div>
       </nav>
 
