@@ -120,7 +120,7 @@ export function Events() {
       }
 
       const { data, error, count } = await query
-        .order('starts_at', { ascending: timeFilter !== 'Прошедшие' })
+        .order('created_at', { ascending: false })
         .range((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE - 1);
 
       if (error) throw error;
