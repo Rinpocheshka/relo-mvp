@@ -148,35 +148,35 @@ export function PeopleNearby() {
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   return (
-    <div className="min-h-screen bg-warm-milk py-8 px-4">
+    <div className="min-h-screen bg-warm-milk py-4 md:py-8 px-4 pb-24 md:pb-32">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-6 md:mb-12"
         >
-          <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-4">
-            <img src="/assets/icons/custom/people_tab.png" className="w-6 h-6 object-contain" alt="" />
-            <span className="text-dusty-indigo font-bold text-sm">Люди рядом</span>
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-3 md:mb-4">
+            <img src="/assets/icons/custom/people_tab.png" className="w-5 h-5 md:w-6 md:h-6 object-contain" alt="" />
+            <span className="text-dusty-indigo font-bold text-xs md:text-sm">Люди рядом</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Здесь уже есть люди, которые проходят тот же путь</h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-4xl mx-auto">
-            Познакомься с теми, кто сейчас в том же этапе или может помочь советом
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-4 leading-tight">Здесь уже есть люди, которые проходят тот же путь</h1>
+          <p className="text-sm md:text-lg text-muted-foreground max-w-4xl mx-auto px-2">
+            Познакомься с теми, кто сейчас на том же этапе или может помочь советом
           </p>
         </motion.div>
 
         {/* Interest Selection Dropdown */}
-        <div className="mb-8">
+        <div className="mb-6 md:mb-8">
           <div className="relative max-w-sm mx-auto">
-            <Heart className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-terracotta-deep/50" />
+            <Heart className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-terracotta-deep/50" />
             <select
               value={selectedInterest}
               onChange={(e) => {
                 setSelectedInterest(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-12 pr-10 py-4 bg-white shadow-sm border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20 transition-all text-sm font-semibold appearance-none cursor-pointer"
+              className="w-full pl-10 md:pl-12 pr-10 py-3.5 md:py-4 bg-white shadow-sm border border-border/50 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20 transition-all text-[13px] md:text-sm font-semibold appearance-none cursor-pointer"
             >
               <option value="">🎯 Любой интерес или статус</option>
               {INTEREST_OPTIONS.map(opt => (
@@ -184,15 +184,15 @@ export function PeopleNearby() {
               ))}
             </select>
             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
-              <ChevronDown className="w-4 h-4" />
+              <ChevronDown className="w-3.5 h-3.5 md:w-4 md:h-4" />
             </div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="mb-10 relative w-full overflow-visible">
-          <div className="flex overflow-x-auto md:overflow-visible py-3 scrollbar-hide -mx-4 px-4 md:justify-center">
-            <div className="flex flex-nowrap gap-2.5 items-center min-h-[60px] pr-12 md:pr-0">
+        <div className="mb-8 md:mb-10 relative w-full overflow-visible -mx-4">
+          <div className="flex overflow-x-auto md:overflow-visible py-2 px-4 scrollbar-hide md:justify-center">
+            <div className="flex flex-nowrap gap-2 items-center">
               {filters.map((f) => (
                 <button
                   key={f.name}
@@ -200,15 +200,15 @@ export function PeopleNearby() {
                     setSelectedFilter(f.value);
                     setCurrentPage(1);
                   }}
-                  className={`flex items-center gap-2.5 px-5 h-12 rounded-full whitespace-nowrap text-sm font-bold transition-all duration-300 border ${
+                  className={`flex items-center gap-2 px-4 h-11 md:h-12 rounded-full whitespace-nowrap text-xs md:text-sm font-bold transition-all duration-300 border shadow-sm ${
                     selectedFilter === f.value
-                      ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-lg shadow-dusty-indigo/20 scale-105 active:scale-95'
-                      : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
+                      ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-md shadow-dusty-indigo/10'
+                      : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground'
                   }`}
                 >
                   <img 
                     src={f.icon} 
-                    className={`w-6 h-6 object-contain shrink-0 transition-all duration-300 ${
+                    className={`w-5 h-5 md:w-6 md:h-6 object-contain shrink-0 transition-all duration-300 ${
                       selectedFilter === f.value ? 'brightness-[100] invert' : ''
                     }`} 
                     alt="" 
@@ -280,7 +280,7 @@ export function PeopleNearby() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: i * 0.05 }}
-                  className={`bg-white p-8 rounded-[32px] border transition-all shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] group ${
+                  className={`bg-white p-6 md:p-8 rounded-[24px] md:rounded-[32px] border transition-all shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] group ${
                     person.is_guide 
                       ? 'border-warm-olive/30 bg-gradient-to-br from-white to-warm-olive/5' 
                       : 'border-border/40'
@@ -290,9 +290,9 @@ export function PeopleNearby() {
                   <div className="flex items-start gap-4 mb-6">
                     <div className="relative">
                       {person.avatar_url ? (
-                        <img src={person.avatar_url} className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-sm" alt="" />
+                        <img src={person.avatar_url} className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-white shadow-sm" alt="" />
                       ) : (
-                        <div className={`w-16 h-16 rounded-full flex-shrink-0 flex items-center justify-center text-white text-2xl font-bold shadow-sm ${
+                        <div className={`w-12 h-12 md:w-16 md:h-16 rounded-full flex-shrink-0 flex items-center justify-center text-white text-lg md:text-2xl font-bold shadow-sm ${
                           person.is_guide ? 'bg-warm-olive' : 'bg-dusty-indigo/20 text-dusty-indigo'
                         }`}>
                           {person.display_name?.charAt(0) || '?'}
@@ -307,11 +307,11 @@ export function PeopleNearby() {
                     </div>
                     <div className="flex-1 min-w-0 pt-1">
                       <Link to={`/profile/${person.id}`} className="hover:text-dusty-indigo transition-colors">
-                        <h3 className="font-semibold text-lg truncate group-hover:text-dusty-indigo transition-colors">
+                        <h3 className="font-semibold text-base md:text-lg truncate group-hover:text-dusty-indigo transition-colors">
                           {person.display_name || 'Аноним'}
                         </h3>
                       </Link>
-                      <p className="text-sm font-medium text-muted-foreground mt-0.5">
+                      <p className="text-[12px] md:text-sm font-medium text-muted-foreground mt-0.5">
                         {translateTag(person.stage) || (person.is_guide ? 'Проводник' : 'Участник')}
                       </p>
                     </div>
@@ -364,7 +364,7 @@ export function PeopleNearby() {
 
             {/* Pagination */}
             {!loading && totalCount > 0 && (
-              <div className="mt-12 flex items-center justify-center gap-4">
+              <div className="mt-8 md:mt-12 flex items-center justify-center gap-3 md:gap-4">
                 <Button
                   variant="outline"
                   onClick={() => {
@@ -372,12 +372,12 @@ export function PeopleNearby() {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   disabled={currentPage === 1}
-                  className="rounded-[16px] px-6 h-12 bg-white"
+                  className="rounded-[14px] md:rounded-[16px] px-4 md:px-6 h-10 md:h-12 bg-white text-sm"
                 >
                   ← Назад
                 </Button>
-                <span className="text-sm font-medium text-muted-foreground bg-white px-4 py-2 rounded-full border border-border shadow-sm">
-                  Страница {currentPage}
+                <span className="text-xs md:text-sm font-medium text-muted-foreground bg-white px-3 md:px-4 py-2 rounded-full border border-border shadow-sm">
+                  Стр. {currentPage}
                 </span>
                 <Button
                   variant="outline"
@@ -386,7 +386,7 @@ export function PeopleNearby() {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   disabled={currentPage * PAGE_SIZE >= totalCount}
-                  className="rounded-[16px] px-6 h-12 bg-white"
+                  className="rounded-[14px] md:rounded-[16px] px-4 md:px-6 h-10 md:h-12 bg-white text-sm"
                 >
                   Вперед →
                 </Button>
@@ -396,18 +396,18 @@ export function PeopleNearby() {
         )}
 
         {/* Stats Section */}
-        <div className="grid md:grid-cols-3 gap-6 mt-20 pt-10 border-t border-border/40">
-          <div className="bg-white/40 p-8 rounded-[24px] text-center backdrop-blur-sm">
-            <div className="text-3xl font-extrabold text-terracotta-deep mb-1">{stats.total}</div>
-            <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Пользователей</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mt-12 md:mt-20 pt-8 md:pt-10 border-t border-border/40">
+          <div className="bg-white/40 p-6 md:p-8 rounded-[20px] md:rounded-[24px] text-center backdrop-blur-sm">
+            <div className="text-2xl md:text-3xl font-extrabold text-terracotta-deep mb-1">{stats.total}</div>
+            <p className="text-[10px] md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Пользователей</p>
           </div>
-          <div className="bg-white/40 p-8 rounded-[24px] text-center backdrop-blur-sm">
-            <div className="text-3xl font-extrabold text-dusty-indigo mb-1">{stats.newcomers}</div>
-            <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Новичков</p>
+          <div className="bg-white/40 p-6 md:p-8 rounded-[20px] md:rounded-[24px] text-center backdrop-blur-sm">
+            <div className="text-2xl md:text-3xl font-extrabold text-dusty-indigo mb-1">{stats.newcomers}</div>
+            <p className="text-[10px] md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Новичков</p>
           </div>
-          <div className="bg-white/40 p-8 rounded-[24px] text-center backdrop-blur-sm">
-            <div className="text-3xl font-extrabold text-warm-olive mb-1">{stats.guides}</div>
-            <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Проводников</p>
+          <div className="bg-white/40 p-6 md:p-8 rounded-[20px] md:rounded-[24px] text-center backdrop-blur-sm">
+            <div className="text-2xl md:text-3xl font-extrabold text-warm-olive mb-1">{stats.guides}</div>
+            <p className="text-[10px] md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Проводников</p>
           </div>
         </div>
       </div>

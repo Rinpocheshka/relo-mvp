@@ -467,38 +467,38 @@ export function FindSupport() {
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-warm-milk py-8 pb-32 overflow-x-hidden">
+    <div className="min-h-screen bg-warm-milk py-4 md:py-8 pb-24 md:pb-32 overflow-x-hidden">
       {/* ── Header ── */}
       <div className="max-w-7xl mx-auto px-4 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-10"
+          className="text-center mb-6 md:mb-10"
         >
-          <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-4">
-            <img src="/assets/icons/custom/support_tab.png" className="w-6 h-6 object-contain" alt="" />
-            <span className="text-dusty-indigo font-bold text-sm">Найти опору</span>
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-3 md:mb-4">
+            <img src="/assets/icons/custom/support_tab.png" className="w-5 h-5 md:w-6 md:h-6 object-contain" alt="" />
+            <span className="text-dusty-indigo font-bold text-xs md:text-sm">Найти опору</span>
           </div>
-          <h1 className="text-4xl font-bold mb-3">Вопросы и ответы</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-3">Вопросы и ответы</h1>
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
             Задавай вопросы и получай проверенные ответы от проводников города
           </p>
         </motion.div>
 
         {/* ── Tab Switcher ── */}
-        <div className="flex justify-center mb-10">
-          <div className="bg-soft-sand/20 p-1.5 rounded-2xl border border-border/40 inline-flex shadow-sm">
+        <div className="flex justify-center mb-6 md:mb-10">
+          <div className="bg-soft-sand/20 p-1 md:p-1.5 rounded-[16px] md:rounded-2xl border border-border/40 inline-flex shadow-sm w-full sm:w-auto">
             {(['questions', 'resources'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => handleTabChange(tab)}
-                className={`px-8 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${
+                className={`px-3 sm:px-8 py-2.5 md:py-3 rounded-[12px] md:rounded-xl text-[13px] sm:text-sm font-bold transition-all duration-200 flex-1 sm:flex-initial ${
                   activeTab === tab
                     ? 'bg-white text-dusty-indigo shadow-md'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                {tab === 'questions' ? 'Вопросы и ответы' : 'Полезные ресурсы'}
+                {tab === 'questions' ? 'Вопросы' : 'Ресурсы'}
               </button>
             ))}
           </div>
@@ -507,8 +507,8 @@ export function FindSupport() {
 
       <div className="max-w-7xl mx-auto px-4">
         {/* ── Search & Actions ── */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row gap-4 mb-5">
+        <div className="mb-6 md:mb-8">
+          <div className="flex flex-col md:flex-row gap-3 md:gap-4 mb-4 md:mb-5">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <input
@@ -516,40 +516,40 @@ export function FindSupport() {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder={activeTab === 'questions' ? 'Поиск по вопросам...' : 'Поиск по ресурсам...'}
-                className="w-full pl-12 pr-4 py-4 bg-white border border-border/50 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20 shadow-sm"
+                className="w-full pl-12 pr-4 py-3.5 md:py-4 bg-white border border-border/50 rounded-[16px] md:rounded-[20px] focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20 shadow-sm text-sm md:text-base"
               />
             </div>
             {activeTab === 'questions' && (
               <Button
                 onClick={() => setAskModalOpen(true)}
-                className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[58px] px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95 font-bold"
+                className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[52px] md:h-[58px] px-6 md:px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95 font-bold text-sm md:text-base"
               >
-                <Plus className="w-5 h-5 mr-2" />
+                <Plus className="w-5 h-5 mr-1 md:mr-2" />
                 Задать вопрос
               </Button>
             )}
             {activeTab === 'resources' && (
               <Button
                 onClick={() => setSuggestModalOpen(true)}
-                className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[58px] px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95 font-bold"
+                className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[52px] md:h-[58px] px-6 md:px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95 font-bold text-sm md:text-base"
               >
-                <Plus className="w-5 h-5 mr-2" />
+                <Plus className="w-5 h-5 mr-1 md:mr-2" />
                 Предложить ресурс
               </Button>
             )}
           </div>
 
           {/* Sort & Categories restructured for full visibility without extra labels */}
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-4 md:gap-5">
             {/* Row 1: Sort Buttons */}
             {activeTab === 'questions' && (
-              <div className="flex flex-shrink-0">
-                <div className="flex gap-1.5 bg-white border border-border/40 rounded-full px-1.5 py-1 shadow-sm">
+              <div className="flex flex-shrink-0 -mx-4 px-4 overflow-x-auto scrollbar-hide">
+                <div className="flex gap-1.5 bg-white border border-border/40 rounded-full px-1.5 py-1 shadow-sm whitespace-nowrap min-w-max">
                   {([['new', 'Новые'], ['unanswered', 'Без ответа'], ['popular', 'Популярные']] as [SortMode, string][]).map(([mode, label]) => (
                     <button
                       key={mode}
                       onClick={() => setSortMode(mode)}
-                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+                      className={`px-3 md:px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
                         sortMode === mode
                           ? 'bg-dusty-indigo text-white shadow-sm'
                           : 'text-muted-foreground hover:text-foreground'
@@ -562,22 +562,22 @@ export function FindSupport() {
               </div>
             )}
 
-            {/* Row 2: Categories (Wrapped for full visibility) */}
-            <div className="flex flex-wrap gap-2.5">
+            {/* Row 2: Categories */}
+            <div className="flex flex-wrap gap-2 md:gap-2.5">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-2.5 sm:px-5 sm:py-3 rounded-full whitespace-nowrap text-[13px] sm:text-sm font-bold transition-all duration-300 border flex items-center gap-2 ${
+                  className={`px-3.5 py-2 md:px-5 md:py-3 rounded-full whitespace-nowrap text-[12px] md:text-sm font-bold transition-all duration-300 border flex items-center gap-1.5 md:gap-2 ${
                     selectedCategory === cat
-                      ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-lg shadow-dusty-indigo/20 scale-105 active:scale-95'
+                      ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-md shadow-dusty-indigo/10'
                       : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
                   }`}
                 >
                   {CATEGORY_ICON_MAP[cat] && (
                     <img 
                       src={CATEGORY_ICON_MAP[cat]} 
-                      className={`w-5 h-5 sm:w-6 sm:h-6 object-contain transition-all duration-300 ${selectedCategory === cat ? 'brightness-0 invert' : ''}`} 
+                      className={`w-4 h-4 md:w-6 md:h-6 object-contain transition-all duration-300 ${selectedCategory === cat ? 'brightness-0 invert' : ''}`} 
                       alt="" 
                     />
                   )}
@@ -596,7 +596,7 @@ export function FindSupport() {
             {activeTab === 'questions' ? (
               <>
                 <div className="flex items-center justify-between mb-1">
-                  <h2 className="text-2xl font-black text-foreground">
+                  <h2 className="text-xl md:text-2xl font-black text-foreground">
                     {sortMode === 'new' ? 'Недавние вопросы'
                       : sortMode === 'unanswered' ? 'Без ответа'
                       : 'Популярные'}
