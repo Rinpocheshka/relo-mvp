@@ -173,7 +173,7 @@ export function HomePage() {
   const content = stageContent[currentStage];
 
   return (
-    <div className="min-h-screen bg-warm-milk">
+    <div className="bg-warm-milk pb-12 md:pb-16">
       <div className="max-w-5xl mx-auto px-4 py-8 pb-24 md:pb-8">
 
         <AnimatePresence mode="wait">

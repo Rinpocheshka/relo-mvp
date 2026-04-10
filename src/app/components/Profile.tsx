@@ -300,13 +300,13 @@ export function Profile() {
   };
 
   if (loading || authLoading) {
-    return <div className="min-h-screen bg-warm-milk py-16 flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dusty-indigo"></div></div>;
+    return <div className="bg-warm-milk py-16 flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dusty-indigo"></div></div>;
   }
 
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-warm-milk py-16 flex flex-col items-center justify-center px-4 text-center">
+      <div className="bg-warm-milk py-16 flex flex-col items-center justify-center px-4 text-center">
         <div className="w-20 h-20 bg-terracotta-deep/10 rounded-full flex items-center justify-center mb-6">
           <Lock className="w-10 h-10 text-terracotta-deep" />
         </div>
@@ -326,7 +326,7 @@ export function Profile() {
   }
 
   if (!profile) {
-    return <div className="min-h-screen bg-warm-milk py-16 flex justify-center"><p>Пользователь не найден</p></div>;
+    return <div className="bg-warm-milk py-16 flex justify-center"><p>Пользователь не найден</p></div>;
   }
 
   const activities = [
@@ -361,7 +361,7 @@ export function Profile() {
   ];
 
   return (
-    <div className="min-h-screen bg-warm-milk py-8">
+    <div className="bg-warm-milk py-4 md:py-8 pb-12 md:pb-16">
       <div className="max-w-5xl mx-auto px-4">
         {/* Admin Controls - Floating Panel */}
         {globalProfile?.role === 'admin' && (

@@ -468,7 +468,7 @@ export function FindSupport() {
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-warm-milk py-4 md:py-8 pb-24 md:pb-32 overflow-x-hidden">
+    <div className="bg-warm-milk py-4 md:py-8 pb-12 md:pb-16 overflow-x-hidden">
       {/* ── Header ── */}
       <div className="max-w-7xl mx-auto px-4 text-center">
         <motion.div

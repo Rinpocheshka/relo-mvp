@@ -127,7 +127,7 @@ export function Announcements() {
 
 
   return (
-    <div className="min-h-screen bg-warm-milk py-4 md:py-8">
+    <div className="bg-warm-milk py-4 md:py-8 pb-12 md:pb-16">
       <div className="max-w-7xl mx-auto px-3 sm:px-4">
         {/* Header */}
         <motion.div

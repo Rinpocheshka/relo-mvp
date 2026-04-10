@@ -148,7 +148,7 @@ export function PeopleNearby() {
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   return (
-    <div className="min-h-screen bg-warm-milk py-4 md:py-8 px-4 pb-24 md:pb-32">
+    <div className="bg-warm-milk py-4 md:py-8 px-4 pb-12 md:pb-16">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div

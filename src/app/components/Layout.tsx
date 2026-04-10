@@ -211,7 +211,7 @@ export function Layout() {
   if (isLanding) return <Outlet />;
 
   return (
-    <div className="min-h-screen bg-warm-milk">
+    <div className="min-h-screen bg-warm-milk flex flex-col">
 
       {/* ── Header ── */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-border/30">
@@ -284,12 +284,12 @@ export function Layout() {
       </header>
 
       {/* ── Main Content ── */}
-      <main>
+      <main className="flex-1">
         <Outlet />
       </main>
 
       {/* ── Footer ── */}
-      <footer className="bg-white border-t border-border/50 mt-16">
+      <footer className="bg-white border-t border-border/50 mt-8 md:mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
           <div className="grid md:grid-cols-4 gap-8">
             {/* Brand */}

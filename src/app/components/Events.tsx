@@ -182,7 +182,7 @@ export function Events() {
   };
 
   return (
-    <div className="min-h-screen bg-warm-milk py-4 md:py-8 pb-24 md:pb-32">
+    <div className="bg-warm-milk py-4 md:py-8 pb-12 md:pb-16">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <motion.div
