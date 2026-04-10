@@ -189,9 +189,9 @@ export function PeopleNearby() {
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="mb-8 md:mb-10 relative w-full overflow-visible -mx-4">
-          <div className="flex overflow-x-auto md:overflow-visible py-2 px-4 scrollbar-hide md:justify-center">
+        {/* Filters with horizontal scroll on mobile */}
+        <div className="mb-8 md:mb-10 relative w-full overflow-visible -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="flex overflow-x-auto md:overflow-visible py-2 px-0 scrollbar-hide md:justify-center">
             <div className="flex flex-nowrap gap-2 items-center">
               {filters.map((f) => (
                 <button
@@ -200,7 +200,7 @@ export function PeopleNearby() {
                     setSelectedFilter(f.value);
                     setCurrentPage(1);
                   }}
-                  className={`flex items-center gap-2 px-4 h-11 md:h-12 rounded-full whitespace-nowrap text-xs md:text-sm font-bold transition-all duration-300 border shadow-sm ${
+                  className={`flex-shrink-0 flex items-center gap-2 px-4 h-11 md:h-12 rounded-full whitespace-nowrap text-xs md:text-sm font-bold transition-all duration-300 border shadow-sm ${
                     selectedFilter === f.value
                       ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-md shadow-dusty-indigo/10'
                       : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground'
@@ -209,7 +209,7 @@ export function PeopleNearby() {
                   <img 
                     src={f.icon} 
                     className={`w-5 h-5 md:w-6 md:h-6 object-contain shrink-0 transition-all duration-300 ${
-                      selectedFilter === f.value ? 'brightness-[100] invert' : ''
+                      selectedFilter === f.value ? 'brightness-0 invert' : ''
                     }`} 
                     alt="" 
                   />
