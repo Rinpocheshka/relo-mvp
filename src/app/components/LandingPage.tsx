@@ -365,12 +365,12 @@ export function LandingPage() {
           </div>
           <div className="grid md:grid-cols-3 gap-4 md:gap-6">
             {[
-              { emoji: '😮‍💨', text: 'Открываешь десятки чатов — и не понимаешь, кому можно доверять' },
-              { emoji: '⏳', text: 'Тратишь часы на поиски простых вещей: жильё, обменники, школы' },
-              { emoji: '🤷', text: 'Не знаешь, с чего начать и что делать дальше' },
+              { emoji: <img src="/assets/icons/custom/people_all.png" alt="" className="w-12 h-12 md:w-14 md:h-14 object-contain mb-3 md:mb-4" />, text: 'Открываешь десятки чатов — и не понимаешь, кому можно доверять' },
+              { emoji: <img src="/assets/icons/custom/watch.png" alt="" className="w-10 h-10 md:w-12 md:h-12 object-contain mb-3 md:mb-4" />, text: 'Тратишь часы на поиски простых вещей: жильё, обменники, школы' },
+              { emoji: <img src="/assets/icons/custom/events_business.png" alt="" className="w-12 h-12 md:w-14 md:h-14 object-contain mb-3 md:mb-4" />, text: 'Не знаешь, с чего начать и что делать дальше' },
             ].map((p, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="bg-white p-6 md:p-8 rounded-[24px] border border-border/40 shadow-sm hover:shadow-md transition-shadow">
-                <span className="text-3xl md:text-4xl mb-3 md:mb-4 block">{p.emoji}</span>
+                {p.emoji}
                 <p className="text-base md:text-lg text-foreground/90 leading-relaxed">{p.text}</p>
               </motion.div>
             ))}
@@ -388,25 +388,25 @@ export function LandingPage() {
           <div className="grid md:grid-cols-2 gap-4 md:gap-5">
             {[
               {
-                icon: '🗂️',
+                icon: <img src="/assets/icons/custom/afisha.png" alt="" className="w-10 h-10 md:w-12 md:h-12 object-contain" />,
                 title: 'Актуальные объявления и события',
                 desc: 'Можно выбрать по категориям, фильтрам и всё — актуальное',
                 accent: 'bg-terracotta-deep/5 border-terracotta-deep/10',
               },
               {
-                icon: '🤝',
+                icon: <img src="/assets/icons/custom/people_tab.png" alt="" className="w-10 h-10 md:w-12 md:h-12 object-contain" />,
                 title: 'Люди, которым можно доверять',
                 desc: 'Ты видишь путь, который уже прошёл человек, а не только его ник',
                 accent: 'bg-dusty-indigo/5 border-dusty-indigo/10',
               },
               {
-                icon: '💬',
+                icon: <img src="/assets/icons/custom/signpost.png" alt="" className="w-10 h-10 md:w-12 md:h-12 object-contain" />,
                 title: 'Все ответы в одном месте',
                 desc: 'Кто прошёл путь — делится опытом, помогает другим',
                 accent: 'bg-warm-olive/5 border-warm-olive/10',
               },
               {
-                icon: '🗺️',
+                icon: <img src="/assets/icons/custom/people_sharing.png" alt="" className="w-10 h-10 md:w-12 md:h-12 object-contain" />,
                 title: 'Понятно куда дальше',
                 desc: 'Внутри уже есть шаги на каждый этап релокации',
                 accent: 'bg-rose-50/50 border-rose-100/50',
@@ -420,7 +420,7 @@ export function LandingPage() {
                 transition={{ delay: i * 0.08 }}
                 className={`rounded-[28px] border p-5 md:p-7 flex gap-4 md:gap-5 items-start ${f.accent}`}
               >
-                <div className="text-3xl md:text-4xl flex-shrink-0 mt-0.5">{f.icon}</div>
+                <div className="flex-shrink-0 mt-0.5">{f.icon}</div>
                 <div>
                   <div className="font-bold text-base md:text-lg mb-1">{f.title}</div>
                   <p className="text-[14px] md:text-base text-muted-foreground leading-relaxed">{f.desc}</p>
