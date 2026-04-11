@@ -22,7 +22,7 @@ interface AppInfo {
 }
 
 interface SurvivalCard {
-  emoji: string;
+  emoji: string | React.ReactNode;
   title: string;
   short: string;
   detail: string | React.ReactNode;
@@ -36,7 +36,7 @@ interface SurvivalCard {
 
 const SURVIVAL_CARDS_HERE: SurvivalCard[] = [
   {
-    emoji: '🚕',
+    emoji: <img src="/assets/icons/custom/bus.png" alt="" className="w-8 h-8 object-contain" />,
     title: 'Как добраться',
     short: 'Такси, автобусы, поезда',
     detail: 'Стойка официального такси находится у выхода из таможни, но дешевле вызвать машину через приложение.',
@@ -63,7 +63,7 @@ const SURVIVAL_CARDS_HERE: SurvivalCard[] = [
     border: 'border-dusty-indigo/20',
   },
   {
-    emoji: '💵',
+    emoji: <img src="/assets/icons/custom/category_finance.png" alt="" className="w-8 h-8 object-contain" />,
     title: 'Деньги — где снять и обменять',
     short: 'Банкоматы, обменники, какие карты работают',
     detail: 'Лучший курс обычно в ювелирных магазинах в туристических местах. Карту Мир можно использовать в банкоматах VRB банка. В некоторых магазинах и кафе можно расплатиться по QR-коду Сбербанка.',
@@ -75,7 +75,7 @@ const SURVIVAL_CARDS_HERE: SurvivalCard[] = [
 
 const SURVIVAL_CARDS_PLANNING: SurvivalCard[] = [
   {
-    emoji: '🛂',
+    emoji: <img src="/assets/icons/custom/passport.png" alt="" className="w-8 h-8 object-contain" />,
     title: 'Какую визу делать?',
     short: 'Штамп по прилёту или E-visa',
     detail: <>Граждане России могут въехать во Вьетнам бесплатно по штампу на 45 дней. Если планируете остаться дольше — можно оформить электронную визу (E-visa) на 90 дней онлайн. Сделать её можно самостоятельно на официальном сайте: <a href="https://evisa.gov.vn/" target="_blank" rel="noopener noreferrer" className="underline hover:text-dusty-indigo">evisa.gov.vn</a></>,
@@ -83,7 +83,7 @@ const SURVIVAL_CARDS_PLANNING: SurvivalCard[] = [
     border: 'border-dusty-indigo/20',
   },
   {
-    emoji: '✈️',
+    emoji: <img src="/assets/icons/custom/people_moving.png" alt="" className="w-8 h-8 object-contain" />,
     title: 'Как добраться',
     short: 'Поиск авиабилетов и маршрутов',
     detail: 'Спланировать сложный маршрут и найти самые дешевые билеты помогут эти сервисы.',
@@ -97,7 +97,7 @@ const SURVIVAL_CARDS_PLANNING: SurvivalCard[] = [
     border: 'border-terracotta-deep/20',
   },
   {
-    emoji: '🏠',
+    emoji: <img src="/assets/icons/custom/category_housing.png" alt="" className="w-8 h-8 object-contain" />,
     title: 'Где искать жилье?',
     short: 'Отели и аренда на долгий срок',
     detail: <>Постоянное жилье можно найти у нас на сайте или на местном аналоге Авито <a href="https://www.nhatot.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-warm-olive">www.nhatot.com</a>.<br/><br/>А на первое время можно забронировать отель или апартаменты на любом из популярных сайтов.</>,
@@ -130,7 +130,7 @@ const SURVIVAL_CARDS_SHOPPING: SurvivalCard[] = [
 
 const SURVIVAL_CARDS_WHY_RELO: SurvivalCard[] = [
   {
-    emoji: <img src="/assets/icons/custom/category_places.jpg" alt="" className="w-8 h-8 object-contain" />,
+    emoji: <img src="/assets/icons/custom/signpost.png" alt="" className="w-8 h-8 object-contain" />,
     title: 'Зачем мне этот сайт?',
     short: 'Relo — твой помощник в мобильности',
     detail: 'С Relo удобно: пересдать квартиру, продать лишние вещи, запланировать переезд в новое место. Мы помогаем сделать каждое перемещение проще.',
