@@ -114,7 +114,7 @@ const SURVIVAL_CARDS_PLANNING: SurvivalCard[] = [
 
 const SURVIVAL_CARDS_SHOPPING: SurvivalCard[] = [
   {
-    emoji: '🛍️',
+    emoji: <img src="/assets/icons/custom/luggage.png" alt="" className="w-8 h-8 object-contain" />,
     title: 'Шоппинг и маркетплейсы',
     short: 'Shopee и Lazada — всё с доставкой на дом',
     detail: 'Во Вьетнаме почти всё покупают онлайн. На Shopee и Lazada можно найти практически любой товар: от продуктов до техники.',
@@ -130,7 +130,7 @@ const SURVIVAL_CARDS_SHOPPING: SurvivalCard[] = [
 
 const SURVIVAL_CARDS_WHY_RELO: SurvivalCard[] = [
   {
-    emoji: '🚀',
+    emoji: <img src="/assets/icons/custom/category_places.jpg" alt="" className="w-8 h-8 object-contain" />,
     title: 'Зачем мне этот сайт?',
     short: 'Relo — твой помощник в мобильности',
     detail: 'С Relo удобно: пересдать квартиру, продать лишние вещи, запланировать переезд в новое место. Мы помогаем сделать каждое перемещение проще.',
