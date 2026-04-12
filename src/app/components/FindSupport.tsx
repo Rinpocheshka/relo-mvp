@@ -14,6 +14,9 @@ import {
   Loader2,
   Eye,
   Filter,
+  Pencil,
+  Trash2,
+  X,
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { supabase } from '@/lib/supabaseClient';
@@ -146,12 +149,20 @@ export function FindSupport() {
   const [resources, setResources] = useState<Resource[]>([]);
   const [loadingR, setLoadingR] = useState(true);
 
+  // Resource modals
+  const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
+  const [resourceDetailOpen, setResourceDetailOpen] = useState(false);
+  const [resourceFormOpen, setResourceFormOpen] = useState(false);
+  const [editingResource, setEditingResource] = useState<Resource | null>(null);
+
   // Guides
   const [guides, setGuides] = useState<Guide[]>([]);
 
   // Modals
   const [askModalOpen, setAskModalOpen] = useState(false);
   const [suggestModalOpen, setSuggestModalOpen] = useState(false);
+
+  const isAdmin = profile?.role === 'admin';
 
   const categories = activeTab === 'questions' ? QUESTION_CATEGORIES : RESOURCE_CATEGORIES;
 
@@ -218,31 +229,30 @@ export function FindSupport() {
 
   // ── Fetch Resources ────────────────────────────────────────────────────────
 
-  useEffect(() => {
-    const fetchResources = async () => {
-      setLoadingR(true);
-      try {
-        const { data, error } = await supabase
-          .from('resources')
-          .select('id, category, name, description, url, icon, is_verified')
-          .order('sort_order', { ascending: true });
-        if (!error && data) {
-          setResources(data.map((r) => ({
-            id: r.id,
-            category: r.category,
-            name: r.name,
-            description: r.description,
-            url: r.url,
-            icon: r.icon,
-            isVerified: r.is_verified,
-          })));
-        }
-      } finally {
-        setLoadingR(false);
+  const fetchResources = useCallback(async () => {
+    setLoadingR(true);
+    try {
+      const { data, error } = await supabase
+        .from('resources')
+        .select('id, category, name, description, url, icon, is_verified')
+        .order('sort_order', { ascending: true });
+      if (!error && data) {
+        setResources(data.map((r) => ({
+          id: r.id,
+          category: r.category,
+          name: r.name,
+          description: r.description,
+          url: r.url,
+          icon: r.icon,
+          isVerified: r.is_verified,
+        })));
       }
-    };
-    void fetchResources();
+    } finally {
+      setLoadingR(false);
+    }
   }, []);
+
+  useEffect(() => { void fetchResources(); }, [fetchResources]);
 
   // ── Fetch Guides ───────────────────────────────────────────────────────────
 
@@ -698,9 +708,20 @@ export function FindSupport() {
               <>
                 <div className="flex items-center justify-between mb-1">
                   <h2 className="text-2xl font-black text-foreground">Проверенные ресурсы</h2>
-                  {!loadingR && (
-                    <span className="text-sm text-muted-foreground">{filteredResources.length} ресурсов</span>
-                  )}
+                  <div className="flex items-center gap-3">
+                    {!loadingR && (
+                      <span className="text-sm text-muted-foreground">{filteredResources.length} ресурсов</span>
+                    )}
+                    {isAdmin && (
+                      <button
+                        onClick={() => { setEditingResource(null); setResourceFormOpen(true); }}
+                        className="flex items-center gap-1.5 px-4 py-2 bg-dusty-indigo text-white rounded-full text-sm font-bold hover:bg-dusty-indigo/90 transition-colors shadow-sm"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Добавить
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {loadingR ? (
@@ -718,7 +739,13 @@ export function FindSupport() {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {filteredResources.map((res) => (
-                      <ResourceCard key={res.id} resource={res} />
+                      <ResourceCard
+                        key={res.id}
+                        resource={res}
+                        isAdmin={isAdmin}
+                        onOpen={() => { setSelectedResource(res); setResourceDetailOpen(true); }}
+                        onEdit={() => { setEditingResource(res); setResourceFormOpen(true); }}
+                      />
                     ))}
                   </div>
                 )}
@@ -759,8 +786,29 @@ export function FindSupport() {
       <SuggestResourceModal
         isOpen={suggestModalOpen}
         onClose={() => setSuggestModalOpen(false)}
-        onSuccess={() => { /* refetch resources silently */ }}
+        onSuccess={() => { void fetchResources(); }}
       />
+      {resourceDetailOpen && selectedResource && (
+        <ResourceDetailModal
+          resource={selectedResource}
+          isAdmin={isAdmin}
+          onClose={() => setResourceDetailOpen(false)}
+          onEdit={() => { setEditingResource(selectedResource); setResourceDetailOpen(false); setResourceFormOpen(true); }}
+          onDelete={async () => {
+            if (!confirm(`Удалить ресурс «${selectedResource.name}»?`)) return;
+            await supabase.from('resources').delete().eq('id', selectedResource.id);
+            setResourceDetailOpen(false);
+            void fetchResources();
+          }}
+        />
+      )}
+      {resourceFormOpen && (
+        <ResourceFormModal
+          resource={editingResource}
+          onClose={() => setResourceFormOpen(false)}
+          onSuccess={() => { setResourceFormOpen(false); void fetchResources(); }}
+        />
+      )}
     </div>
   );
 }
@@ -998,18 +1046,34 @@ function AnswerCard({
   );
 }
 
-function ResourceCard({ resource: res }: { resource: Resource }) {
+function ResourceCard({
+  resource: res,
+  isAdmin,
+  onOpen,
+  onEdit,
+}: {
+  resource: Resource;
+  isAdmin: boolean;
+  onOpen: () => void;
+  onEdit: () => void;
+}) {
+  // Determine if icon is a URL/path or an emoji
+  const iconIsImage = res.icon && (res.icon.startsWith('/') || res.icon.startsWith('http'));
+
   return (
     <motion.div
       layout
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       className="group bg-white p-6 rounded-[28px] border border-border/60 hover:border-terracotta-deep/20 transition-all shadow-sm hover:shadow-md cursor-pointer flex flex-col h-full"
-      onClick={() => window.open(res.url, '_blank', 'noopener,noreferrer')}
+      onClick={onOpen}
     >
       <div className="flex items-center gap-4 mb-4">
-        <div className="w-14 h-14 bg-soft-sand/30 rounded-[20px] flex items-center justify-center text-3xl shadow-inner flex-shrink-0">
-          {res.icon ?? '🔗'}
+        <div className="w-14 h-14 bg-soft-sand/30 rounded-[20px] flex items-center justify-center text-3xl shadow-inner flex-shrink-0 overflow-hidden">
+          {iconIsImage
+            ? <img src={res.icon!} alt={res.name} className="w-full h-full object-contain p-1" />
+            : <span>{res.icon ?? '🔗'}</span>
+          }
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 mb-0.5">
@@ -1024,17 +1088,315 @@ function ResourceCard({ resource: res }: { resource: Resource }) {
             {res.name}
           </h3>
         </div>
+        {isAdmin && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onEdit(); }}
+            className="p-2 rounded-full hover:bg-dusty-indigo/10 text-muted-foreground hover:text-dusty-indigo transition-colors flex-shrink-0"
+            title="Редактировать"
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
+        )}
       </div>
       {res.description && (
-        <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1 break-words">{res.description}</p>
+        <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1 line-clamp-3 break-words">{res.description}</p>
       )}
       <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/30">
-        <span className="text-xs font-bold text-terracotta-deep group-hover:underline">Перейти на сайт</span>
-        <div className="w-8 h-8 rounded-full bg-soft-sand/30 flex items-center justify-center group-hover:bg-terracotta-deep/10 transition-colors">
-          <ExternalLink className="w-3.5 h-3.5 text-muted-foreground group-hover:text-terracotta-deep" />
-        </div>
+        <button
+          onClick={(e) => { e.stopPropagation(); window.open(res.url, '_blank', 'noopener,noreferrer'); }}
+          className="text-xs font-bold text-terracotta-deep hover:underline flex items-center gap-1.5"
+        >
+          Перейти на сайт
+          <ExternalLink className="w-3 h-3" />
+        </button>
+        <span className="text-xs text-muted-foreground">Подробнее →</span>
       </div>
     </motion.div>
+  );
+}
+
+// ── Resource Detail Modal ────────────────────────────────────────────────────
+
+function ResourceDetailModal({
+  resource: res,
+  isAdmin,
+  onClose,
+  onEdit,
+  onDelete,
+}: {
+  resource: Resource;
+  isAdmin: boolean;
+  onClose: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const iconIsImage = res.icon && (res.icon.startsWith('/') || res.icon.startsWith('http'));
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 40 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+          className="bg-white w-full sm:max-w-lg rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-border/30 flex-shrink-0">
+            <span className="px-3 py-1 bg-soft-sand/40 text-warm-olive text-[11px] font-black uppercase tracking-wider rounded-md">
+              {res.category}
+            </span>
+            <div className="flex items-center gap-2">
+              {isAdmin && (
+                <>
+                  <button
+                    onClick={onEdit}
+                    className="p-2 rounded-full hover:bg-dusty-indigo/10 text-muted-foreground hover:text-dusty-indigo transition-colors"
+                    title="Редактировать"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={onDelete}
+                    className="p-2 rounded-full hover:bg-red-50 text-muted-foreground hover:text-red-500 transition-colors"
+                    title="Удалить"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </>
+              )}
+              <button
+                onClick={onClose}
+                className="p-2 rounded-full hover:bg-soft-sand/40 text-muted-foreground transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="overflow-y-auto flex-1 px-6 py-6 space-y-5">
+            {/* Logo + Title */}
+            <div className="flex items-center gap-5">
+              <div className="w-20 h-20 bg-soft-sand/30 rounded-[20px] flex items-center justify-center text-4xl shadow-inner flex-shrink-0 overflow-hidden">
+                {iconIsImage
+                  ? <img src={res.icon!} alt={res.name} className="w-full h-full object-contain p-2" />
+                  : <span>{res.icon ?? '🔗'}</span>
+                }
+              </div>
+              <div>
+                <h2 className="text-xl font-black text-foreground leading-tight">{res.name}</h2>
+                {res.isVerified && (
+                  <span className="inline-flex items-center gap-1 text-xs text-green-600 font-bold mt-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Проверенный ресурс
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Description */}
+            {res.description && (
+              <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{res.description}</p>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="px-6 pb-6 pt-4 border-t border-border/30 flex-shrink-0">
+            <Button
+              onClick={() => window.open(res.url, '_blank', 'noopener,noreferrer')}
+              className="w-full bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full h-12 font-bold shadow-sm"
+            >
+              <ExternalLink className="w-4 h-4 mr-2" />
+              Перейти на сайт
+            </Button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+// ── Resource Form Modal (Admin) ───────────────────────────────────────────────
+
+function ResourceFormModal({
+  resource,
+  onClose,
+  onSuccess,
+}: {
+  resource: Resource | null;
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const isEdit = !!resource;
+  const [name, setName] = useState(resource?.name ?? '');
+  const [icon, setIcon] = useState(resource?.icon ?? '');
+  const [category, setCategory] = useState(resource?.category ?? 'Другое');
+  const [description, setDescription] = useState(resource?.description ?? '');
+  const [url, setUrl] = useState(resource?.url ?? '');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const iconIsImage = icon && (icon.startsWith('/') || icon.startsWith('http'));
+
+  const handleSave = async () => {
+    if (!name.trim() || !url.trim()) {
+      setError('Заполните название и ссылку');
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      if (isEdit && resource) {
+        const { error: e } = await supabase
+          .from('resources')
+          .update({ name: name.trim(), icon: icon.trim() || null, category, description: description.trim() || null, url: url.trim() })
+          .eq('id', resource.id);
+        if (e) throw e;
+      } else {
+        const { error: e } = await supabase
+          .from('resources')
+          .insert({ name: name.trim(), icon: icon.trim() || null, category, description: description.trim() || null, url: url.trim(), is_verified: true, sort_order: 0 });
+        if (e) throw e;
+      }
+      onSuccess();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Ошибка сохранения');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 40 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+          className="bg-white w-full sm:max-w-lg rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden flex flex-col max-h-[95vh]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-border/30 flex-shrink-0">
+            <h2 className="text-xl font-black text-foreground">
+              {isEdit ? 'Редактировать ресурс' : 'Новый ресурс'}
+            </h2>
+            <button onClick={onClose} className="p-2 rounded-full hover:bg-soft-sand/40 text-muted-foreground transition-colors">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Form */}
+          <div className="overflow-y-auto flex-1 px-6 py-6 space-y-5">
+            {error && (
+              <div className="bg-red-50 border border-red-100 text-red-600 text-sm rounded-[16px] px-4 py-3">{error}</div>
+            )}
+
+            {/* Title */}
+            <div>
+              <label className="block text-sm font-bold text-foreground mb-1.5">Заголовок *</label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Название ресурса"
+                className="w-full px-4 py-3 bg-soft-sand/20 border border-border/50 rounded-[16px] text-sm focus:outline-none focus:ring-2 focus:ring-dusty-indigo/30 focus:border-dusty-indigo/50 transition-all"
+              />
+            </div>
+
+            {/* Logo URL */}
+            <div>
+              <label className="block text-sm font-bold text-foreground mb-1.5">Логотип (URL или путь)</label>
+              <div className="flex gap-3 items-start">
+                <input
+                  value={icon}
+                  onChange={(e) => setIcon(e.target.value)}
+                  placeholder="https://... или /assets/icons/custom/..."
+                  className="flex-1 px-4 py-3 bg-soft-sand/20 border border-border/50 rounded-[16px] text-sm focus:outline-none focus:ring-2 focus:ring-dusty-indigo/30 focus:border-dusty-indigo/50 transition-all"
+                />
+                <div className="w-14 h-14 bg-soft-sand/30 rounded-[16px] flex items-center justify-center text-2xl overflow-hidden flex-shrink-0 border border-border/40">
+                  {iconIsImage
+                    ? <img src={icon} alt="" className="w-full h-full object-contain p-1" onError={(e) => { (e.target as HTMLImageElement).style.display='none'; }} />
+                    : <span>{icon || '🔗'}</span>
+                  }
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1.5">Можно вставить URL изображения или путь из /assets/</p>
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-bold text-foreground mb-1.5">Категория</label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full px-4 py-3 bg-soft-sand/20 border border-border/50 rounded-[16px] text-sm focus:outline-none focus:ring-2 focus:ring-dusty-indigo/30 focus:border-dusty-indigo/50 transition-all appearance-none"
+              >
+                {['Жильё','Документы/визы','Обмен/деньги','Дети','О городе','Куда сходить','Здоровье','Для бизнеса','О платформе','Другое'].map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-sm font-bold text-foreground mb-1.5">Описание</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Подробное описание ресурса..."
+                rows={5}
+                className="w-full px-4 py-3 bg-soft-sand/20 border border-border/50 rounded-[16px] text-sm focus:outline-none focus:ring-2 focus:ring-dusty-indigo/30 focus:border-dusty-indigo/50 transition-all resize-none leading-relaxed"
+              />
+            </div>
+
+            {/* URL */}
+            <div>
+              <label className="block text-sm font-bold text-foreground mb-1.5">Ссылка на сайт *</label>
+              <input
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://example.com"
+                type="url"
+                className="w-full px-4 py-3 bg-soft-sand/20 border border-border/50 rounded-[16px] text-sm focus:outline-none focus:ring-2 focus:ring-dusty-indigo/30 focus:border-dusty-indigo/50 transition-all"
+              />
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="px-6 pb-6 pt-4 border-t border-border/30 flex gap-3 flex-shrink-0">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="flex-1 rounded-full h-12 font-bold border-border/50"
+            >
+              Отмена
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex-1 bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-full h-12 font-bold shadow-sm"
+            >
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : (isEdit ? 'Сохранить' : 'Создать')}
+            </Button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 
