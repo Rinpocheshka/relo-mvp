@@ -17,7 +17,9 @@ import {
   Pencil,
   Trash2,
   X,
+  ImagePlus,
 } from 'lucide-react';
+declare const heic2any: any;
 import { Button } from './ui/button';
 import { supabase } from '@/lib/supabaseClient';
 import { formatRelativeRu } from '@/lib/date';
@@ -1235,6 +1237,7 @@ function ResourceFormModal({
   onClose: () => void;
   onSuccess: () => void;
 }) {
+  const { user } = useAuth();
   const isEdit = !!resource;
   const [name, setName] = useState(resource?.name ?? '');
   const [icon, setIcon] = useState(resource?.icon ?? '');
@@ -1244,7 +1247,67 @@ function ResourceFormModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [selectedAttachment, setSelectedAttachment] = useState<{file: File, preview: string} | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const iconIsImage = icon && (icon.startsWith('/') || icon.startsWith('http'));
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Файл слишком большой. Максимум 5 МБ.');
+      return;
+    }
+
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+    let fileToProcess = file;
+
+    // Optional HEIC check here if it's not strictly passed by validTypes but extension is 
+    const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
+    
+    if (!validTypes.includes(file.type) && !isHeic) {
+      setError('Неподдерживаемый формат. Пожалуйста, загрузите JPEG, PNG, WEBP или HEIC.');
+      return;
+    }
+
+    setError(null);
+
+    if (isHeic) {
+      try {
+        const convertedBlob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.8 });
+        const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+        fileToProcess = new File([blob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+      } catch (err) {
+        setError(`Не удалось обработать HEIC.`);
+        return;
+      }
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setSelectedAttachment({ file: fileToProcess, preview: reader.result as string });
+    };
+    reader.readAsDataURL(fileToProcess);
+    
+    if (e.target) e.target.value = '';
+  };
+
+  const uploadIcon = async (): Promise<string | null> => {
+    if (!selectedAttachment) return icon;
+    const file = selectedAttachment.file;
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user?.id}/${Math.random()}.${fileExt}`;
+    const filePath = `resources/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage.from('announcements').upload(filePath, file);
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage.from('announcements').getPublicUrl(filePath);
+    return publicUrl;
+  };
 
   const handleSave = async () => {
     if (!name.trim() || !url.trim()) {
@@ -1254,16 +1317,18 @@ function ResourceFormModal({
     setSaving(true);
     setError(null);
     try {
+      const finalIconUrl = await uploadIcon();
+      
       if (isEdit && resource) {
         const { error: e } = await supabase
           .from('resources')
-          .update({ name: name.trim(), icon: icon.trim() || null, category, description: description.trim() || null, url: url.trim() })
+          .update({ name: name.trim(), icon: finalIconUrl, category, description: description.trim() || null, url: url.trim() })
           .eq('id', resource.id);
         if (e) throw e;
       } else {
         const { error: e } = await supabase
           .from('resources')
-          .insert({ name: name.trim(), icon: icon.trim() || null, category, description: description.trim() || null, url: url.trim(), is_verified: true, sort_order: 0 });
+          .insert({ name: name.trim(), icon: finalIconUrl, category, description: description.trim() || null, url: url.trim(), is_verified: true, sort_order: 0 });
         if (e) throw e;
       }
       onSuccess();
@@ -1280,7 +1345,7 @@ function ResourceFormModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+        className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
         onClick={onClose}
       >
         <motion.div
@@ -1318,24 +1383,52 @@ function ResourceFormModal({
               />
             </div>
 
-            {/* Logo URL */}
+            {/* Logo Upload */}
             <div>
-              <label className="block text-sm font-bold text-foreground mb-1.5">Логотип (URL или путь)</label>
-              <div className="flex gap-3 items-start">
-                <input
-                  value={icon}
-                  onChange={(e) => setIcon(e.target.value)}
-                  placeholder="https://... или /assets/icons/custom/..."
-                  className="flex-1 px-4 py-3 bg-soft-sand/20 border border-border/50 rounded-[16px] text-sm focus:outline-none focus:ring-2 focus:ring-dusty-indigo/30 focus:border-dusty-indigo/50 transition-all"
-                />
-                <div className="w-14 h-14 bg-soft-sand/30 rounded-[16px] flex items-center justify-center text-2xl overflow-hidden flex-shrink-0 border border-border/40">
-                  {iconIsImage
-                    ? <img src={icon} alt="" className="w-full h-full object-contain p-1" onError={(e) => { (e.target as HTMLImageElement).style.display='none'; }} />
-                    : <span>{icon || '🔗'}</span>
-                  }
+              <label className="block text-sm font-bold text-foreground mb-1.5">Логотип</label>
+              <div className="flex gap-4 items-center">
+                <div 
+                  className={`w-20 h-20 bg-soft-sand/30 rounded-[20px] flex items-center justify-center text-3xl overflow-hidden flex-shrink-0 border-2 border-dashed ${selectedAttachment ? 'border-transparent' : 'border-border/60 hover:border-dusty-indigo/50 cursor-pointer'}`}
+                  onClick={() => !selectedAttachment && fileInputRef.current?.click()}
+                >
+                  {selectedAttachment ? (
+                    <div className="relative w-full h-full group">
+                      <img src={selectedAttachment.preview} alt="Preview" className="w-full h-full object-contain p-1" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer" onClick={() => setSelectedAttachment(null)}>
+                        <Trash2 className="w-5 h-5 text-white" />
+                      </div>
+                    </div>
+                  ) : iconIsImage ? (
+                    <div className="relative w-full h-full group">
+                      <img src={icon} alt="Icon" className="w-full h-full object-contain p-1" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer" onClick={() => setIcon('')}>
+                        <Trash2 className="w-5 h-5 text-white" />
+                      </div>
+                    </div>
+                  ) : (
+                    <ImagePlus className="w-8 h-8 text-muted-foreground/50" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <input
+                    type="file"
+                    className="hidden"
+                    ref={fileInputRef}
+                    accept="image/jpeg, image/png, image/webp, image/heic, image/heif"
+                    onChange={handleFileChange}
+                  />
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="rounded-full shadow-sm text-xs font-bold"
+                  >
+                    Загрузить фото
+                  </Button>
+                  <p className="text-[11px] text-muted-foreground mt-2 font-medium">JPEG, PNG, WEBP (до 5 МБ)</p>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground mt-1.5">Можно вставить URL изображения или путь из /assets/</p>
             </div>
 
             {/* Category */}
