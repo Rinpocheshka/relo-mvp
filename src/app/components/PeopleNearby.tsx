@@ -280,70 +280,72 @@ export function PeopleNearby() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: i * 0.05 }}
-                  className={`bg-white p-6 md:p-8 rounded-[24px] md:rounded-[32px] border transition-all shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] group ${
+                  className={`bg-white p-6 md:p-8 rounded-[24px] md:rounded-[32px] border transition-all shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] group flex flex-col h-full ${
                     person.is_guide 
                       ? 'border-warm-olive/30 bg-gradient-to-br from-white to-warm-olive/5' 
                       : 'border-border/40'
                   }`}
                 >
-                  {/* Header */}
-                  <div className="flex items-start gap-4 mb-6">
-                    <div className="relative">
-                      {person.avatar_url ? (
-                        <img src={person.avatar_url} className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-white shadow-sm" alt="" />
-                      ) : (
-                        <div className={`w-12 h-12 md:w-16 md:h-16 rounded-full flex-shrink-0 flex items-center justify-center text-white text-lg md:text-2xl font-bold shadow-sm ${
-                          person.is_guide ? 'bg-warm-olive' : 'bg-dusty-indigo/20 text-dusty-indigo'
-                        }`}>
-                          {person.display_name?.charAt(0) || '?'}
-                        </div>
-                      )}
-                      {/* Online status */}
-                      <div className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white ${
-                        person.last_seen && (new Date().getTime() - new Date(person.last_seen).getTime() < 5 * 60 * 1000)
-                          ? 'bg-green-500' 
-                          : 'bg-amber-400'
-                      }`} />
+                  <div className="flex-grow">
+                    {/* Header */}
+                    <div className="flex items-start gap-4 mb-6">
+                      <div className="relative">
+                        {person.avatar_url ? (
+                          <img src={person.avatar_url} className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-white shadow-sm" alt="" />
+                        ) : (
+                          <div className={`w-12 h-12 md:w-16 md:h-16 rounded-full flex-shrink-0 flex items-center justify-center text-white text-lg md:text-2xl font-bold shadow-sm ${
+                            person.is_guide ? 'bg-warm-olive' : 'bg-dusty-indigo/20 text-dusty-indigo'
+                          }`}>
+                            {person.display_name?.charAt(0) || '?'}
+                          </div>
+                        )}
+                        {/* Online status */}
+                        <div className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white ${
+                          person.last_seen && (new Date().getTime() - new Date(person.last_seen).getTime() < 5 * 60 * 1000)
+                            ? 'bg-green-500' 
+                            : 'bg-amber-400'
+                        }`} />
+                      </div>
+                      <div className="flex-1 min-w-0 pt-1">
+                        <Link to={`/profile/${person.id}`} className="hover:text-dusty-indigo transition-colors">
+                          <h3 className="font-semibold text-base md:text-lg truncate group-hover:text-dusty-indigo transition-colors">
+                            {person.display_name || 'Аноним'}
+                          </h3>
+                        </Link>
+                        <p className="text-[12px] md:text-sm font-medium text-muted-foreground mt-0.5">
+                          {translateTag(person.stage) || (person.is_guide ? 'Проводник' : 'Участник')}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0 pt-1">
-                      <Link to={`/profile/${person.id}`} className="hover:text-dusty-indigo transition-colors">
-                        <h3 className="font-semibold text-base md:text-lg truncate group-hover:text-dusty-indigo transition-colors">
-                          {person.display_name || 'Аноним'}
-                        </h3>
-                      </Link>
-                      <p className="text-[12px] md:text-sm font-medium text-muted-foreground mt-0.5">
-                        {translateTag(person.stage) || (person.is_guide ? 'Проводник' : 'Участник')}
-                      </p>
+
+                    {/* Info Row */}
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+                      <MapPin className="w-4 h-4" />
+                      <span className="truncate">{person.city || 'Не указан'}</span>
                     </div>
-                  </div>
 
-                  {/* Info Row */}
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-                    <MapPin className="w-4 h-4" />
-                    <span className="truncate">{person.city || 'Не указан'}</span>
-                  </div>
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {(person.interests || []).slice(0, 3).map((interest) => (
-                      <span
-                        key={interest}
-                        className="px-2.5 py-1 text-[11px] font-bold rounded-full bg-soft-sand/50 text-foreground/70 uppercase tracking-tight"
-                      >
-                        {translateTag(interest)}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Bio snippet */}
-                  {person.bio && (
-                    <div className="mb-6 h-20 relative overflow-hidden">
-                      <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-                        {person.bio}
-                      </p>
-                      <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-white to-transparent" />
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {(person.interests || []).slice(0, 3).map((interest) => (
+                        <span
+                          key={interest}
+                          className="px-2.5 py-1 text-[11px] font-bold rounded-full bg-soft-sand/50 text-foreground/70 uppercase tracking-tight"
+                        >
+                          {translateTag(interest)}
+                        </span>
+                      ))}
                     </div>
-                  )}
+
+                    {/* Bio snippet */}
+                    {person.bio && (
+                      <div className="mb-6 h-20 relative overflow-hidden">
+                        <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                          {person.bio}
+                        </p>
+                        <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-white to-transparent" />
+                      </div>
+                    )}
+                  </div>
 
                   {/* Action */}
                   <Link to={`/profile/${person.id}`}>
