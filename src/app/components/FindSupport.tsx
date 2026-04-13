@@ -1144,7 +1144,7 @@ function ResourceDetailModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+        className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 pb-2 sm:pb-4"
         onClick={onClose}
       >
         <motion.div
@@ -1215,7 +1215,7 @@ function ResourceDetailModal({
           </div>
 
           {/* Footer */}
-          <div className="px-6 pb-8 sm:pb-6 pt-4 border-t border-border/30 flex-shrink-0 safe-area-bottom">
+          <div className="px-6 pb-12 sm:pb-6 pt-4 border-t border-border/30 flex-shrink-0 safe-area-bottom">
             <Button
               onClick={() => {
                 const finalUrl = res.url.startsWith('http') ? res.url : `https://${res.url}`;
@@ -1358,7 +1358,7 @@ function ResourceFormModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+        className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 pb-2 sm:pb-4"
         onClick={onClose}
       >
         <motion.div
@@ -1484,7 +1484,7 @@ function ResourceFormModal({
           </div>
 
           {/* Footer */}
-          <div className="px-6 pb-8 sm:pb-6 pt-4 border-t border-border/30 flex gap-3 flex-shrink-0 safe-area-bottom">
+          <div className="px-6 pb-12 sm:pb-6 pt-4 border-t border-border/30 flex gap-3 flex-shrink-0 safe-area-bottom">
             <Button
               variant="outline"
               onClick={onClose}

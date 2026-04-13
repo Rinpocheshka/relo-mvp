@@ -152,7 +152,7 @@ export function EventDetailsModal({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-5xl bg-white rounded-[24px] md:rounded-[32px] overflow-hidden shadow-2xl flex flex-col lg:flex-row h-full max-h-[92dvh] lg:max-h-[85vh]"
+            className="relative w-full max-w-5xl bg-white rounded-[24px] md:rounded-[32px] overflow-hidden shadow-2xl flex flex-col lg:flex-row h-full max-h-[85dvh] lg:max-h-[85vh] mb-4 lg:mb-0"
           >
             {/* Left Column (Images) - Desktop only (fixed area) */}
             <div className="relative h-48 sm:h-64 md:h-80 lg:h-auto lg:w-[42%] bg-soft-sand/10 shrink-0">
