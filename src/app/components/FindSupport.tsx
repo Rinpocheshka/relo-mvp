@@ -1144,7 +1144,7 @@ function ResourceDetailModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 pb-2 sm:pb-4"
+        className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
         onClick={onClose}
       >
         <motion.div
@@ -1152,7 +1152,7 @@ function ResourceDetailModal({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 40 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
-          className="bg-white w-full sm:max-w-lg rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+          className="bg-white w-full sm:max-w-lg rounded-[32px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -1215,7 +1215,7 @@ function ResourceDetailModal({
           </div>
 
           {/* Footer */}
-          <div className="px-6 pb-12 sm:pb-6 pt-4 border-t border-border/30 flex-shrink-0 safe-area-bottom">
+          <div className="px-6 pb-6 pt-4 border-t border-border/30 flex-shrink-0">
             <Button
               onClick={() => {
                 const finalUrl = res.url.startsWith('http') ? res.url : `https://${res.url}`;
@@ -1358,7 +1358,7 @@ function ResourceFormModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 pb-2 sm:pb-4"
+        className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
         onClick={onClose}
       >
         <motion.div
@@ -1366,7 +1366,7 @@ function ResourceFormModal({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 40 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
-          className="bg-white w-full sm:max-w-lg rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden flex flex-col max-h-[95vh]"
+          className="bg-white w-full sm:max-w-lg rounded-[32px] shadow-2xl overflow-hidden flex flex-col max-h-[95vh]"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -1484,7 +1484,7 @@ function ResourceFormModal({
           </div>
 
           {/* Footer */}
-          <div className="px-6 pb-12 sm:pb-6 pt-4 border-t border-border/30 flex gap-3 flex-shrink-0 safe-area-bottom">
+          <div className="px-6 pb-6 pt-4 border-t border-border/30 flex gap-3 flex-shrink-0">
             <Button
               variant="outline"
               onClick={onClose}
