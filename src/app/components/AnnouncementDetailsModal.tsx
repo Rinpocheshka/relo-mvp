@@ -64,7 +64,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 text-foreground">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-6 text-foreground">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -179,7 +179,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
                   </div>
 
                   {/* Actions */}
-                  <div className="mt-12 pt-8 border-t border-border/40">
+                  <div className="mt-12 pt-8 border-t border-border/40 pb-8 sm:pb-0 safe-area-bottom">
                     <Button className="w-full bg-foreground hover:bg-foreground/90 text-white rounded-2xl h-14 font-black text-lg shadow-xl shadow-foreground/10 transition-all active:scale-[0.98]">
                       Написать автору
                     </Button>

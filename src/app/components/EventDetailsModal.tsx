@@ -140,7 +140,7 @@ export function EventDetailsModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-2 sm:p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -314,7 +314,7 @@ export function EventDetailsModal({
               </div>
 
               {/* Footer Actions */}
-              <div className="p-4 sm:p-6 bg-white border-t border-border/50 flex flex-col sm:flex-row gap-3 shrink-0">
+              <div className="p-4 pb-8 sm:p-6 sm:pb-6 bg-white border-t border-border/50 flex flex-col sm:flex-row gap-3 shrink-0 safe-area-bottom">
                 {!user ? (
                   <div className="flex-1 flex items-center gap-3 p-3 bg-red-50 rounded-2xl">
                     <AlertTriangle className="w-5 h-5 text-red-500 shrink-0" />

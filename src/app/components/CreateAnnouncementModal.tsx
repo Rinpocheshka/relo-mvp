@@ -228,13 +228,13 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
           />
           
           <motion.div
@@ -444,7 +444,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
 
             {/* Footer */}
             {!success && (
-              <div className="p-8 border-t border-border/40 bg-soft-sand/10 flex gap-3">
+              <div className="p-8 pb-10 sm:pb-8 border-t border-border/40 bg-soft-sand/10 flex gap-3 safe-area-bottom">
                 <Button 
                   variant="outline" 
                   onClick={onClose}

@@ -94,7 +94,7 @@ const CATEGORY_ICON_MAP: Record<string, string> = {
   'Обмен/деньги': '/assets/icons/custom/category_finance.png',
   'Дети': '/assets/icons/custom/category_kids_support.png',
   'О городе': '/assets/icons/custom/category_city.png',
-  'Куда сходить': '/assets/icons/custom/category_places.jpg',
+  'Куда сходить': '/assets/icons/custom/signpost.png',
   'Здоровье': '/assets/icons/custom/category_health.png',
   'Для бизнеса': '/assets/icons/custom/category_write.png',
   'О платформе': '/assets/icons/custom/message.png',
@@ -1105,7 +1105,11 @@ function ResourceCard({
       )}
       <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/30">
         <button
-          onClick={(e) => { e.stopPropagation(); window.open(res.url, '_blank', 'noopener,noreferrer'); }}
+          onClick={(e) => { 
+            e.stopPropagation(); 
+            const finalUrl = res.url.startsWith('http') ? res.url : `https://${res.url}`;
+            window.open(finalUrl, '_blank', 'noopener,noreferrer'); 
+          }}
           className="text-xs font-bold text-terracotta-deep hover:underline flex items-center gap-1.5"
         >
           Перейти на сайт
@@ -1140,7 +1144,7 @@ function ResourceDetailModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+        className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
         onClick={onClose}
       >
         <motion.div
@@ -1211,9 +1215,12 @@ function ResourceDetailModal({
           </div>
 
           {/* Footer */}
-          <div className="px-6 pb-6 pt-4 border-t border-border/30 flex-shrink-0">
+          <div className="px-6 pb-8 sm:pb-6 pt-4 border-t border-border/30 flex-shrink-0 safe-area-bottom">
             <Button
-              onClick={() => window.open(res.url, '_blank', 'noopener,noreferrer')}
+              onClick={() => {
+                const finalUrl = res.url.startsWith('http') ? res.url : `https://${res.url}`;
+                window.open(finalUrl, '_blank', 'noopener,noreferrer');
+              }}
               className="w-full bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full h-12 font-bold shadow-sm"
             >
               <ExternalLink className="w-4 h-4 mr-2" />
@@ -1319,16 +1326,22 @@ function ResourceFormModal({
     try {
       const finalIconUrl = await uploadIcon();
       
+      // Normalize URL: ensure it has a protocol
+      let normalizedUrl = url.trim();
+      if (!normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://') && !normalizedUrl.startsWith('/')) {
+        normalizedUrl = `https://${normalizedUrl}`;
+      }
+
       if (isEdit && resource) {
         const { error: e } = await supabase
           .from('resources')
-          .update({ name: name.trim(), icon: finalIconUrl, category, description: description.trim() || null, url: url.trim() })
+          .update({ name: name.trim(), icon: finalIconUrl, category, description: description.trim() || null, url: normalizedUrl })
           .eq('id', resource.id);
         if (e) throw e;
       } else {
         const { error: e } = await supabase
           .from('resources')
-          .insert({ name: name.trim(), icon: finalIconUrl, category, description: description.trim() || null, url: url.trim(), is_verified: true, sort_order: 0 });
+          .insert({ name: name.trim(), icon: finalIconUrl, category, description: description.trim() || null, url: normalizedUrl, is_verified: true, sort_order: 0 });
         if (e) throw e;
       }
       onSuccess();
@@ -1345,7 +1358,7 @@ function ResourceFormModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+        className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
         onClick={onClose}
       >
         <motion.div
@@ -1471,7 +1484,7 @@ function ResourceFormModal({
           </div>
 
           {/* Footer */}
-          <div className="px-6 pb-6 pt-4 border-t border-border/30 flex gap-3 flex-shrink-0">
+          <div className="px-6 pb-8 sm:pb-6 pt-4 border-t border-border/30 flex gap-3 flex-shrink-0 safe-area-bottom">
             <Button
               variant="outline"
               onClick={onClose}

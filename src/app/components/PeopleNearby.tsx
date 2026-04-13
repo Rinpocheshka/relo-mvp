@@ -348,7 +348,7 @@ export function PeopleNearby() {
                   </div>
 
                   {/* Action */}
-                  <Link to={`/profile/${person.id}`}>
+                  <Link to={`/profile/${person.id}`} className="block mt-auto">
                     <Button 
                       className={`w-full rounded-full h-12 font-bold shadow-sm transition-all ${
                         person.is_guide
