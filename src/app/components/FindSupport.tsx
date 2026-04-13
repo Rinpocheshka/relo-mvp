@@ -708,16 +708,20 @@ export function FindSupport() {
                 </>
               ) : (
               <>
-                <div className="flex items-center justify-between mb-1">
-                  <h2 className="text-2xl font-black text-foreground">Проверенные ресурсы</h2>
-                  <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-y-3 gap-x-6 mb-4">
+                  <div className="flex items-baseline gap-2">
+                    <h2 className="text-2xl font-black text-foreground leading-tight">Проверенные ресурсы</h2>
                     {!loadingR && (
-                      <span className="text-sm text-muted-foreground">{filteredResources.length} ресурсов</span>
+                      <span className="text-xs font-bold text-muted-foreground/60 bg-soft-sand/30 px-2 py-0.5 rounded-full whitespace-nowrap">
+                        {filteredResources.length}
+                      </span>
                     )}
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
                     {isAdmin && (
                       <button
                         onClick={() => { setEditingResource(null); setResourceFormOpen(true); }}
-                        className="flex items-center gap-1.5 px-4 py-2 bg-dusty-indigo text-white rounded-full text-sm font-bold hover:bg-dusty-indigo/90 transition-colors shadow-sm"
+                        className="flex items-center gap-1.5 px-5 py-2.5 bg-dusty-indigo text-white rounded-full text-sm font-bold hover:bg-dusty-indigo/90 transition-all shadow-md shadow-dusty-indigo/10 active:scale-[0.98]"
                       >
                         <Plus className="w-4 h-4" />
                         Добавить
