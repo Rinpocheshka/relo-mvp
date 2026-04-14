@@ -45,12 +45,9 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
     }
 
     if (!announcement?.author_id) {
-      console.error('DEBUG: Missing author_id');
-      return;
-    }
-
-    if (user.id === announcement.author_id) {
-      alert('Это ваше объявление.');
+      console.warn('Announcement header missing author_id:', announcement);
+      // If we don't have an ID, we can't open a chat, so we show a message
+      alert('К сожалению, ID автора не указан. Невозможно начать чат.');
       return;
     }
 
@@ -213,7 +210,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
                   </div>
 
                   {/* Actions */}
-                  <div className="mt-12 pt-8 border-t border-border/40 pb-8 sm:pb-0 safe-area-bottom relative z-50">
+                  <div className="mt-12 pt-8 border-t border-border/40 pb-8 sm:pb-8 safe-area-bottom relative z-50">
                     {(!user || user.id !== announcement?.author_id) && (
                       <button 
                         onClick={handleMessageClick}

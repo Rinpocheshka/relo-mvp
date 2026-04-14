@@ -228,7 +228,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-2 sm:p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -241,7 +241,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-2xl bg-white rounded-[32px] overflow-hidden shadow-2xl flex flex-col max-h-[88vh] m-4"
+            className="relative w-full max-w-2xl bg-white rounded-[32px] overflow-hidden shadow-2xl flex flex-col max-h-[88vh] mb-6 sm:mb-8 mx-4"
           >
             {/* Header */}
             <div className="px-8 py-6 border-b border-border/40 flex items-center justify-between bg-white sticky top-0 z-10">
