@@ -6,6 +6,7 @@ import { useAuth } from '../SupabaseAuthProvider';
 import { supabase } from '@/lib/supabaseClient';
 import { useNavigate } from 'react-router';
 import { getOrCreateChat } from '@/lib/chatUtils';
+import { useMessageModal } from '../hooks/useMessageModal';
 
 import { Announcement } from './Announcements';
 import { formatPrice } from '@/lib/format';
@@ -23,7 +24,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
   const navigate = useNavigate();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [chatLoading, setChatLoading] = useState(false);
+  const { openMessageModal } = useMessageModal();
 
   const canManage = user && (user.id === announcement?.author_id || profile?.role === 'admin');
 
@@ -32,11 +33,10 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
       e.preventDefault();
       e.stopPropagation();
     }
-    alert('Шаг 1: Объявления. Кнопка нажата! ID: ' + (announcement?.author_id || 'Отсутствует'));
     
     if (!user) {
       // @ts-ignore - assuming parent has auth handlers or we use a global modal
-      setAuthOpen?.(true); 
+      alert('Пожалуйста, войдите в систему.');
       return;
     }
 
@@ -50,23 +50,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
       return;
     }
 
-    setChatLoading(true);
-    try {
-      console.log('DEBUG: Calling getOrCreateChat for author...');
-      const chatId = await getOrCreateChat(user.id, announcement.author_id);
-      console.log('DEBUG: Chat result:', chatId);
-      
-      if (chatId) {
-        navigate(`/messages/${chatId}`);
-      } else {
-        alert('Не удалось начать чат с автором (null). Проверьте консоль.');
-      }
-    } catch (err: any) {
-      console.error('DEBUG: Catch error:', err);
-      alert('Ошибка чата: ' + (err.message || 'Unknown'));
-    } finally {
-      setChatLoading(false);
-    }
+    openMessageModal(announcement.author_id, announcement.author_name || 'Автору');
   };
 
   // Reset active image when announcement changes

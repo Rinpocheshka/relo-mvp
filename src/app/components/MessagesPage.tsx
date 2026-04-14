@@ -84,7 +84,12 @@ export function MessagesPage() {
                       {profiles?.display_name?.charAt(0) || '?'}
                     </div>
                   )}
-                  {/* Online indicator could go here */}
+                  {/* Unread Badge */}
+                  {chat.unread_count && chat.unread_count > 0 ? (
+                    <div className="absolute -top-1 -right-1 flex h-5 w-5 md:h-6 md:w-6 items-center justify-center rounded-full bg-red-500 text-[10px] md:text-xs font-bold text-white shadow-sm border-2 border-white">
+                      {chat.unread_count > 9 ? '9+' : chat.unread_count}
+                    </div>
+                  ) : null}
                 </div>
 
                 {/* Content */}

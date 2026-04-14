@@ -135,6 +135,36 @@ export function Layout() {
   const isLanding = location.pathname === '/';
   const [city, setCity] = useState<string>('');
   const [authOpen, setAuthOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) {
+      setUnreadCount(0);
+      return;
+    }
+
+    const fetchUnreadCount = async () => {
+      const { count } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_read', false)
+        .neq('sender_id', user.id);
+      
+      setUnreadCount(count || 0);
+    };
+
+    fetchUnreadCount();
+
+    const channel = supabase.channel('layout_unread_count')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => {
+        fetchUnreadCount();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   useEffect(() => {
     // 1. Redirect logged-in users from Landing to Home
@@ -257,7 +287,14 @@ export function Layout() {
                         : 'text-muted-foreground hover:text-foreground hover:bg-soft-sand/40'
                     }`}
                   >
-                    <img src={item.icon as string} className="w-6 h-6 object-contain" alt="" />
+                    <div className="relative">
+                      <img src={item.icon as string} className="w-6 h-6 object-contain" alt="" />
+                      {item.path === '/messages' && unreadCount > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
+                          {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                      )}
+                    </div>
                     {item.label}
                     {active && (
                       <motion.div
@@ -413,7 +450,14 @@ export function Layout() {
                     : 'text-muted-foreground hover:bg-soft-sand/20'
                 }`}
               >
-                <img src={item.icon as string} className="w-6 h-6 object-contain" alt="" />
+                <div className="relative">
+                  <img src={item.icon as string} className="w-6 h-6 object-contain" alt="" />
+                  {item.path === '/messages' && unreadCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </div>
                 <span className="text-[10px] font-medium leading-none text-center w-full px-0.5">{item.label}</span>
               </Link>
             );

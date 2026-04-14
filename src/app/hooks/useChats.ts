@@ -69,9 +69,23 @@ export function useChats(userId: string | undefined) {
       if (chatsError) {
         console.error('Error fetching chats:', chatsError);
       } else {
+        // Fetch unread messages
+        const { data: unreadData } = await supabase
+          .from('messages')
+          .select('chat_id')
+          .eq('is_read', false)
+          .neq('sender_id', userId)
+          .in('chat_id', chatIds);
+
+        const unreadCounts = (unreadData || []).reduce((acc, msg) => {
+          acc[msg.chat_id] = (acc[msg.chat_id] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>);
+
         // Map the data to our interface
         const formattedChats = (chatsData || []).map(chat => ({
           ...chat,
+          unread_count: unreadCounts[chat.id] || 0,
           participants: (chat.chat_participants as any[]).map(p => ({
             user_id: p.user_id,
             profiles: p.profiles
@@ -86,23 +100,19 @@ export function useChats(userId: string | undefined) {
     fetchChats();
 
     // 3. Subscribe to chat changes
-    const channel = supabase
+    const channelChats = supabase
       .channel('public:chats')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'chats'
-        },
-        () => {
-          fetchChats();
-        }
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'chats' }, fetchChats)
+      .subscribe();
+
+    const channelMessages = supabase
+      .channel('public:messages_useChats')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, fetchChats)
       .subscribe();
 
     return () => {
-      void supabase.removeChannel(channel);
+      supabase.removeChannel(channelChats);
+      supabase.removeChannel(channelMessages);
     };
   }, [userId]);
 

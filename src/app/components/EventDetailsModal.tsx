@@ -7,7 +7,7 @@ import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
 import { formatPrice } from '@/lib/format';
 import { getOrCreateChat } from '@/lib/chatUtils';
-import { useNavigate } from 'react-router';
+import { useMessageModal } from '../hooks/useMessageModal';
 
 interface Event {
   id: string;
@@ -54,11 +54,10 @@ export function EventDetailsModal({
   onEdited
 }: EventDetailsModalProps) {
   const { user, profile } = useAuth();
-  const navigate = useNavigate();
+  const { openMessageModal } = useMessageModal();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [isAttending, setIsAttending] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [chatLoading, setChatLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const isOrganizer = user && event.organizer_id === user.id;
@@ -126,7 +125,6 @@ export function EventDetailsModal({
       e.preventDefault();
       e.stopPropagation();
     }
-    alert('Шаг 1: Кнопка нажата! ID организатора: ' + (event?.organizer_id || 'Отсутствует'));
     
     if (!user) {
       alert('Пожалуйста, войдите в систему.');
@@ -143,24 +141,9 @@ export function EventDetailsModal({
       return;
     }
 
-    setChatLoading(true);
-    try {
-      console.log('DEBUG: Calling getOrCreateChat from EventModal...');
-      const chatId = await getOrCreateChat(user.id, event.organizer_id);
-      console.log('DEBUG: Chat result:', chatId);
-      
-      if (chatId) {
-        navigate(`/messages/${chatId}`);
-      } else {
-        alert('Не удалось начать чат (в базе вернулся null). Проверьте консоль.');
-      }
-    } catch (err: any) {
-      console.error('DEBUG: Catch error:', err);
-      alert('Ошибка при создании чата: ' + (err.message || 'Unknown'));
-    } finally {
-      setChatLoading(false);
-    }
+    openMessageModal(event.organizer_id, event.organizer || 'Организатор');
   };
+
 
   const handleDelete = async () => {
     if (!canManage || !window.confirm('Вы уверены, что хотите удалить это событие?')) return;
@@ -382,17 +365,12 @@ export function EventDetailsModal({
                     {!canManage && (
                       <Button 
                         onClick={handleMessageClick}
-                        disabled={chatLoading}
                         className="w-[180px] h-14 bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-2xl font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all flex hidden md:flex items-center justify-center pointer-events-auto"
                       >
-                        {chatLoading ? (
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        ) : (
-                          <>
-                            <MessageCircle className="w-5 h-5 mr-2" />
-                            Написать
-                          </>
-                        )}
+                        <>
+                          <MessageCircle className="w-5 h-5 mr-2" />
+                          Написать
+                        </>
                       </Button>
                     )}
                   </div>

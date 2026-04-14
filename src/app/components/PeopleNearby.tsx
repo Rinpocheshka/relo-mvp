@@ -7,7 +7,7 @@ import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
 import { Link, useNavigate } from 'react-router';
 import { translateTag } from '@/lib/tags';
-import { getOrCreateChat } from '../../lib/chatUtils';
+import { useMessageModal } from '../hooks/useMessageModal';
 
 interface Person {
   id: string;
@@ -147,45 +147,24 @@ export function PeopleNearby() {
   }, [session]);
 
   const navigate = useNavigate();
+  const { openMessageModal } = useMessageModal();
   const [chatLoading, setChatLoading] = useState<string | null>(null);
 
-  const handleMessageClick = async (e: React.MouseEvent, targetId: string) => {
-    // LOUD DEBUG LOGS
-    console.log('DEBUG: Message button clicked', { targetId, currentUserId: user?.id });
-    
+  const handleMessageClick = async (e: React.MouseEvent, person: Person) => {
     e.preventDefault();
     e.stopPropagation();
     
     if (!user) {
-      console.log('DEBUG: No user, opening auth modal');
       setAuthOpen(true);
       return;
     }
 
-    if (user.id === targetId) {
+    if (user.id === person.id) {
       alert('Вы не можете написать самому себе.');
       return;
     }
 
-    setChatLoading(targetId);
-    try {
-      console.log('DEBUG: Calling getOrCreateChat...');
-      const chatId = await getOrCreateChat(user.id, targetId);
-      console.log('DEBUG: Chat result:', chatId);
-      
-      if (chatId) {
-        console.log('DEBUG: Navigating to chat:', chatId);
-        navigate(`/messages/${chatId}`);
-      } else {
-        console.error('DEBUG: getOrCreateChat returned null');
-        alert('Не удалось инициализировать чат (код: null). Проверьте консоль.');
-      }
-    } catch (err: any) {
-      console.error('DEBUG: Catch block error:', err);
-      alert('Ошибка при создании чата: ' + (err.message || 'Unknown error'));
-    } finally {
-      setChatLoading(null);
-    }
+    openMessageModal(person.id, person.display_name || 'Пользователь');
   };
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
@@ -393,7 +372,7 @@ export function PeopleNearby() {
                   {/* Action */}
                   <div className="flex gap-2 mt-auto relative z-20">
                     <button 
-                      onClick={(e) => handleMessageClick(e, person.id)}
+                      onClick={(e) => handleMessageClick(e, person)}
                       disabled={chatLoading === person.id}
                       className={`flex-1 rounded-full h-11 font-bold shadow-sm transition-all flex items-center justify-center cursor-pointer ${
                         person.is_guide

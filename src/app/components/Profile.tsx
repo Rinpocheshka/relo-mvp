@@ -12,6 +12,7 @@ import { EventDetailsModal } from './EventDetailsModal';
 import { EventFormModal } from './EventFormModal';
 import { CreateAnnouncementModal } from './CreateAnnouncementModal';
 import { getOrCreateChat } from '@/lib/chatUtils';
+import { useMessageModal } from '../hooks/useMessageModal';
 
 interface Event {
   id: string;
@@ -131,11 +132,7 @@ export function Profile() {
   const targetId = isOwnProfile ? session?.user?.id : id;
 
   const handleMessageClick = async () => {
-    // LOUD DEBUG LOGS
-    console.log('DEBUG: Profile Message clicked', { targetId, userId: user?.id });
-    
     if (!user) {
-      console.log('DEBUG: No user, opening auth modal');
       setAuthModalOpen(true);
       return;
     }
@@ -150,23 +147,7 @@ export function Profile() {
       return;
     }
 
-    setChatLoading(true);
-    try {
-      console.log('DEBUG: Calling getOrCreateChat from profile...', { targetId });
-      const chatId = await getOrCreateChat(user.id, targetId);
-      console.log('DEBUG: Chat result:', chatId);
-      
-      if (chatId) {
-        navigate(`/messages/${chatId}`);
-      } else {
-        alert('Не удалось начать чат (в базе вернулся null). Проверьте консоль.');
-      }
-    } catch (err: any) {
-      console.error('DEBUG: Catch error:', err);
-      alert('Ошибка при создании чата: ' + (err.message || 'Unknown'));
-    } finally {
-      setChatLoading(false);
-    }
+    openMessageModal(targetId, profile?.display_name || 'Пользователь');
   };
 
   useEffect(() => {
