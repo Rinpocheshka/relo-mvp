@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import {
   Home, Megaphone, Calendar, User as UserIcon, Users, Search, Plus,
-  LogOut, ChevronDown, Settings, Edit, Heart
+  LogOut, ChevronDown, Settings, Edit, Heart, MessageSquare
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Button } from './ui/button';
@@ -41,7 +41,7 @@ function UserAvatar({ profile }: { profile: any }) {
 }
 
 // ─── Header Auth Block ────────────────────────────────────────────────────────
-function HeaderAuth() {
+function HeaderAuth({ unreadCount }: { unreadCount: number }) {
   const { user, profile, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [authOpen, setAuthOpen] = useState(false);
@@ -54,8 +54,13 @@ function HeaderAuth() {
       <>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-soft-sand/40 transition-colors">
+            <button className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-soft-sand/40 transition-colors relative">
               <UserAvatar profile={profile} />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 left-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
               <span className="hidden lg:block text-sm font-medium max-w-[120px] truncate">{displayName}</span>
               <ChevronDown className="w-3.5 h-3.5 text-muted-foreground hidden lg:block" />
             </button>
@@ -64,6 +69,18 @@ function HeaderAuth() {
               <DropdownMenuItem asChild className="rounded-[12px] cursor-pointer hover:bg-soft-sand/30 font-medium">
                 <Link to="/profile" className="flex items-center gap-2 w-full px-2 py-1.5">
                   <UserIcon className="w-4 h-4" /> Мой профиль
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="rounded-[12px] cursor-pointer hover:bg-soft-sand/30 font-medium">
+                <Link to="/messages" className="flex items-center justify-between w-full px-2 py-1.5">
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="w-4 h-4" /> Сообщения
+                  </div>
+                  {unreadCount > 0 && (
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                      {unreadCount}
+                    </span>
+                  )}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="my-1 bg-soft-sand/10" />
@@ -270,7 +287,7 @@ export function Layout() {
 
             {/* Desktop nav — centered */}
             <nav className="hidden md:flex items-center gap-0.5 mx-auto">
-              {navItems.map((item) => {
+              {navItems.filter(item => item.path !== '/messages').map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.path);
                 return (
@@ -307,7 +324,7 @@ export function Layout() {
             {/* Right side */}
             <div className="hidden md:flex items-center gap-2 flex-shrink-0 ml-auto xl:ml-0">
               {/* Auth — Profile or Login */}
-              <HeaderAuth />
+              <HeaderAuth unreadCount={unreadCount} />
             </div>
 
             <div className="flex md:hidden items-center gap-2 ml-auto">
