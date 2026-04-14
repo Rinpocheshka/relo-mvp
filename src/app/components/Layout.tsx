@@ -144,6 +144,7 @@ export function Layout() {
     }
 
     const fetchUnreadCount = async () => {
+      if (!user?.id) return;
       const { count } = await supabase
         .from('messages')
         .select('*', { count: 'exact', head: true })

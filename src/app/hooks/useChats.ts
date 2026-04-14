@@ -70,17 +70,20 @@ export function useChats(userId: string | undefined) {
         console.error('Error fetching chats:', chatsError);
       } else {
         // Fetch unread messages
-        const { data: unreadData } = await supabase
-          .from('messages')
-          .select('chat_id')
-          .eq('is_read', false)
-          .neq('sender_id', userId)
-          .in('chat_id', chatIds);
+        let unreadCounts: Record<string, number> = {};
+        if (userId) {
+          const { data: unreadData } = await supabase
+            .from('messages')
+            .select('chat_id')
+            .eq('is_read', false)
+            .neq('sender_id', userId)
+            .in('chat_id', chatIds);
 
-        const unreadCounts = (unreadData || []).reduce((acc, msg) => {
-          acc[msg.chat_id] = (acc[msg.chat_id] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>);
+          unreadCounts = (unreadData || []).reduce((acc, msg) => {
+            acc[msg.chat_id] = (acc[msg.chat_id] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>);
+        }
 
         // Map the data to our interface
         const formattedChats = (chatsData || []).map(chat => ({

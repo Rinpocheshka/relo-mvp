@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Users, Heart, MessageCircle, MapPin, Clock, Star, Lock, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+import { Users, Heart, MessageCircle, MapPin, Clock, Star, Lock, ChevronLeft, ChevronRight, ChevronDown, User } from 'lucide-react';
 import { Button } from './ui/button';
 import { AuthModal } from './AuthWidget';
 import { supabase } from '../../lib/supabaseClient';
