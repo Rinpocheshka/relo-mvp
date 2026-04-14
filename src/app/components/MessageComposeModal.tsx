@@ -165,7 +165,7 @@ export function MessageComposeModal({ isOpen, onClose, recipientId, recipientNam
                       value={content}
                       onChange={(e) => setContent(e.target.value.slice(0, 1000))}
                       placeholder="Напишите ваше сообщение здесь..."
-                      className="w-full bg-soft-sand/20 border border-border/40 rounded-2xl p-4 min-h-[160px] max-h-[300px] focus:outline-none focus:ring-2 focus:ring-dusty-indigo/30 focus:border-dusty-indigo transition-all resize-none font-medium custom-scrollbar"
+                      className="w-full bg-soft-sand/20 border border-border/40 rounded-2xl p-4 md:p-5 focus:outline-none focus:ring-2 focus:ring-dusty-indigo/30 focus:border-dusty-indigo transition-all resize-none font-medium custom-scrollbar"
                     />
                     <div className={`absolute bottom-4 right-4 text-xs font-bold ${content.length >= 1000 ? 'text-red-500' : 'text-muted-foreground/50'}`}>
                       {content.length} / 1000

@@ -141,7 +141,7 @@ export function ChatRoom() {
                 }
             }}
             placeholder="Напишите сообщение..."
-            className="flex-1 bg-transparent border-none focus:ring-0 text-sm md:text-base py-2 resize-none max-h-32 placeholder:text-muted-foreground/50"
+            className="flex-1 bg-transparent border-none focus:ring-0 text-sm md:text-base py-2 px-3 md:px-4 resize-none max-h-32 placeholder:text-muted-foreground/50"
           />
           
           <button 
