@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import {
-  Home, Megaphone, Calendar, User, Users, Search, Plus,
+  Home, Megaphone, Calendar, User as UserIcon, Users, Search, Plus,
   LogOut, ChevronDown, Settings, Edit, Heart
 } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -63,7 +63,7 @@ function HeaderAuth() {
             <DropdownMenuContent align="end" className="w-[180px] rounded-[20px] p-2 mt-2 shadow-xl border-soft-sand/20">
               <DropdownMenuItem asChild className="rounded-[12px] cursor-pointer hover:bg-soft-sand/30 font-medium">
                 <Link to="/profile" className="flex items-center gap-2 w-full px-2 py-1.5">
-                  <User className="w-4 h-4" /> Мой профиль
+                  <UserIcon className="w-4 h-4" /> Мой профиль
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="my-1 bg-soft-sand/10" />
@@ -119,7 +119,7 @@ function MobileUserButton({ isActive }: { isActive: boolean }) {
         onClick={() => setAuthOpen(true)}
         className="flex flex-col items-center justify-center gap-0.5 p-1 flex-1 min-w-0 rounded-[12px] text-muted-foreground hover:text-terracotta-deep transition-colors"
       >
-        <User className="w-5 h-5 sm:w-6 sm:h-6" />
+        <UserIcon className="w-5 h-5 sm:w-6 sm:h-6" />
         <span className="text-[9px] sm:text-[10px] font-medium leading-none text-center truncate w-full">Войти</span>
       </button>
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Users, Heart, MessageCircle, MapPin, Clock, Star, Lock, ChevronLeft, ChevronRight, ChevronDown, User } from 'lucide-react';
+import { Users, Heart, MessageCircle, MapPin, Clock, Star, Lock, ChevronLeft, ChevronRight, ChevronDown, User as UserIcon } from 'lucide-react';
 import { Button } from './ui/button';
 import { AuthModal } from './AuthWidget';
 import { supabase } from '../../lib/supabaseClient';
@@ -395,7 +395,7 @@ export function PeopleNearby() {
                         variant="outline"
                         className="w-11 h-11 rounded-full border-border/40 text-muted-foreground hover:bg-soft-sand/20 p-0"
                       >
-                        <User className="w-5 h-5" />
+                        <UserIcon className="w-5 h-5" />
                       </Button>
                     </Link>
                   </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, MapPin, Calendar, User, CornerUpRight, Trash2, Loader2, Edit, MessageCircle } from 'lucide-react';
+import { X, MapPin, Calendar, User as UserIcon, CornerUpRight, Trash2, Loader2, Edit, MessageCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '../SupabaseAuthProvider';
 import { supabase } from '@/lib/supabaseClient';
@@ -195,7 +195,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
                         {new Date(announcement.created_at).toLocaleDateString('ru-RU')}
                       </div>
                       <div className="flex items-center gap-2 bg-white/80 border border-border/40 px-3 py-1.5 rounded-xl">
-                        <User className="w-4 h-4 text-warm-olive" />
+                        <UserIcon className="w-4 h-4 text-warm-olive" />
                         {announcement.author_name}
                       </div>
                     </div>
