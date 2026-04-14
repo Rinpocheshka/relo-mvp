@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
 import { formatPrice } from '@/lib/format';
+import { getOrCreateChat } from '@/lib/chatUtils';
+import { useNavigate } from 'react-router';
 
 interface Event {
   id: string;
@@ -52,9 +54,11 @@ export function EventDetailsModal({
   onEdited
 }: EventDetailsModalProps) {
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [isAttending, setIsAttending] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [chatLoading, setChatLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const isOrganizer = user && event.organizer_id === user.id;
@@ -114,6 +118,43 @@ export function EventDetailsModal({
       console.error('Error toggling attendance:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleMessageClick = async () => {
+    console.log('DEBUG: Event Contact Organizer clicked', { organizerId: event.organizer_id, userId: user?.id });
+    
+    if (!user) {
+      alert('Пожалуйста, войдите в систему.');
+      return;
+    }
+
+    if (!event.organizer_id) {
+      alert('Ошибка: ID организатора не найден.');
+      return;
+    }
+
+    if (user.id === event.organizer_id) {
+      alert('Вы организатор этого события.');
+      return;
+    }
+
+    setChatLoading(true);
+    try {
+      console.log('DEBUG: Calling getOrCreateChat from EventModal...');
+      const chatId = await getOrCreateChat(user.id, event.organizer_id);
+      console.log('DEBUG: Chat result:', chatId);
+      
+      if (chatId) {
+        navigate(`/messages/${chatId}`);
+      } else {
+        alert('Не удалось начать чат (в базе вернулся null). Проверьте консоль.');
+      }
+    } catch (err: any) {
+      console.error('DEBUG: Catch error:', err);
+      alert('Ошибка при создании чата: ' + (err.message || 'Unknown'));
+    } finally {
+      setChatLoading(false);
     }
   };
 
@@ -322,18 +363,36 @@ export function EventDetailsModal({
                       Пожалуйста, войдите в систему, чтобы записываться на события.
                     </p>
                   </div>
-                ) : (
-                  <Button
-                    onClick={handleJoinToggle}
-                    disabled={loading || (!!event.maxAttendees && participants.length >= event.maxAttendees && !isAttending)}
-                    className={`flex-1 h-14 rounded-2xl font-bold text-lg shadow-lg shadow-terracotta-deep/10 transition-all ${
-                      isAttending 
-                      ? 'bg-soft-sand text-foreground hover:bg-soft-sand/80' 
-                      : 'bg-terracotta-deep hover:bg-terracotta-deep/90 text-white'
-                    }`}
-                  >
-                    {isAttending ? 'Я передумал' : 'Я пойду!'}
-                  </Button>
+                  <div className="flex-1 flex gap-2 w-full">
+                    <Button
+                      onClick={handleJoinToggle}
+                      disabled={loading || (!!event.maxAttendees && participants.length >= event.maxAttendees && !isAttending)}
+                      className={`flex-1 h-14 rounded-2xl font-bold text-lg shadow-lg shadow-terracotta-deep/10 transition-all ${
+                        isAttending 
+                        ? 'bg-soft-sand text-foreground hover:bg-soft-sand/80' 
+                        : 'bg-terracotta-deep hover:bg-terracotta-deep/90 text-white'
+                      }`}
+                    >
+                      {isAttending ? 'Я передумал' : 'Я пойду!'}
+                    </Button>
+                    {!canManage && (
+                      <button 
+                        onClick={handleMessageClick}
+                        disabled={chatLoading}
+                        className="w-14 h-14 md:w-auto md:px-6 bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-2xl font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50"
+                        style={{ pointerEvents: 'auto' }}
+                      >
+                        {chatLoading ? (
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : (
+                          <>
+                            <MessageCircle className="w-5 h-5 md:mr-2" />
+                            <span className="hidden md:inline">Написать</span>
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
                 )}
 
                 {canManage && (
