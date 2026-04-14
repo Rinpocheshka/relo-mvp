@@ -35,7 +35,12 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
       const chatId = await getOrCreateChat(user.id, announcement.author_id);
       if (chatId) {
         navigate(`/messages/${chatId}`);
+      } else {
+        alert('Не удалось начать чат. Пожалуйста, попробуйте еще раз или напишите в поддержку.');
       }
+    } catch (err) {
+      console.error('Chat error:', err);
+      alert('Произошла ошибка при создании чата.');
     } finally {
       setChatLoading(false);
     }
