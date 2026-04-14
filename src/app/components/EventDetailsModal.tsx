@@ -180,7 +180,7 @@ export function EventDetailsModal({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-5xl bg-white rounded-[24px] md:rounded-[32px] overflow-hidden shadow-2xl flex flex-col lg:flex-row h-full max-h-[85dvh] lg:max-h-[85vh] mb-4 lg:mb-0"
+            className="relative w-full max-w-5xl bg-white rounded-[24px] md:rounded-[32px] overflow-hidden shadow-2xl flex flex-col lg:flex-row h-full max-h-[88vh] mb-6 sm:mb-8"
           >
             {/* Left Column (Images) - Desktop only (fixed area) */}
             <div className="relative h-48 sm:h-64 md:h-80 lg:h-auto lg:w-[42%] bg-soft-sand/10 shrink-0">
@@ -363,7 +363,7 @@ export function EventDetailsModal({
                     >
                       {isAttending ? 'Я передумал' : 'Я пойду!'}
                     </Button>
-                    {!canManage && (
+                    {user && user.id !== event.organizer_id && (
                       <Button 
                         onClick={handleMessageClick}
                         className="w-[180px] h-14 bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-2xl font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all hidden md:flex items-center justify-center"

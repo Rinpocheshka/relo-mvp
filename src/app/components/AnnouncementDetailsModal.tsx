@@ -107,7 +107,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
             initial={{ opacity: 0, scale: 0.9, y: 40 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 40 }}
-            className="relative bg-white w-full max-w-4xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] mb-4 lg:mb-0"
+            className="relative bg-white w-full max-w-4xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[88vh] mb-6 sm:mb-8"
           >
             {/* Close Button */}
             <div className="absolute top-6 right-6 z-20">
@@ -210,21 +210,13 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
 
                   {/* Actions */}
                   <div className="mt-12 pt-8 border-t border-border/40 pb-8 sm:pb-0 safe-area-bottom relative z-50">
-                    {!canManage && (
+                    {user && user.id !== announcement?.author_id && (
                       <button 
                         onClick={handleMessageClick}
-                        disabled={chatLoading}
-                        className="w-full bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-2xl h-14 font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50"
-                        style={{ pointerEvents: 'auto' }}
+                        className="w-full bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-2xl h-14 font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all flex items-center justify-center cursor-pointer mt-4"
                       >
-                        {chatLoading ? (
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                        ) : (
-                          <>
-                            <MessageCircle className="w-5 h-5 mr-2" />
-                            Написать автору
-                          </>
-                        )}
+                        <MessageCircle className="w-5 h-5 mr-2" />
+                        Написать автору
                       </button>
                     )}
                     

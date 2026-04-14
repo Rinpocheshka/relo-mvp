@@ -1,0 +1,9 @@
+- `[x]` Create MessageModalContext & Provider
+- `[x]` Create MessageComposeModal component (with Textarea & Supabase integration)
+- `[x]` Wrap application in MessageModalProvider
+- `[x]` Refactor `Profile.tsx` to use openMessageModal
+- `[x]` Refactor `PeopleNearby.tsx` to use openMessageModal
+- `[x]` Refactor `EventDetailsModal.tsx` to use openMessageModal
+- `[x]` Refactor `AnnouncementDetailsModal.tsx` to use openMessageModal
+- `[x]` Add unread message indicator block/badge to `Layout.tsx` nav items
+- `[x]` Enhance `MessagesPage.tsx` to visually distinguish unread messages

@@ -241,7 +241,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative bg-white w-full max-w-2xl rounded-[32px] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] mb-4 sm:mb-0"
+            className="relative w-full max-w-2xl bg-white rounded-[32px] overflow-hidden shadow-2xl flex flex-col max-h-[88vh] m-4"
           >
             {/* Header */}
             <div className="px-8 py-6 border-b border-border/40 flex items-center justify-between bg-white sticky top-0 z-10">
@@ -444,7 +444,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
 
             {/* Footer */}
             {!success && (
-              <div className="p-8 pb-10 sm:pb-8 border-t border-border/40 bg-soft-sand/10 flex gap-3 safe-area-bottom">
+              <div className="p-8 pb-12 sm:pb-10 border-t border-border/40 bg-soft-sand/10 flex gap-3 safe-area-bottom">
                 <Button 
                   variant="outline" 
                   onClick={onClose}

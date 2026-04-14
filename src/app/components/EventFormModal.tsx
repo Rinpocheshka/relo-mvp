@@ -455,7 +455,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
           </form>
 
           {/* Footer */}
-          <div className="p-8 bg-white border-t border-border/50 flex gap-3">
+          <div className="p-8 pb-12 sm:pb-10 bg-white border-t border-border/50 flex gap-3">
             <Button
               type="button"
               variant="outline"

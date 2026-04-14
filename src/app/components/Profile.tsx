@@ -130,6 +130,7 @@ export function Profile() {
 
   const isOwnProfile = !id || id === user?.id;
   const targetId = isOwnProfile ? session?.user?.id : id;
+  const { openMessageModal } = useMessageModal();
 
   const handleMessageClick = async () => {
     if (!user) {
