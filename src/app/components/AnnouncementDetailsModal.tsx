@@ -28,19 +28,39 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
   const canManage = user && (user.id === announcement?.author_id || profile?.role === 'admin');
 
   const handleMessageClick = async () => {
-    if (!user || !announcement?.author_id) return;
+    console.log('DEBUG: Contact Author clicked', { authorId: announcement?.author_id, userId: user?.id });
     
+    if (!user) {
+      console.log('DEBUG: No user, opening auth modal');
+      // @ts-ignore - assuming parent has auth handlers or we use a global modal
+      setAuthOpen?.(true); 
+      return;
+    }
+
+    if (!announcement?.author_id) {
+      console.error('DEBUG: Missing author_id');
+      return;
+    }
+
+    if (user.id === announcement.author_id) {
+      alert('Это ваше объявление.');
+      return;
+    }
+
     setChatLoading(true);
     try {
+      console.log('DEBUG: Calling getOrCreateChat for author...');
       const chatId = await getOrCreateChat(user.id, announcement.author_id);
+      console.log('DEBUG: Chat result:', chatId);
+      
       if (chatId) {
         navigate(`/messages/${chatId}`);
       } else {
-        alert('Не удалось начать чат. Пожалуйста, попробуйте еще раз или напишите в поддержку.');
+        alert('Не удалось начать чат с автором (null). Проверьте консоль.');
       }
-    } catch (err) {
-      console.error('Chat error:', err);
-      alert('Произошла ошибка при создании чата.');
+    } catch (err: any) {
+      console.error('DEBUG: Catch error:', err);
+      alert('Ошибка чата: ' + (err.message || 'Unknown'));
     } finally {
       setChatLoading(false);
     }
@@ -202,12 +222,13 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
                   </div>
 
                   {/* Actions */}
-                  <div className="mt-12 pt-8 border-t border-border/40 pb-8 sm:pb-0 safe-area-bottom">
+                  <div className="mt-12 pt-8 border-t border-border/40 pb-8 sm:pb-0 safe-area-bottom relative z-50">
                     {!canManage && (
-                      <Button 
+                      <button 
                         onClick={handleMessageClick}
                         disabled={chatLoading}
-                        className="w-full bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-2xl h-14 font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all active:scale-[0.98]"
+                        className="w-full bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-2xl h-14 font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50"
+                        style={{ pointerEvents: 'auto' }}
                       >
                         {chatLoading ? (
                           <Loader2 className="w-5 h-5 animate-spin" />
@@ -217,7 +238,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
                             Написать автору
                           </>
                         )}
-                      </Button>
+                      </button>
                     )}
                     
                     {canManage && (

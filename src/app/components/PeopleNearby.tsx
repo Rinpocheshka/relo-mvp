@@ -150,25 +150,39 @@ export function PeopleNearby() {
   const [chatLoading, setChatLoading] = useState<string | null>(null);
 
   const handleMessageClick = async (e: React.MouseEvent, targetId: string) => {
+    // LOUD DEBUG LOGS
+    console.log('DEBUG: Message button clicked', { targetId, currentUserId: user?.id });
+    
     e.preventDefault();
     e.stopPropagation();
     
     if (!user) {
+      console.log('DEBUG: No user, opening auth modal');
       setAuthOpen(true);
+      return;
+    }
+
+    if (user.id === targetId) {
+      alert('Вы не можете написать самому себе.');
       return;
     }
 
     setChatLoading(targetId);
     try {
+      console.log('DEBUG: Calling getOrCreateChat...');
       const chatId = await getOrCreateChat(user.id, targetId);
+      console.log('DEBUG: Chat result:', chatId);
+      
       if (chatId) {
+        console.log('DEBUG: Navigating to chat:', chatId);
         navigate(`/messages/${chatId}`);
       } else {
-        alert('Не удалось начать чат. Пожалуйста, попробуйте еще раз или напишите в поддержку.');
+        console.error('DEBUG: getOrCreateChat returned null');
+        alert('Не удалось инициализировать чат (код: null). Проверьте консоль.');
       }
-    } catch (err) {
-      console.error('Chat error:', err);
-      alert('Произошла ошибка при создании чата.');
+    } catch (err: any) {
+      console.error('DEBUG: Catch block error:', err);
+      alert('Ошибка при создании чата: ' + (err.message || 'Unknown error'));
     } finally {
       setChatLoading(null);
     }
@@ -377,15 +391,16 @@ export function PeopleNearby() {
                   </div>
 
                   {/* Action */}
-                  <div className="flex gap-2 mt-auto">
-                    <Button 
+                  <div className="flex gap-2 mt-auto relative z-20">
+                    <button 
                       onClick={(e) => handleMessageClick(e, person.id)}
                       disabled={chatLoading === person.id}
-                      className={`flex-1 rounded-full h-11 font-bold shadow-sm transition-all ${
+                      className={`flex-1 rounded-full h-11 font-bold shadow-sm transition-all flex items-center justify-center cursor-pointer ${
                         person.is_guide
                           ? 'bg-warm-olive hover:bg-warm-olive/90'
                           : 'bg-dusty-indigo hover:bg-dusty-indigo/90'
                       } text-white text-sm`}
+                      style={{ pointerEvents: 'auto' }}
                     >
                       {chatLoading === person.id ? (
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -395,7 +410,7 @@ export function PeopleNearby() {
                           Написать
                         </>
                       )}
-                    </Button>
+                    </button>
                     <Link to={`/profile/${person.id}`}>
                       <Button 
                         variant="outline"
