@@ -328,7 +328,7 @@ export function LandingPage() {
               <span className="text-terracotta-deep">как дома</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-              Relo.me — система для удобной жизни релокантов<br />
+              Relo me — система для удобной жизни релокантов<br />
               Удобно когда жильё, события, вещи и поддержка в одном месте.
             </p>
           </motion.div>
@@ -463,8 +463,8 @@ export function LandingPage() {
       {/* Footer */}
       <footer className="px-4 py-8 border-t border-border/30">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <div className="font-bold text-terracotta-deep text-base">Relo.me</div>
-          <p>© 2026 · Relo.me — система для удобной жизни релокантов</p>
+          <div className="font-bold text-terracotta-deep text-base">Relo me</div>
+          <p>© 2026 · Relo me — система для удобной жизни релокантов</p>
           <div className="flex gap-3">
              {/* Icons here... */}
           </div>

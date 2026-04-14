@@ -347,7 +347,7 @@ export function Layout() {
 
           {/* Social + copy */}
           <div className="mt-10 pt-8 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-muted-foreground">© 2026 Relo.me — система для удобной жизни релокантов</p>
+            <p className="text-xs text-muted-foreground">© 2026 Relo me — система для удобной жизни релокантов</p>
             <div className="flex gap-3">
               {/* Telegram */}
               <a href="https://t.me/relo_me" target="_blank" rel="noopener noreferrer" aria-label="Telegram"
