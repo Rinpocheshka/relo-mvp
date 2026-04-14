@@ -121,8 +121,12 @@ export function EventDetailsModal({
     }
   };
 
-  const handleMessageClick = async () => {
-    console.log('DEBUG: Event Contact Organizer clicked', { organizerId: event.organizer_id, userId: user?.id });
+  const handleMessageClick = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    alert('Шаг 1: Кнопка нажата! ID организатора: ' + (event?.organizer_id || 'Отсутствует'));
     
     if (!user) {
       alert('Пожалуйста, войдите в систему.');
@@ -376,21 +380,20 @@ export function EventDetailsModal({
                       {isAttending ? 'Я передумал' : 'Я пойду!'}
                     </Button>
                     {!canManage && (
-                      <button 
+                      <Button 
                         onClick={handleMessageClick}
                         disabled={chatLoading}
-                        className="w-14 h-14 md:w-auto md:px-6 bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-2xl font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50"
-                        style={{ pointerEvents: 'auto' }}
+                        className="w-[180px] h-14 bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-2xl font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all flex hidden md:flex items-center justify-center pointer-events-auto"
                       >
                         {chatLoading ? (
                           <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
                           <>
-                            <MessageCircle className="w-5 h-5 md:mr-2" />
-                            <span className="hidden md:inline">Написать</span>
+                            <MessageCircle className="w-5 h-5 mr-2" />
+                            Написать
                           </>
                         )}
-                      </button>
+                      </Button>
                     )}
                   </div>
                 )}

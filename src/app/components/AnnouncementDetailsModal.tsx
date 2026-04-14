@@ -27,11 +27,14 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
 
   const canManage = user && (user.id === announcement?.author_id || profile?.role === 'admin');
 
-  const handleMessageClick = async () => {
-    console.log('DEBUG: Contact Author clicked', { authorId: announcement?.author_id, userId: user?.id });
+  const handleMessageClick = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    alert('Шаг 1: Объявления. Кнопка нажата! ID: ' + (announcement?.author_id || 'Отсутствует'));
     
     if (!user) {
-      console.log('DEBUG: No user, opening auth modal');
       // @ts-ignore - assuming parent has auth handlers or we use a global modal
       setAuthOpen?.(true); 
       return;
