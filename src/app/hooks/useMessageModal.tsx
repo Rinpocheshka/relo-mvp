@@ -1,8 +1,14 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { MessageComposeModal } from '../components/MessageComposeModal';
 
+interface MessageContext {
+  title: string;
+  type: 'announcement' | 'event';
+  id: string;
+}
+
 interface MessageModalContextType {
-  openMessageModal: (recipientId: string, recipientName: string) => void;
+  openMessageModal: (recipientId: string, recipientName: string, context?: MessageContext) => void;
   closeMessageModal: () => void;
 }
 
@@ -11,16 +17,21 @@ const MessageModalContext = createContext<MessageModalContextType | undefined>(u
 export function MessageModalProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [recipient, setRecipient] = useState<{ id: string; name: string } | null>(null);
+  const [context, setContext] = useState<MessageContext | null>(null);
 
-  const openMessageModal = (recipientId: string, recipientName: string) => {
+  const openMessageModal = (recipientId: string, recipientName: string, messageContext?: MessageContext) => {
     setRecipient({ id: recipientId, name: recipientName });
+    setContext(messageContext || null);
     setIsOpen(true);
   };
 
   const closeMessageModal = () => {
     setIsOpen(false);
-    // Optional delay before wiping recipient state to let animation finish gracefully
-    setTimeout(() => setRecipient(null), 300);
+    // Optional delay before wiping state
+    setTimeout(() => {
+      setRecipient(null);
+      setContext(null);
+    }, 300);
   };
 
   return (
@@ -32,6 +43,7 @@ export function MessageModalProvider({ children }: { children: ReactNode }) {
           onClose={closeMessageModal} 
           recipientId={recipient.id}
           recipientName={recipient.name}
+          context={context || undefined}
         />
       )}
     </MessageModalContext.Provider>

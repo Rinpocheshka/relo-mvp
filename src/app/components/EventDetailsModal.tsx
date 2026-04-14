@@ -140,7 +140,11 @@ export function EventDetailsModal({
       return;
     }
 
-    openMessageModal(event.organizer_id, event.organizer || 'Организатор');
+    openMessageModal(event.organizer_id, event.organizer || 'Организатор', {
+      title: event.title,
+      type: 'event',
+      id: event.id
+    });
   };
 
 

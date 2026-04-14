@@ -11,9 +11,14 @@ interface MessageComposeModalProps {
   onClose: () => void;
   recipientId: string;
   recipientName: string;
+  context?: {
+    title: string;
+    type: 'announcement' | 'event';
+    id: string;
+  };
 }
 
-export function MessageComposeModal({ isOpen, onClose, recipientId, recipientName }: MessageComposeModalProps) {
+export function MessageComposeModal({ isOpen, onClose, recipientId, recipientName, context }: MessageComposeModalProps) {
   const { user } = useAuth();
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,14 +29,24 @@ export function MessageComposeModal({ isOpen, onClose, recipientId, recipientNam
 
   useEffect(() => {
     if (isOpen) {
-      setContent('');
+      if (context) {
+        const itemType = context.type === 'announcement' ? 'объявлению' : 'событию';
+        setContent(`Здравствуйте! Пишу вам по поводу вашего интереса к ${itemType} "${context.title}": `);
+      } else {
+        setContent('');
+      }
       setIsSuccess(false);
       setErrorMsg('');
       setTimeout(() => {
         textareaRef.current?.focus();
+        // Move cursor to end
+        if (textareaRef.current) {
+          textareaRef.current.selectionStart = textareaRef.current.value.length;
+          textareaRef.current.selectionEnd = textareaRef.current.value.length;
+        }
       }, 100);
     }
-  }, [isOpen]);
+  }, [isOpen, context]);
 
   const handleSend = async () => {
     if (!user) {
@@ -106,13 +121,23 @@ export function MessageComposeModal({ isOpen, onClose, recipientId, recipientNam
           >
             {/* Header */}
             <div className="px-6 py-5 border-b border-soft-sand flex items-center justify-between shrink-0">
-              <div>
-                <h3 className="text-xl font-black text-foreground">Новое сообщение</h3>
+              <div className="min-w-0 flex-1 pr-4">
+                <h3 className="text-xl font-black text-foreground truncate">Новое сообщение</h3>
                 <p className="text-sm text-muted-foreground font-medium">Кому: <span className="text-dusty-indigo font-bold">{recipientName}</span></p>
+                {context && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="px-2 py-0.5 bg-dusty-indigo/10 text-dusty-indigo text-[10px] font-bold uppercase tracking-wider rounded-md border border-dusty-indigo/20">
+                      Контекст
+                    </span>
+                    <span className="text-[11px] text-muted-foreground font-bold truncate italic">
+                      {context.title}
+                    </span>
+                  </div>
+                )}
               </div>
               <button
                 onClick={onClose}
-                className="p-2 bg-soft-sand/30 hover:bg-soft-sand text-muted-foreground rounded-full transition-colors active:scale-95"
+                className="p-2 bg-soft-sand/30 hover:bg-soft-sand text-muted-foreground rounded-full transition-colors active:scale-95 shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>

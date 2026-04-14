@@ -49,7 +49,11 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
       return;
     }
 
-    openMessageModal(announcement.author_id, announcement.author_name || 'Автору');
+    openMessageModal(announcement.author_id, announcement.author_name || 'Автору', {
+      title: announcement.title,
+      type: 'announcement',
+      id: announcement.id
+    });
   };
 
   // Reset active image when announcement changes
