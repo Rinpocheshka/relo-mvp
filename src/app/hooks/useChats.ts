@@ -89,7 +89,7 @@ export function useChats(userId: string | undefined) {
         const formattedChats = (chatsData || []).map(chat => ({
           ...chat,
           unread_count: unreadCounts[chat.id] || 0,
-          participants: (chat.chat_participants as any[]).map(p => ({
+          participants: (chat.chat_participants as any[] || []).map(p => ({
             user_id: p.user_id,
             profiles: p.profiles
           }))
