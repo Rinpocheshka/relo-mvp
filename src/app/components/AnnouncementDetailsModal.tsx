@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, MapPin, Calendar, User, CornerUpRight, Trash2, Loader2, Edit } from 'lucide-react';
+import { X, MapPin, Calendar, User, CornerUpRight, Trash2, Loader2, Edit, MessageCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '../SupabaseAuthProvider';
 import { supabase } from '@/lib/supabaseClient';
+import { useNavigate } from 'react-router';
+import { getOrCreateChat } from '@/lib/chatUtils';
 
 import { Announcement } from './Announcements';
 import { formatPrice } from '@/lib/format';
@@ -18,10 +20,26 @@ interface Props {
 
 export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDeleted, onEdited }: Props) {
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [chatLoading, setChatLoading] = useState(false);
 
   const canManage = user && (user.id === announcement?.author_id || profile?.role === 'admin');
+
+  const handleMessageClick = async () => {
+    if (!user || !announcement?.author_id) return;
+    
+    setChatLoading(true);
+    try {
+      const chatId = await getOrCreateChat(user.id, announcement.author_id);
+      if (chatId) {
+        navigate(`/messages/${chatId}`);
+      }
+    } finally {
+      setChatLoading(false);
+    }
+  };
 
   // Reset active image when announcement changes
   useEffect(() => {
@@ -180,9 +198,22 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
 
                   {/* Actions */}
                   <div className="mt-12 pt-8 border-t border-border/40 pb-8 sm:pb-0 safe-area-bottom">
-                    <Button className="w-full bg-foreground hover:bg-foreground/90 text-white rounded-2xl h-14 font-black text-lg shadow-xl shadow-foreground/10 transition-all active:scale-[0.98]">
-                      Написать автору
-                    </Button>
+                    {!canManage && (
+                      <Button 
+                        onClick={handleMessageClick}
+                        disabled={chatLoading}
+                        className="w-full bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-2xl h-14 font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all active:scale-[0.98]"
+                      >
+                        {chatLoading ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <>
+                            <MessageCircle className="w-5 h-5 mr-2" />
+                            Написать автору
+                          </>
+                        )}
+                      </Button>
+                    )}
                     
                     {canManage && (
                       <div className="flex gap-2 mt-4">

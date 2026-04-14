@@ -5,8 +5,9 @@ import { Button } from './ui/button';
 import { AuthModal } from './AuthWidget';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { translateTag } from '@/lib/tags';
+import { getOrCreateChat } from '../../lib/chatUtils';
 
 interface Person {
   id: string;
@@ -144,6 +145,29 @@ export function PeopleNearby() {
 
     fetchStats();
   }, [session]);
+
+  const navigate = useNavigate();
+  const [chatLoading, setChatLoading] = useState<string | null>(null);
+
+  const handleMessageClick = async (e: React.MouseEvent, targetId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!user) {
+      setAuthOpen(true);
+      return;
+    }
+
+    setChatLoading(targetId);
+    try {
+      const chatId = await getOrCreateChat(user.id, targetId);
+      if (chatId) {
+        navigate(`/messages/${chatId}`);
+      }
+    } finally {
+      setChatLoading(null);
+    }
+  };
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -348,18 +372,34 @@ export function PeopleNearby() {
                   </div>
 
                   {/* Action */}
-                  <Link to={`/profile/${person.id}`} className="block mt-auto">
+                  <div className="flex gap-2 mt-auto">
                     <Button 
-                      className={`w-full rounded-full h-12 font-bold shadow-sm transition-all ${
+                      onClick={(e) => handleMessageClick(e, person.id)}
+                      disabled={chatLoading === person.id}
+                      className={`flex-1 rounded-full h-11 font-bold shadow-sm transition-all ${
                         person.is_guide
                           ? 'bg-warm-olive hover:bg-warm-olive/90'
                           : 'bg-dusty-indigo hover:bg-dusty-indigo/90'
-                      } text-white`}
+                      } text-white text-sm`}
                     >
-                      <MessageCircle className="w-5 h-5 mr-2" />
-                      Посмотреть
+                      {chatLoading === person.id ? (
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        <>
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          Написать
+                        </>
+                      )}
                     </Button>
-                  </Link>
+                    <Link to={`/profile/${person.id}`}>
+                      <Button 
+                        variant="outline"
+                        className="w-11 h-11 rounded-full border-border/40 text-muted-foreground hover:bg-soft-sand/20 p-0"
+                      >
+                        <User className="w-5 h-5" />
+                      </Button>
+                    </Link>
+                  </div>
                 </motion.div>
               ))}
             </div>

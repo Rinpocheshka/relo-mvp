@@ -17,6 +17,8 @@ export const router = createBrowserRouter([
       { path: 'map', lazy: () => import('./components/MapPage').then(m => ({ Component: m.MapPage })) },
       { path: 'profile', lazy: () => import('./components/Profile').then(m => ({ Component: m.Profile })) },
       { path: 'profile/:id', lazy: () => import('./components/Profile').then(m => ({ Component: m.Profile })) },
+      { path: 'messages', lazy: () => import('./components/MessagesPage').then(m => ({ Component: m.MessagesPage })) },
+      { path: 'messages/:chatId', lazy: () => import('./components/ChatRoom').then(m => ({ Component: m.ChatRoom })) },
       { path: '*', lazy: () => import('./components/NotFound').then(m => ({ Component: m.NotFound })) },
     ],
   },
