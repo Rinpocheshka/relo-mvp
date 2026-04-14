@@ -350,6 +350,7 @@ export function EventDetailsModal({
                       Пожалуйста, войдите в систему, чтобы записываться на события.
                     </p>
                   </div>
+                ) : (
                   <div className="flex-1 flex gap-2 w-full">
                     <Button
                       onClick={handleJoinToggle}
@@ -365,12 +366,10 @@ export function EventDetailsModal({
                     {!canManage && (
                       <Button 
                         onClick={handleMessageClick}
-                        className="w-[180px] h-14 bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-2xl font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all flex hidden md:flex items-center justify-center pointer-events-auto"
+                        className="w-[180px] h-14 bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-2xl font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all hidden md:flex items-center justify-center"
                       >
-                        <>
-                          <MessageCircle className="w-5 h-5 mr-2" />
-                          Написать
-                        </>
+                        <MessageCircle className="w-5 h-5 mr-2" />
+                        Написать
                       </Button>
                     )}
                   </div>
