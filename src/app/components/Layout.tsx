@@ -65,7 +65,7 @@ function HeaderAuth({ unreadCount }: { unreadCount: number }) {
               <ChevronDown className="w-3.5 h-3.5 text-muted-foreground hidden lg:block" />
             </button>
           </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[180px] rounded-[20px] p-2 mt-2 shadow-xl border-soft-sand/20">
+            <DropdownMenuContent align="end" className="w-[180px] rounded-[20px] p-2 mt-2 shadow-xl border-soft-sand/20 z-[70]">
               <DropdownMenuItem asChild className="rounded-[12px] cursor-pointer hover:bg-soft-sand/30 font-medium">
                 <Link to="/profile" className="flex items-center gap-2 w-full px-2 py-1.5">
                   <UserIcon className="w-4 h-4" /> Мой профиль
@@ -446,7 +446,7 @@ export function Layout() {
       </footer>
 
       {/* ── Mobile Bottom Navigation ── */}
-      <nav className="md:hidden fixed bottom-3 left-3 right-3 bg-white/90 backdrop-blur-xl shadow-xl border border-border/40 rounded-[20px] z-50 p-1 safe-area-bottom">
+      <nav className="md:hidden fixed bottom-3 left-3 right-3 bg-white/90 backdrop-blur-xl shadow-xl border border-border/40 rounded-[20px] z-[70] p-1 safe-area-bottom">
         <div className="flex items-center justify-between">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -477,7 +477,7 @@ export function Layout() {
       </nav>
 
       {/* ── Mobile FAB ── */}
-      <div className="md:hidden fixed bottom-24 right-4 z-40">
+      <div className="md:hidden fixed bottom-24 right-4 z-[70]">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
@@ -487,7 +487,7 @@ export function Layout() {
               <Plus className="w-5 h-5" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52 rounded-[16px] shadow-xl border-border/50 p-1.5 mb-2">
+          <DropdownMenuContent align="end" className="w-52 rounded-[16px] shadow-xl border-border/50 p-1.5 mb-2 z-[70]">
             <DropdownMenuItem asChild className="rounded-[10px] px-3 py-2.5">
               <Link to="/announcements">📋 Создать объявление</Link>
             </DropdownMenuItem>
