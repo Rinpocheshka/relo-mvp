@@ -63,7 +63,7 @@ const INTEREST_OPTIONS = [
 ];
 
 export function PeopleNearby() {
-  const { session } = useAuth();
+  const { session, user } = useAuth();
   const [selectedFilter, setSelectedFilter] = useState('Все');
   const [people, setPeople] = useState<Person[]>([]);
   const [loading, setLoading] = useState(true);
