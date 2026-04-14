@@ -252,12 +252,7 @@ export function Layout() {
 
             {/* Logo */}
             <Link to="/home" className="flex items-center gap-2 mr-2 flex-shrink-0">
-              <div
-                className="text-xl font-extrabold text-terracotta-deep tracking-tight"
-                style={{ fontFamily: "'Manrope', sans-serif" }}
-              >
-                Relo.me
-              </div>
+              <img src="/assets/logo/Relome_1.png" alt="Relo.me" className="h-7 w-auto object-contain" />
             </Link>
 
             {/* City pill */}
@@ -333,9 +328,7 @@ export function Layout() {
           <div className="grid md:grid-cols-4 gap-8">
             {/* Brand */}
             <div className="md:col-span-1">
-              <div className="text-xl font-extrabold text-terracotta-deep mb-3" style={{ fontFamily: "'Manrope', sans-serif" }}>
-                Relo.me
-              </div>
+              <img src="/assets/logo/Relome_1.png" alt="Relo.me" className="h-8 w-auto object-contain mb-4" />
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                 Экосистема поддержки релокантов. Жильё, люди, советы и события — в одном месте.
               </p>
