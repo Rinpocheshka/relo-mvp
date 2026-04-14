@@ -4,6 +4,7 @@ import { Calendar, Search, Plus, Users, MapPin, Clock, Filter, CheckCircle } fro
 import { Button } from './ui/button';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
+import { AuthModal } from './AuthWidget';
 import { EventDetailsModal } from './EventDetailsModal';
 import { EventFormModal } from './EventFormModal';
 import { formatPrice } from '@/lib/format';
@@ -40,6 +41,7 @@ export function Events() {
   // Modal states
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [eventToEdit, setEventToEdit] = useState<any>(null);
 
@@ -453,6 +455,7 @@ export function Events() {
           onLeft={fetchData}
           onDeleted={fetchData}
           onEdited={() => handleEdit(selectedEvent)}
+          onAuthRequired={() => setIsAuthModalOpen(true)}
         />
       )}
 
@@ -461,6 +464,11 @@ export function Events() {
         onClose={() => setIsFormOpen(false)}
         eventToEdit={eventToEdit}
         onSuccess={fetchData}
+      />
+
+      <AuthModal 
+        open={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
       />
     </div>
   );

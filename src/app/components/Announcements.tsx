@@ -378,6 +378,7 @@ export function Announcements() {
             setIsCreateModalOpen(true);
           }}
           onDeleted={() => void fetchData()}
+          onAuthRequired={() => setIsAuthModalOpen(true)}
         />
       </div>
     </div>

@@ -17,9 +17,10 @@ interface Props {
   onClose: () => void;
   onDeleted?: () => void;
   onEdited?: (announcement: Announcement) => void;
+  onAuthRequired?: () => void;
 }
 
-export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDeleted, onEdited }: Props) {
+export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDeleted, onEdited, onAuthRequired }: Props) {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -35,8 +36,11 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
     }
     
     if (!user) {
-      // @ts-ignore - assuming parent has auth handlers or we use a global modal
-      alert('Пожалуйста, войдите в систему.');
+      if (onAuthRequired) {
+        onAuthRequired();
+      } else {
+        alert('Пожалуйста, войдите в систему.');
+      }
       return;
     }
 
@@ -210,7 +214,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
 
                   {/* Actions */}
                   <div className="mt-12 pt-8 border-t border-border/40 pb-8 sm:pb-0 safe-area-bottom relative z-50">
-                    {user && user.id !== announcement?.author_id && (
+                    {(!user || user.id !== announcement?.author_id) && (
                       <button 
                         onClick={handleMessageClick}
                         className="w-full bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-2xl h-14 font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all flex items-center justify-center cursor-pointer mt-4"

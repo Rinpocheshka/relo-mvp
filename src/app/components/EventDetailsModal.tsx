@@ -42,16 +42,16 @@ interface EventDetailsModalProps {
   onLeft?: () => void;
   onDeleted?: () => void;
   onEdited?: (event: Event) => void;
+  onAuthRequired?: () => void;
 }
 
 export function EventDetailsModal({
   isOpen,
   onClose,
   event,
-  onJoined,
-  onLeft,
   onDeleted,
-  onEdited
+  onEdited,
+  onAuthRequired
 }: EventDetailsModalProps) {
   const { user, profile } = useAuth();
   const { openMessageModal } = useMessageModal();
@@ -127,7 +127,11 @@ export function EventDetailsModal({
     }
     
     if (!user) {
-      alert('Пожалуйста, войдите в систему.');
+      if (onAuthRequired) {
+        onAuthRequired();
+      } else {
+        alert('Пожалуйста, войдите в систему.');
+      }
       return;
     }
 
@@ -343,37 +347,29 @@ export function EventDetailsModal({
 
               {/* Footer Actions */}
               <div className="p-4 pb-8 sm:p-6 sm:pb-6 bg-white border-t border-border/50 flex flex-col sm:flex-row gap-3 shrink-0 safe-area-bottom">
-                {!user ? (
-                  <div className="flex-1 flex items-center gap-3 p-3 bg-red-50 rounded-2xl">
-                    <AlertTriangle className="w-5 h-5 text-red-500 shrink-0" />
-                    <p className="text-xs text-red-700 font-medium leading-tight">
-                      Пожалуйста, войдите в систему, чтобы записываться на события.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="flex-1 flex gap-2 w-full">
-                    <Button
-                      onClick={handleJoinToggle}
-                      disabled={loading || (!!event.maxAttendees && participants.length >= event.maxAttendees && !isAttending)}
-                      className={`flex-1 h-14 rounded-2xl font-bold text-lg shadow-lg shadow-terracotta-deep/10 transition-all ${
-                        isAttending 
-                        ? 'bg-soft-sand text-foreground hover:bg-soft-sand/80' 
-                        : 'bg-terracotta-deep hover:bg-terracotta-deep/90 text-white'
-                      }`}
+                <div className="flex-1 flex gap-2 w-full">
+                  <Button
+                    onClick={user ? handleJoinToggle : onAuthRequired}
+                    disabled={loading || (user && !!event.maxAttendees && participants.length >= event.maxAttendees && !isAttending)}
+                    className={`flex-1 h-14 rounded-2xl font-bold text-lg shadow-lg shadow-terracotta-deep/10 transition-all ${
+                      isAttending 
+                      ? 'bg-soft-sand text-foreground hover:bg-soft-sand/80' 
+                      : 'bg-terracotta-deep hover:bg-terracotta-deep/90 text-white'
+                    }`}
+                  >
+                    {!user ? 'Войти и записаться' : (isAttending ? 'Я передумал' : 'Я пойду!')}
+                  </Button>
+                  
+                  {(!user || user.id !== event.organizer_id) && (
+                    <Button 
+                      onClick={handleMessageClick}
+                      className="w-full sm:w-[180px] h-14 bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-2xl font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all flex items-center justify-center"
                     >
-                      {isAttending ? 'Я передумал' : 'Я пойду!'}
+                      <MessageCircle className="w-5 h-5 mr-2" />
+                      Написать
                     </Button>
-                    {user && user.id !== event.organizer_id && (
-                      <Button 
-                        onClick={handleMessageClick}
-                        className="w-[180px] h-14 bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-2xl font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all hidden md:flex items-center justify-center"
-                      >
-                        <MessageCircle className="w-5 h-5 mr-2" />
-                        Написать
-                      </Button>
-                    )}
-                  </div>
-                )}
+                  )}
+                </div>
 
                 {canManage && (
                   <div className="flex gap-2 shrink-0">
