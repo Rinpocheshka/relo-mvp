@@ -171,7 +171,7 @@ export function EventDetailsModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-2 sm:p-4">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-8 md:p-12">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -183,7 +183,7 @@ export function EventDetailsModal({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-5xl bg-white rounded-[24px] md:rounded-[32px] overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[85vh] mb-6 sm:mb-8 mx-4"
+            className="relative w-full max-w-5xl bg-white rounded-[40px] overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[82vh] mb-6 sm:mb-8 mx-4"
           >
             {/* Left Column (Images) - Desktop only (fixed area) */}
             <div className="relative h-48 sm:h-64 md:h-80 lg:h-auto lg:w-[42%] bg-soft-sand/10 shrink-0">
@@ -218,7 +218,7 @@ export function EventDetailsModal({
             </div>
 
             {/* Right Column (Content) */}
-            <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-white relative">
+            <div className="flex-1 flex flex-col min-w-0 min-h-0 relative">
               {/* Desktop Close Button */}
               <button
                 onClick={onClose}
@@ -345,7 +345,7 @@ export function EventDetailsModal({
               </div>
 
               {/* Footer Actions */}
-              <div className="p-4 pb-8 sm:p-6 sm:pb-6 bg-white border-t border-border/50 flex flex-col sm:flex-row gap-3 shrink-0 safe-area-bottom">
+              <div className="p-4 pb-8 sm:p-6 sm:pb-10 md:pb-12 bg-white/80 backdrop-blur-md border-t border-border/50 flex flex-col sm:flex-row gap-3 shrink-0 safe-area-bottom mt-auto">
                 <div className="flex-1 flex gap-2 w-full">
                   <Button
                     onClick={user ? handleJoinToggle : onAuthRequired}
