@@ -11,6 +11,7 @@ import { Announcement } from './Announcements';
 import { EventDetailsModal } from './EventDetailsModal';
 import { EventFormModal } from './EventFormModal';
 import { CreateAnnouncementModal } from './CreateAnnouncementModal';
+import { getOrCreateChat } from '@/lib/chatUtils';
 
 interface Event {
   id: string;
@@ -105,6 +106,7 @@ export function Profile() {
   
   const [profile, setProfile] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [chatLoading, setChatLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<Partial<UserData>>({});
   const [manualCity, setManualCity] = useState('');
@@ -127,6 +129,45 @@ export function Profile() {
 
   const isOwnProfile = !id || id === user?.id;
   const targetId = isOwnProfile ? session?.user?.id : id;
+
+  const handleMessageClick = async () => {
+    // LOUD DEBUG LOGS
+    console.log('DEBUG: Profile Message clicked', { targetId, userId: user?.id });
+    
+    if (!user) {
+      console.log('DEBUG: No user, opening auth modal');
+      setAuthModalOpen(true);
+      return;
+    }
+
+    if (user.id === targetId) {
+      alert('Это ваш собственный профиль.');
+      return;
+    }
+
+    if (!targetId) {
+      alert('Ошибка: ID пользователя не найден.');
+      return;
+    }
+
+    setChatLoading(true);
+    try {
+      console.log('DEBUG: Calling getOrCreateChat from profile...', { targetId });
+      const chatId = await getOrCreateChat(user.id, targetId);
+      console.log('DEBUG: Chat result:', chatId);
+      
+      if (chatId) {
+        navigate(`/messages/${chatId}`);
+      } else {
+        alert('Не удалось начать чат (в базе вернулся null). Проверьте консоль.');
+      }
+    } catch (err: any) {
+      console.error('DEBUG: Catch error:', err);
+      alert('Ошибка при создании чата: ' + (err.message || 'Unknown'));
+    } finally {
+      setChatLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (authLoading) return;
@@ -534,24 +575,47 @@ export function Profile() {
                         </Button>
                       ) : (globalProfile?.role === 'admin' || user?.id === 'admin-id-fallback') ? (
                         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                          <Button 
-                            className="w-full sm:w-auto bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full shadow-md px-6 sm:px-8 h-11 font-semibold transition-all active:scale-95 sm:min-w-[180px]"
-                            onClick={() => setIsEditing(true)}
+                          <button 
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsEditing(true); }}
+                            className="w-full sm:w-auto bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full shadow-md px-6 sm:px-8 h-11 font-semibold transition-all active:scale-95 sm:min-w-[180px] flex items-center justify-center cursor-pointer"
                           >
                             <Edit className="w-4 h-4 mr-2" />
                             Редактировать
-                          </Button>
-                          <Button className="w-full sm:w-auto bg-soft-sand hover:bg-soft-sand/80 text-foreground rounded-full shadow-sm px-6 sm:px-8 h-11 font-medium transition-all active:scale-95 sm:min-w-[140px]">
+                          </button>
+                          <button 
+                            onClick={handleMessageClick}
+                            className="w-full sm:w-auto bg-soft-sand hover:bg-soft-sand/80 text-foreground rounded-full shadow-sm px-6 sm:px-8 h-11 font-medium transition-all active:scale-95 sm:min-w-[140px] flex items-center justify-center cursor-pointer relative z-20"
+                            style={{ pointerEvents: 'auto' }}
+                          >
                              <MessageCircle className="w-4 h-4 mr-2" />
                              Написать
-                          </Button>
+                          </button>
                         </div>
                       ) : user ? (
-                        <Button className="w-full sm:w-auto bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-6 sm:px-8 h-11 font-medium sm:min-w-[160px]">
+                        <button 
+                          onClick={handleMessageClick}
+                          disabled={chatLoading}
+                          className="w-full sm:w-auto bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-6 sm:px-8 h-11 font-medium sm:min-w-[160px] flex items-center justify-center cursor-pointer relative z-20"
+                          style={{ pointerEvents: 'auto' }}
+                        >
+                           {chatLoading ? (
+                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                           ) : (
+                             <>
+                               <MessageCircle className="w-4 h-4 mr-2" />
+                               Написать
+                             </>
+                           )}
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={() => setAuthOpen(true)}
+                          className="w-full sm:w-auto bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-full shadow-sm px-6 sm:px-8 h-11 font-medium sm:min-w-[160px] flex items-center justify-center cursor-pointer"
+                        >
                            <MessageCircle className="w-4 h-4 mr-2" />
                            Написать
-                        </Button>
-                      ) : null}
+                        </button>
+                      )}
                     </div>
                   </div>
                 </>
