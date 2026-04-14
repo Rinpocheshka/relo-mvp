@@ -44,10 +44,8 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
       return;
     }
 
-    if (!announcement?.author_id) {
-      console.warn('Announcement header missing author_id:', announcement);
-      // If we don't have an ID, we can't open a chat, so we show a message
-      alert('К сожалению, ID автора не указан. Невозможно начать чат.');
+    if (user && user.id === announcement.author_id) {
+      alert('Это ваше объявление. Вы не можете отправить сообщение самому себе.');
       return;
     }
 
@@ -210,8 +208,8 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
                   </div>
 
                   {/* Actions */}
-                  <div className="mt-12 pt-8 border-t border-border/40 pb-8 sm:pb-8 safe-area-bottom relative z-50">
-                    {(!user || user.id !== announcement?.author_id) && (
+                  <div className="mt-12 pt-8 border-t border-border/40 pb-10 sm:pb-12 safe-area-bottom relative z-50">
+                    {(!user || user.id !== 'DUMMY_NEVER_MATCH') && (
                       <button 
                         onClick={handleMessageClick}
                         className="w-full bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-2xl h-14 font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all flex items-center justify-center cursor-pointer mt-4"
