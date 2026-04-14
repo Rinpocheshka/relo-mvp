@@ -171,7 +171,7 @@ export function EventDetailsModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[1000] flex items-start justify-center p-4 overflow-y-auto py-10 sm:py-20 scrollbar-hide">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-2 sm:p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -183,7 +183,7 @@ export function EventDetailsModal({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-5xl bg-white rounded-[24px] md:rounded-[32px] shadow-2xl flex flex-col lg:flex-row mx-4 my-auto"
+            className="relative w-full max-w-5xl bg-white rounded-[24px] md:rounded-[32px] overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[85vh] mb-6 sm:mb-8 mx-4"
           >
             {/* Left Column (Images) - Desktop only (fixed area) */}
             <div className="relative h-48 sm:h-64 md:h-80 lg:h-auto lg:w-[42%] bg-soft-sand/10 shrink-0">

@@ -110,7 +110,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
             initial={{ opacity: 0, scale: 0.9, y: 40 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 40 }}
-            className="relative bg-white w-full max-w-4xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[88vh] mb-6 sm:mb-8"
+            className="relative bg-white w-full max-w-4xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] mb-6 sm:mb-8"
           >
             {/* Close Button */}
             <div className="absolute top-6 right-6 z-20">
