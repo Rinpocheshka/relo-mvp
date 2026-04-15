@@ -128,6 +128,7 @@ export function HomePage() {
   const [storiesLoading, setStoriesLoading] = useState(true);
   const [writeStoryOpen, setWriteStoryOpen] = useState(false);
   const [detailsStoryId, setDetailsStoryId] = useState<string | null>(null);
+  const [storyToEdit, setStoryToEdit] = useState<Story | null>(null);
 
   useEffect(() => {
     try {
@@ -222,8 +223,13 @@ export function HomePage() {
     void fetchMainData();
   }, [session, user, city]);
 
-  const navigate = useNavigate();
   const content = stageContent[currentStage];
+
+  const handleEditStory = (story: Story) => {
+    setDetailsStoryId(null);
+    setStoryToEdit(story);
+    setWriteStoryOpen(true);
+  };
 
   return (
     <div className="bg-warm-milk pb-8 md:pb-16">
@@ -475,12 +481,14 @@ export function HomePage() {
 
       <WriteStoryModal 
         isOpen={writeStoryOpen} 
-        onClose={() => setWriteStoryOpen(false)} 
+        onClose={() => {
+          setWriteStoryOpen(false);
+          setStoryToEdit(null);
+        }} 
+        storyToEdit={storyToEdit}
         onSuccess={() => {
-          // Re-fetch stories after new one added
-          // Note: In a real app we might just append locally or use an event
-          // For now, simpler to just trigger the effect again if needed or wait for poll
-          window.location.reload(); // Simple way to refresh all data for now
+          // Re-fetch stories after new one added or edited
+          window.location.reload(); 
         }} 
       />
 
@@ -488,6 +496,10 @@ export function HomePage() {
         isOpen={!!detailsStoryId}
         onClose={() => setDetailsStoryId(null)}
         storyId={detailsStoryId}
+        onEdit={handleEditStory}
+        onDeleteSuccess={() => {
+          window.location.reload();
+        }}
       />
 
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />

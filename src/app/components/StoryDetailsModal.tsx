@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, MessageCircle, Send, Loader2, Calendar, User, BookOpen } from 'lucide-react';
+import { X, MessageCircle, Send, Loader2, Calendar, User, BookOpen, Edit2, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/app/SupabaseAuthProvider';
@@ -33,9 +33,11 @@ interface StoryDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   storyId: string | null;
+  onEdit?: (story: Story) => void;
+  onDeleteSuccess?: () => void;
 }
 
-export function StoryDetailsModal({ isOpen, onClose, storyId }: StoryDetailsModalProps) {
+export function StoryDetailsModal({ isOpen, onClose, storyId, onEdit, onDeleteSuccess }: StoryDetailsModalProps) {
   const { user, profile } = useAuth();
   const [story, setStory] = useState<Story | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -151,6 +153,32 @@ export function StoryDetailsModal({ isOpen, onClose, storyId }: StoryDetailsModa
     }
   };
 
+  const handleDelete = async () => {
+    if (!story || !user || story.author_id !== user.id) return;
+    
+    if (!confirm('Вы уверены, что хотите удалить эту историю? Это действие нельзя отменить.')) {
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('stories')
+        .delete()
+        .eq('id', story.id);
+
+      if (error) throw error;
+      
+      onDeleteSuccess?.();
+      onClose();
+    } catch (e) {
+      console.error('Error deleting story:', e);
+      alert('Не удалось удалить историю');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) onClose();
   };
@@ -179,12 +207,33 @@ export function StoryDetailsModal({ isOpen, onClose, storyId }: StoryDetailsModa
                 </div>
                 <h2 className="font-bold text-lg truncate">История релокации</h2>
               </div>
-              <button
-                onClick={onClose}
-                className="w-10 h-10 rounded-full bg-soft-sand/30 hover:bg-soft-sand/60 flex items-center justify-center transition-colors"
-              >
-                <X className="w-5 h-5 text-muted-foreground" />
-              </button>
+              <div className="flex items-center gap-2">
+                {story && user && story.author_id === user.id && (
+                  <div className="flex items-center gap-1 mr-2 px-1 border-r border-border/20">
+                    <button
+                      onClick={() => story && onEdit?.(story)}
+                      className="w-9 h-9 rounded-full bg-soft-sand/30 hover:bg-terracotta-deep/10 hover:text-terracotta-deep flex items-center justify-center transition-all"
+                      title="Редактировать"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={handleDelete}
+                      disabled={submitting}
+                      className="w-9 h-9 rounded-full bg-soft-sand/30 hover:bg-red-50 hover:text-destructive flex items-center justify-center transition-all disabled:opacity-50"
+                      title="Удалить"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                <button
+                  onClick={onClose}
+                  className="w-10 h-10 rounded-full bg-soft-sand/30 hover:bg-soft-sand/60 flex items-center justify-center transition-colors"
+                >
+                  <X className="w-5 h-5 text-muted-foreground" />
+                </button>
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto bg-white flex flex-col md:flex-row">

@@ -9,14 +9,34 @@ interface WriteStoryModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  storyToEdit?: { id: string; title: string; content: string } | null;
 }
 
-export function WriteStoryModal({ isOpen, onClose, onSuccess }: WriteStoryModalProps) {
+export function WriteStoryModal({ isOpen, onClose, onSuccess, storyToEdit }: WriteStoryModalProps) {
   const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Prefill when editing
+  useState(() => {
+    if (storyToEdit) {
+      setTitle(storyToEdit.title);
+      setContent(storyToEdit.content);
+    }
+  });
+
+  // Also update if storyToEdit changes while open (though unlikely in this flow)
+  useEffect(() => {
+    if (storyToEdit) {
+      setTitle(storyToEdit.title);
+      setContent(storyToEdit.content);
+    } else {
+      setTitle('');
+      setContent('');
+    }
+  }, [storyToEdit]);
 
   const isValid = title.trim().length >= 3 && content.trim().length >= 20;
 
@@ -26,13 +46,25 @@ export function WriteStoryModal({ isOpen, onClose, onSuccess }: WriteStoryModalP
     setError(null);
 
     try {
-      const { error: insertError } = await supabase.from('stories').insert({
-        title: title.trim(),
-        content: content.trim(),
-        author_id: user.id
-      });
+      if (storyToEdit) {
+        const { error: updateError } = await supabase
+          .from('stories')
+          .update({
+            title: title.trim(),
+            content: content.trim()
+          })
+          .eq('id', storyToEdit.id);
+        
+        if (updateError) throw updateError;
+      } else {
+        const { error: insertError } = await supabase.from('stories').insert({
+          title: title.trim(),
+          content: content.trim(),
+          author_id: user.id
+        });
 
-      if (insertError) throw insertError;
+        if (insertError) throw insertError;
+      }
 
       onSuccess();
       onClose();
@@ -73,8 +105,12 @@ export function WriteStoryModal({ isOpen, onClose, onSuccess }: WriteStoryModalP
                   <BookOpen className="w-5 h-5 text-terracotta-deep" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-foreground">Поделиться историей</h2>
-                  <p className="text-xs text-muted-foreground">Твой опыт поможет другим решиться или избежать ошибок</p>
+                  <h2 className="text-xl font-bold text-foreground">
+                    {storyToEdit ? 'Редактировать историю' : 'Поделиться историей'}
+                  </h2>
+                  <p className="text-xs text-muted-foreground">
+                    {storyToEdit ? 'Обнови свой рассказ для читателей' : 'Твой опыт поможет другим решиться или избежать ошибок'}
+                  </p>
                 </div>
               </div>
               <button
@@ -150,7 +186,7 @@ export function WriteStoryModal({ isOpen, onClose, onSuccess }: WriteStoryModalP
                     Публикуем...
                   </>
                 ) : (
-                  'Опубликовать историю'
+                  storyToEdit ? 'Сохранить изменения' : 'Опубликовать историю'
                 )}
               </Button>
             </div>
