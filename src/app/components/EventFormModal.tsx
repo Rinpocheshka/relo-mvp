@@ -92,6 +92,10 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
 
     try {
       for (const file of files) {
+        if (file.size > 9 * 1024 * 1024) {
+          setError(`Файл ${file.name} слишком большой. Максимальный размер — 9 Мб.`);
+          continue;
+        }
         let fileToProcess = file;
         const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
         

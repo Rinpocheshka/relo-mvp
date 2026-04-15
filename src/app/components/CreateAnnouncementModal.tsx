@@ -81,6 +81,10 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
 
     try {
       for (const file of files) {
+        if (file.size > 9 * 1024 * 1024) {
+          setError(`Файл ${file.name} слишком большой. Максимальный размер — 9 Мб.`);
+          continue;
+        }
         let fileToProcess = file;
         
         // Check for HEIC/HEIF
