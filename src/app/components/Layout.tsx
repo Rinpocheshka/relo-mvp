@@ -379,7 +379,7 @@ export function Layout() {
               <ul className="space-y-2.5">
                 <li>
                   <a
-                    href="https://t.me/relo_support"
+                    href="https://t.me/relome_world"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-terracotta-deep transition-colors"
