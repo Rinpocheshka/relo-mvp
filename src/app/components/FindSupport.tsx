@@ -488,10 +488,6 @@ export function FindSupport() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-6 md:mb-10"
         >
-          <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-3 md:mb-4">
-            <img src="/assets/icons/custom/support_tab.png" className="w-5 h-5 md:w-6 md:h-6 object-contain" alt="" />
-            <span className="text-dusty-indigo font-bold text-xs md:text-sm">Найти опору</span>
-          </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-3">Вопросы и ответы</h1>
           <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
             Задавай вопросы и получай проверенные ответы от проводников города

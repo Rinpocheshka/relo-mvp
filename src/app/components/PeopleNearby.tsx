@@ -178,10 +178,6 @@ export function PeopleNearby() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-6 md:mb-12"
         >
-          <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-3 md:mb-4">
-            <img src="/assets/icons/custom/people_tab.png" className="w-5 h-5 md:w-6 md:h-6 object-contain" alt="" />
-            <span className="text-dusty-indigo font-bold text-xs md:text-sm">Люди рядом</span>
-          </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-4 leading-tight">Здесь уже есть люди, которые проходят тот же путь</h1>
           <p className="text-sm md:text-lg text-muted-foreground max-w-4xl mx-auto px-2">
             Познакомься с теми, кто сейчас на том же этапе или может помочь советом

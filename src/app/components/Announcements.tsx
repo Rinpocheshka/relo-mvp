@@ -135,10 +135,6 @@ export function Announcements() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-6 md:mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-terracotta-deep/10 rounded-full mb-3 md:mb-4">
-            <img src="/assets/icons/custom/luggage.png" className="w-5 h-5 object-contain" alt="" />
-            <span className="text-terracotta-deep font-medium text-sm md:text-base">Объявления</span>
-          </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-4">Жильё, вещи, услуги</h1>
           <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
             {getSubtitle()}

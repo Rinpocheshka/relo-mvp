@@ -192,10 +192,6 @@ export function Events() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-6 md:mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-dusty-indigo/10 rounded-full mb-3 md:mb-4">
-            <img src="/assets/icons/custom/events_all.png" className="w-5 h-5 object-contain" alt="" />
-            <span className="text-dusty-indigo font-medium text-sm md:text-base">Афиша</span>
-          </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-4">События и встречи</h1>
           <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
             Находи интересные мероприятия и знакомься с новыми людьми
