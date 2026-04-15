@@ -413,7 +413,7 @@ export function Layout() {
                 </svg>
               </a>
               {/* TikTok */}
-              <a href="https://www.tiktok.com/@relome.world" target="_blank" rel="noopener noreferrer" aria-label="TikTok"
+              <a href="https://www.tiktok.com/@relo.me" target="_blank" rel="noopener noreferrer" aria-label="TikTok"
                 className="w-8 h-8 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-full flex items-center justify-center transition-colors text-muted-foreground">
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                   <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.06-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93v7.24a8.1 8.1 0 0 1-5 7.42 8.13 8.13 0 0 1-9.98-3.9 8.01 8.01 0 0 1 1-8.52 8.1 8.1 0 0 1 6.57-2.6v4.13a4.01 4.01 0 0 0-2.31 7.23 4.06 4.06 0 0 0 4.1.6 4.01 4.01 0 0 0 2.22-3.66l.01-15.9Z"/>
