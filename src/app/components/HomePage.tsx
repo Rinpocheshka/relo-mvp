@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { Button } from './ui/button';
-import { MessageCircle, ArrowRight, Star, Users, Megaphone, Calendar, Heart, MapPin, Plus, Edit } from 'lucide-react';
+import { MessageCircle, ArrowRight, Star, Users, Megaphone, Calendar, Heart, MapPin, Plus, Edit, Search } from 'lucide-react';
 import { MessageHelper } from './MessageHelper';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
@@ -170,6 +170,7 @@ export function HomePage() {
     fetchMainData();
   }, [session, user, city]);
 
+  const navigate = useNavigate();
   const content = stageContent[currentStage];
 
   return (
@@ -189,6 +190,37 @@ export function HomePage() {
                 <span key={i} className="block">{line}</span>
               ))}</h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{content.warmth}</p>
+
+              {/* Global Search Bar */}
+              <div className="mt-8 max-w-2xl mx-auto relative group">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-dusty-indigo transition-colors" />
+                <input
+                  type="text"
+                  placeholder="ищи что угодно"
+                  className="w-full pl-14 pr-32 py-4 md:py-5 bg-white border border-border/60 rounded-[24px] shadow-sm focus:outline-none focus:ring-4 focus:ring-dusty-indigo/10 focus:border-dusty-indigo/50 transition-all text-base md:text-lg"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const query = (e.target as HTMLInputElement).value;
+                      if (query.trim()) {
+                        navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+                      }
+                    }
+                  }}
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <Button 
+                    className="bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-xl h-10 md:h-12 px-6 font-bold shadow-lg shadow-dusty-indigo/20 transition-all active:scale-95"
+                    onClick={(e) => {
+                      const input = e.currentTarget.parentElement?.previousElementSibling as HTMLInputElement;
+                      if (input.value.trim()) {
+                        navigate(`/search?q=${encodeURIComponent(input.value.trim())}`);
+                      }
+                    }}
+                  >
+                    Найти
+                  </Button>
+                </div>
+              </div>
             </motion.div>
 
             <div className="bg-white rounded-[32px] border border-border/40 shadow-sm overflow-hidden mb-10">
