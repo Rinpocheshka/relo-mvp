@@ -308,22 +308,29 @@ export function StoryDetailsModal({ isOpen, onClose, storyId, onEdit, onDeleteSu
                 <div className="p-4 bg-white border-t border-border/10">
                    {user ? (
                      <div className="flex items-end gap-2">
+                      <div className="flex flex-col flex-1 gap-1">
                         <textarea
                           value={commentDraft}
                           onChange={(e) => setCommentDraft(e.target.value)}
                           placeholder="Ваш комментарий..."
                           rows={2}
                           maxLength={2000}
-                          className="flex-1 bg-soft-sand/20 border border-border/40 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 resize-none"
+                          className="w-full bg-soft-sand/20 border border-border/40 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 resize-none"
                         />
-                        <Button 
-                          size="icon" 
-                          disabled={!commentDraft.trim() || submitting}
-                          onClick={handleSendComment}
-                          className="rounded-xl h-10 w-10 bg-terracotta-deep text-white shadow-md shadow-terracotta-deep/20 flex-shrink-0"
-                        >
-                          {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                        </Button>
+                        <div className="flex justify-end pr-1">
+                          <span className={`text-[9px] font-bold ${commentDraft.length > 1900 ? 'text-terracotta-deep' : 'text-muted-foreground/30'}`}>
+                            {commentDraft.length}/2,000
+                          </span>
+                        </div>
+                      </div>
+                      <Button 
+                        size="icon" 
+                        disabled={!commentDraft.trim() || submitting}
+                        onClick={handleSendComment}
+                        className="rounded-xl h-10 w-10 bg-terracotta-deep text-white shadow-md shadow-terracotta-deep/20 flex-shrink-0"
+                      >
+                        {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                      </Button>
                      </div>
                    ) : (
                      <div className="text-center py-4 bg-soft-sand/10 rounded-xl border border-dashed border-border/40">
