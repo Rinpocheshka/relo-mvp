@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router';
 import { Button } from './ui/button';
 import { MessageCircle, ArrowRight, Star, Users, Megaphone, Calendar, Heart, MapPin, Plus, Edit, Search } from 'lucide-react';
 import { MessageHelper } from './MessageHelper';
+import { UserAvatar } from './UserAvatar';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
 import { AuthModal } from './AuthWidget';
@@ -364,16 +365,16 @@ function CardItemContent({ person }: { person: Person }) {
   return (
     <>
       <div className="flex items-center gap-4 mb-4">
-        <div className="relative">
-          {person.avatar_url ? (
-            <img src={person.avatar_url} alt={person.display_name} className="w-14 h-14 rounded-full object-cover shadow-md border-2 border-white" />
-          ) : (
-            <div className="w-14 h-14 rounded-full bg-soft-sand flex items-center justify-center shadow-inner">
-              <Users className="w-7 h-7 text-dusty-indigo" />
-            </div>
-          )}
-          <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full shadow-sm" title="В сети" />
-        </div>
+        <UserAvatar 
+          src={person.avatar_url} 
+          name={person.display_name} 
+          isGuide={person.is_guide} 
+          size="xl" 
+          className="!shadow-md !border-2 !border-white" 
+        >
+          {/* Online indicator - moved to bottom-left to avoid overlap with guide star */}
+          <div className="absolute bottom-0 left-0 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full shadow-sm" title="В сети" />
+        </UserAvatar>
         <div>
           <h3 className="font-bold text-lg text-foreground group-hover:text-terracotta-deep transition-colors w-full truncate">
             {person.display_name || 'Без имени'}

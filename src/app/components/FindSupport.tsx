@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 declare const heic2any: any;
 import { Button } from './ui/button';
+import { UserAvatar } from './UserAvatar';
 import { supabase } from '@/lib/supabaseClient';
 import { formatRelativeRu } from '@/lib/date';
 import { AskQuestionModal } from './AskQuestionModal';
@@ -29,16 +30,8 @@ import { SuggestResourceModal } from './SuggestResourceModal';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface Question {
-  id: string;
-  question: string;
-  category: string;
-  askedBy: string;
-  answers: number;
-  isAnswered: boolean;
-  createdAt?: string;
-  viewsCount?: number;
   isAnonymous?: boolean;
+  authorIsGuide?: boolean;
 }
 
 interface Answer {
@@ -47,6 +40,7 @@ interface Answer {
   author: string;
   authorId: string | null;
   authorAvatarUrl: string | null;
+  authorIsGuide?: boolean;
   isBest: boolean;
   upvotesCount: number;
   createdAt?: string;
@@ -59,6 +53,7 @@ interface Guide {
   expertise: string[];
   answeredCount: number;
   avatarUrl: string | null;
+  isGuide: boolean;
   avatarColor: string;
   contactTelegram: string | null;
   contactWhatsapp: string | null;
@@ -176,7 +171,7 @@ export function FindSupport() {
     try {
       let q = supabase
         .from('questions')
-        .select('id, question, category, asked_by_name, created_at, views_count, answers(count)', { count: 'exact' });
+        .select('id, question, category, asked_by, asked_by_name, created_at, views_count, answers(count), profiles:asked_by(is_guide)', { count: 'exact' });
 
       // Server-side filtering
       if (selectedCategory !== 'Все') q = q.eq('category', selectedCategory);
@@ -210,6 +205,7 @@ export function FindSupport() {
           createdAt: row.created_at ? formatRelativeRu(new Date(row.created_at as string)) : undefined,
           viewsCount: (row as any).views_count ?? 0,
           isAnonymous: (row as any).is_anonymous as boolean,
+          authorIsGuide: (row as any).profiles?.is_guide as boolean,
         };
       });
 
@@ -262,7 +258,7 @@ export function FindSupport() {
     const fetchGuides = async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('id, display_name, rating, expertise, answered_count, avatar_url, contact_telegram, contact_whatsapp')
+        .select('id, display_name, rating, expertise, answered_count, avatar_url, contact_telegram, contact_whatsapp, is_guide')
         .eq('is_guide', true)
         .order('rating', { ascending: false })
         .limit(3);
@@ -275,6 +271,7 @@ export function FindSupport() {
           expertise: (p as any).expertise ?? [],
           answeredCount: (p as any).answered_count ?? 0,
           avatarUrl: (p as any).avatar_url,
+          isGuide: (p as any).is_guide ?? true,
           avatarColor: GUIDE_COLORS[i % GUIDE_COLORS.length],
           contactTelegram: (p as any).contact_telegram,
           contactWhatsapp: (p as any).contact_whatsapp,
@@ -313,7 +310,7 @@ export function FindSupport() {
           is_best, 
           upvotes_count, 
           created_at,
-          profiles:author_id(avatar_url)
+          profiles:author_id(avatar_url, is_guide)
         `)
         .eq('question_id', questionId)
         .order('is_best', { ascending: false })
@@ -328,6 +325,7 @@ export function FindSupport() {
         author: (a as any).author_name ?? 'Проводник',
         authorId: (a as any).author_id,
         authorAvatarUrl: (a as any).profiles?.avatar_url,
+        authorIsGuide: (a as any).profiles?.is_guide,
         isBest: (a as any).is_best ?? false,
         upvotesCount: (a as any).upvotes_count ?? 0,
         createdAt: a.created_at ? formatRelativeRu(new Date(a.created_at)) : undefined,
@@ -868,8 +866,11 @@ function QuestionCard({
             </h3>
 
             <div className="flex items-center gap-3 text-xs text-muted-foreground/60">
-              <span className="font-medium">
+              <span className="font-medium flex items-center gap-1.5">
                 {q.isAnonymous ? 'Анонимно' : `от ${q.askedBy}`}
+                {!q.isAnonymous && q.authorIsGuide && (
+                  <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                )}
               </span>
               {q.createdAt && (
                 <>
@@ -1013,20 +1014,19 @@ function AnswerCard({
         </div>
       )}
       <div className="flex items-start gap-3">
-        {a.authorAvatarUrl ? (
-          <img
-            src={a.authorAvatarUrl}
-            alt={a.author}
-            className="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm flex-shrink-0"
-          />
-        ) : (
-          <div className="w-9 h-9 rounded-full bg-dusty-indigo/30 flex-shrink-0 border-2 border-white shadow-sm flex items-center justify-center">
-            <span className="text-dusty-indigo font-bold text-sm">{a.author.charAt(0)}</span>
-          </div>
-        )}
+        <UserAvatar 
+          src={a.authorAvatarUrl} 
+          name={a.author} 
+          isGuide={a.authorIsGuide} 
+          size="sm" 
+          className="border-2 border-white !shadow-sm" 
+        />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="font-bold text-sm text-foreground">{a.author}</span>
+            <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
+              {a.author}
+              {a.authorIsGuide && <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />}
+            </span>
             {a.createdAt && (
               <span className="text-xs text-muted-foreground/60">{a.createdAt}</span>
             )}
@@ -1522,17 +1522,13 @@ function GuidesPanel({ guides }: { guides: Guide[] }) {
             className="bg-white p-5 rounded-[24px] border border-border/60 shadow-sm hover:shadow-md transition-all group"
           >
             <div className="flex items-start gap-4 mb-4">
-              {guide.avatarUrl ? (
-                <img
-                  src={guide.avatarUrl}
-                  alt={guide.name}
-                  className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm flex-shrink-0"
-                />
-              ) : (
-                <div className={`w-14 h-14 rounded-full ${guide.avatarColor} flex-shrink-0 border-2 border-white shadow-sm group-hover:scale-105 transition-transform flex items-center justify-center`}>
-                  <span className="text-white font-bold text-lg">{guide.name.charAt(0)}</span>
-                </div>
-              )}
+              <UserAvatar 
+                src={guide.avatarUrl} 
+                name={guide.name} 
+                isGuide={guide.isGuide} 
+                size="xl" 
+                className="!shadow-sm !border-2 !border-white group-hover:scale-105 transition-transform" 
+              />
               <div className="flex-1 min-w-0">
                 <h3 className="font-bold text-lg text-foreground truncate">{guide.name}</h3>
                 <p className="text-xs font-bold text-warm-olive/70 uppercase tracking-tighter mb-1.5">Проводник города</p>

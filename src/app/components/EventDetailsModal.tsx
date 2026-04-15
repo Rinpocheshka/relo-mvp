@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router';
 import { X, Calendar, MapPin, Clock, Users, MessageCircle, Trash2, ShieldCheck, AlertTriangle, Edit, Wallet } from 'lucide-react';
 import { Button } from './ui/button';
+import { UserAvatar } from './UserAvatar';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
@@ -31,6 +32,7 @@ interface Participant {
   profiles: {
     avatar_url: string | null;
     display_name: string | null;
+    is_guide: boolean;
   };
 }
 
@@ -78,7 +80,8 @@ export function EventDetailsModal({
           user_id,
           profiles:user_id (
             avatar_url,
-            display_name
+            display_name,
+            is_guide
           )
         `)
         .eq('event_id', event.id);
@@ -321,17 +324,14 @@ export function EventDetailsModal({
                           className="group relative" 
                           title={p.profiles?.display_name || 'Anonymous'}
                         >
-                           {p.profiles?.avatar_url ? (
-                              <img 
-                                src={p.profiles.avatar_url} 
-                                className="w-12 h-12 rounded-2xl border-2 border-white shadow-md object-cover transition-all group-hover:-translate-y-1 group-hover:scale-105 active:scale-95" 
-                                alt="participant"
-                              />
-                           ) : (
-                              <div className="w-12 h-12 rounded-2xl border-2 border-white shadow-md bg-soft-sand text-dusty-indigo flex items-center justify-center text-sm font-black transition-all group-hover:-translate-y-1 group-hover:scale-105 active:scale-95">
-                                {(p.profiles?.display_name || 'U').charAt(0)}
-                              </div>
-                           )}
+                            <UserAvatar 
+                              src={p.profiles?.avatar_url} 
+                              name={p.profiles?.display_name} 
+                              isGuide={p.profiles?.is_guide} 
+                              size="lg" 
+                              className="!shadow-md !border-2 !border-white transition-all group-hover:-translate-y-1 group-hover:scale-105 active:scale-95" 
+                              rounded="rounded-2xl"
+                            />
                         </Link>
                       ))}
                       {participants.length > 12 && (

@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Button } from './ui/button';
+import { UserAvatar } from './UserAvatar';
 import { AuthModal } from './AuthWidget';
 import { useAuth } from '../SupabaseAuthProvider';
 import { supabase } from '../../lib/supabaseClient';
@@ -24,21 +25,7 @@ const TelegramIcon = () => (
   </svg>
 );
 
-// ─── Avatar ───────────────────────────────────────────────────────────────────
-function UserAvatar({ profile }: { profile: any }) {
-  const name = profile?.display_name || 'U';
-  const avatarUrl = profile?.avatar_url;
-  const initial = name.charAt(0).toUpperCase();
 
-  if (avatarUrl) {
-    return <img src={avatarUrl} alt={name} className="w-8 h-8 rounded-full object-cover" />;
-  }
-  return (
-    <div className="w-8 h-8 rounded-full bg-terracotta-deep text-white flex items-center justify-center text-sm font-bold">
-      {initial}
-    </div>
-  );
-}
 
 // ─── Header Auth Block ────────────────────────────────────────────────────────
 function HeaderAuth({ unreadCount }: { unreadCount: number }) {
@@ -55,7 +42,12 @@ function HeaderAuth({ unreadCount }: { unreadCount: number }) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-soft-sand/40 transition-colors relative">
-              <UserAvatar profile={profile} />
+              <UserAvatar 
+                src={profile?.avatar_url} 
+                name={profile?.display_name || user.email?.split('@')[0]} 
+                isGuide={profile?.is_guide} 
+                size="sm" 
+              />
               {unreadCount > 0 && (
                 <span className="absolute top-1 left-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
                   {unreadCount > 9 ? '9+' : unreadCount}

@@ -2,9 +2,9 @@ import { useParams, useNavigate } from 'react-router';
 import { useAuth } from '../SupabaseAuthProvider';
 import { useMessages } from '../hooks/useMessages';
 import { useChats } from '../hooks/useChats';
-import { ArrowLeft, Send, MoreHorizontal, Smile, Paperclip } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { UserAvatar } from './UserAvatar';
 
 export function ChatRoom() {
   const { chatId } = useParams();
@@ -52,16 +52,16 @@ export function ChatRoom() {
           </button>
           
           <div className="flex items-center gap-3">
-            <div className="relative">
-              {profiles?.avatar_url ? (
-                <img src={profiles.avatar_url} alt="" className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border border-border/20" />
-              ) : (
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-terracotta-deep/10 text-terracotta-deep flex items-center justify-center font-black">
-                  {profiles?.display_name?.charAt(0) || '?'}
-                </div>
-              )}
-              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
-            </div>
+            <UserAvatar 
+              src={profiles?.avatar_url} 
+              name={profiles?.display_name} 
+              isGuide={profiles?.is_guide} 
+              size="lg" 
+              className="!border-white !shadow-sm ring-1 ring-border/20"
+            >
+              {/* Online indicator - moved to bottom-left to avoid overlap with guide star */}
+              <div className="absolute bottom-0 left-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
+            </UserAvatar>
             <div>
               <h3 className="font-bold text-base md:text-xl leading-tight font-manrope">
                 {profiles?.display_name || 'Чат'}

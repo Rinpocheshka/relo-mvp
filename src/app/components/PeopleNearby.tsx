@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Users, Heart, MessageCircle, MapPin, Clock, Star, Lock, ChevronLeft, ChevronRight, ChevronDown, User as UserIcon } from 'lucide-react';
 import { Button } from './ui/button';
 import { AuthModal } from './AuthWidget';
+import { UserAvatar } from './UserAvatar';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
 import { Link, useNavigate } from 'react-router';
@@ -307,23 +308,20 @@ export function PeopleNearby() {
                   <div className="flex-grow">
                     {/* Header */}
                     <div className="flex items-start gap-4 mb-6">
-                      <div className="relative">
-                        {person.avatar_url ? (
-                          <img src={person.avatar_url} className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-white shadow-sm" alt="" />
-                        ) : (
-                          <div className={`w-12 h-12 md:w-16 md:h-16 rounded-full flex-shrink-0 flex items-center justify-center text-white text-lg md:text-2xl font-bold shadow-sm ${
-                            person.is_guide ? 'bg-warm-olive' : 'bg-dusty-indigo/20 text-dusty-indigo'
-                          }`}>
-                            {person.display_name?.charAt(0) || '?'}
-                          </div>
-                        )}
-                        {/* Online status */}
-                        <div className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white ${
+                      <UserAvatar 
+                        src={person.avatar_url} 
+                        name={person.display_name} 
+                        isGuide={person.is_guide} 
+                        size="2xl" 
+                        className="w-12 h-12 md:w-16 md:h-16 !shadow-sm !border-2 !border-white"
+                      >
+                        {/* Online status indicator - moved to bottom-left to avoid overlap with guide star */}
+                        <div className={`absolute bottom-0 left-0 w-4 h-4 rounded-full border-2 border-white ${
                           person.last_seen && (new Date().getTime() - new Date(person.last_seen).getTime() < 5 * 60 * 1000)
                             ? 'bg-green-500' 
                             : 'bg-amber-400'
                         }`} />
-                      </div>
+                      </UserAvatar>
                       <div className="flex-1 min-w-0 pt-1">
                         <Link to={`/profile/${person.id}`} className="hover:text-dusty-indigo transition-colors">
                           <h3 className="font-semibold text-base md:text-lg truncate group-hover:text-dusty-indigo transition-colors">

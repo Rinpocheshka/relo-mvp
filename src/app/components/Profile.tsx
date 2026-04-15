@@ -11,6 +11,7 @@ import { Announcement } from './Announcements';
 import { EventDetailsModal } from './EventDetailsModal';
 import { EventFormModal } from './EventFormModal';
 import { CreateAnnouncementModal } from './CreateAnnouncementModal';
+import { UserAvatar } from './UserAvatar';
 import { getOrCreateChat } from '@/lib/chatUtils';
 import { useMessageModal } from '../hooks/useMessageModal';
 
@@ -478,20 +479,22 @@ export function Profile() {
           <div className="flex flex-col md:flex-row gap-6">
             {/* Avatar */}
             <div className="flex flex-col items-center md:items-start group relative">
-              <div className="w-32 h-32 bg-gradient-to-br from-terracotta-deep to-dusty-indigo rounded-full mb-4 flex items-center justify-center text-white text-4xl font-bold uppercase overflow-hidden relative shadow-md">
-                {(isEditing ? editForm.avatar_url : profile?.avatar_url) ? (
-                  <img src={(isEditing ? editForm.avatar_url : profile?.avatar_url) || ''} alt="Avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <span>{(isEditing ? editForm.display_name : profile?.display_name)?.charAt(0) || '?'}</span>
-                )}
-                {isEditing && (
-                  <label className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white cursor-pointer hover:bg-black/50 transition-colors">
-                    {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Camera className="w-6 h-6" />}
-                    <span className="text-[10px] font-medium mt-1">Изменить</span>
-                    <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={uploadAvatar} />
-                  </label>
-                )}
-              </div>
+            <UserAvatar 
+              src={isEditing ? editForm.avatar_url : profile?.avatar_url}
+              name={isEditing ? editForm.display_name : profile?.display_name}
+              isGuide={profile?.is_guide}
+              size="3xl"
+              className="w-32 h-32 mb-4 !shadow-md"
+              badgeClassName="!bottom-1 !right-1 w-8 h-8 p-1.5"
+            >
+              {isEditing && (
+                <label className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white cursor-pointer hover:bg-black/50 transition-colors">
+                  {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Camera className="w-6 h-6" />}
+                  <span className="text-[10px] font-medium mt-1">Изменить</span>
+                  <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={uploadAvatar} />
+                </label>
+              )}
+            </UserAvatar>
               {!isEditing && profile?.is_guide && (
                 <div className="flex items-center gap-2 px-3 py-1 bg-warm-olive/10 text-warm-olive rounded-full">
                   <Star className="w-4 h-4 fill-warm-olive" />

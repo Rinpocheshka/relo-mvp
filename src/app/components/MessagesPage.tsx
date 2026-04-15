@@ -3,6 +3,7 @@ import { useAuth } from '../SupabaseAuthProvider';
 import { useChats } from '../hooks/useChats';
 import { MessageSquare, Clock, ChevronRight, Search } from 'lucide-react';
 import { motion } from 'motion/react';
+import { UserAvatar } from './UserAvatar';
 
 export function MessagesPage() {
   const { user } = useAuth();
@@ -71,26 +72,20 @@ export function MessagesPage() {
                 onClick={() => navigate(`/messages/${chat.id}`)}
                 className="w-full flex items-center gap-4 p-4 bg-white hover:bg-soft-sand/20 border border-border/40 rounded-[24px] shadow-sm hover:shadow-md transition-all group group-active:scale-[0.98]"
               >
-                {/* Avatar */}
-                <div className="relative flex-shrink-0">
-                  {profiles?.avatar_url ? (
-                    <img 
-                      src={profiles.avatar_url} 
-                      alt="" 
-                      className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border-2 border-white shadow-sm" 
-                    />
-                  ) : (
-                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-terracotta-deep/10 text-terracotta-deep flex items-center justify-center text-lg font-black bg-gradient-to-br from-terracotta-deep/20 to-terracotta-deep/5">
-                      {profiles?.display_name?.charAt(0) || '?'}
-                    </div>
-                  )}
-                  {/* Unread Badge */}
+                <UserAvatar 
+                  src={profiles?.avatar_url} 
+                  name={profiles?.display_name} 
+                  isGuide={profiles?.is_guide} 
+                  size="xl" 
+                  className="w-12 h-12 md:w-14 md:h-14 !shadow-sm !border-2 !border-white"
+                >
+                  {/* Unread Badge as child to ensure it's positioned relative to avatar container */}
                   {chat.unread_count && chat.unread_count > 0 ? (
                     <div className="absolute -top-1 -right-1 flex h-5 w-5 md:h-6 md:w-6 items-center justify-center rounded-full bg-red-500 text-[10px] md:text-xs font-bold text-white shadow-sm border-2 border-white">
                       {chat.unread_count > 9 ? '9+' : chat.unread_count}
                     </div>
                   ) : null}
-                </div>
+                </UserAvatar>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0 text-left">

@@ -11,6 +11,7 @@ export interface Message {
   profiles?: {
     display_name: string;
     avatar_url: string;
+    is_guide: boolean;
   };
 }
 
@@ -33,7 +34,8 @@ export function useMessages(chatId: string | undefined, currentUserId: string | 
         is_read,
         profiles:sender_id (
           display_name,
-          avatar_url
+          avatar_url,
+          is_guide
         )
       `)
       .eq('chat_id', chatId)
@@ -76,7 +78,8 @@ export function useMessages(chatId: string | undefined, currentUserId: string | 
               is_read,
               profiles:sender_id (
                 display_name,
-                avatar_url
+                avatar_url,
+                is_guide
               )
             `)
             .eq('id', payload.new.id)
