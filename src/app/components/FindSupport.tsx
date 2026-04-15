@@ -550,13 +550,13 @@ export function FindSupport() {
                 Задать вопрос
               </Button>
             )}
-            {activeTab === 'resources' && (
+            {activeTab === 'resources' && isAdmin && (
               <Button
                 onClick={() => user ? setSuggestModalOpen(true) : setIsAuthModalOpen(true)}
                 className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[52px] md:h-[58px] px-6 md:px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95 font-bold text-sm md:text-base"
               >
                 <Plus className="w-5 h-5 mr-1 md:mr-2" />
-                Предложить ресурс
+                Добавить ресурс
               </Button>
             )}
           </div>

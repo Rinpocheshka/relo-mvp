@@ -72,7 +72,7 @@ export function SuggestResourceModal({ isOpen, onClose, onSuccess }: SuggestReso
         icon,
         city: profile?.city ?? 'Дананг',
         added_by: user.id,
-        is_verified: false, // pending moderation
+        is_verified: true, // admin resource is auto-verified
       });
 
       if (insertError) throw insertError;
@@ -119,8 +119,8 @@ export function SuggestResourceModal({ isOpen, onClose, onSuccess }: SuggestReso
                   <Link2 className="w-5 h-5 text-dusty-indigo" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-foreground">Предложить ресурс</h2>
-                  <p className="text-xs text-muted-foreground">Будет добавлен после модерации</p>
+                  <h2 className="text-xl font-bold text-foreground">Добавить ресурс</h2>
+                  <p className="text-xs text-muted-foreground">Добавление нового полезного ресурса</p>
                 </div>
               </div>
               <button
@@ -220,7 +220,7 @@ export function SuggestResourceModal({ isOpen, onClose, onSuccess }: SuggestReso
 
                   {/* Moderation notice */}
                   <div className="bg-dusty-indigo/5 border border-dusty-indigo/15 rounded-[14px] px-4 py-3 text-xs text-dusty-indigo leading-relaxed">
-                    🔍 Ресурс пройдёт проверку перед публикацией. Это обычно занимает 1–2 дня.
+                    🔍 Ресурс будет сразу добавлен в список проверенных сервисов.
                   </div>
 
                   {error && (
@@ -239,7 +239,7 @@ export function SuggestResourceModal({ isOpen, onClose, onSuccess }: SuggestReso
                     disabled={!isValid || submitting}
                     className="flex-1 h-12 rounded-[16px] bg-terracotta-deep hover:bg-terracotta-deep/90 text-white font-bold shadow-lg shadow-terracotta-deep/20 disabled:opacity-40"
                   >
-                    {submitting ? 'Отправляем...' : 'Предложить'}
+                    {submitting ? 'Добавление...' : 'Добавить'}
                   </Button>
                 </div>
               </>
