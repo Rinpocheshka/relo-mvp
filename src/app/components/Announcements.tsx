@@ -183,32 +183,38 @@ export function Announcements() {
 
 
         {/* Sorting & Search & Add Button */}
-        <div className="flex flex-col gap-3 mb-6 md:mb-8">
+        <div className="flex flex-col md:flex-row gap-2 md:gap-3 mb-6 md:mb-10 items-stretch">
           {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <div className="relative flex-1 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-terracotta-deep transition-colors" />
             <input
               type="text"
-              placeholder="Поиск объявлений..."
-              className="w-full pl-12 pr-4 py-3 md:py-4 bg-white border border-border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 shadow-sm text-sm md:text-base"
+              placeholder="ищи что угодно в объявлениях..."
+              className="w-full pl-11 pr-4 h-11 md:h-12 bg-white border border-border/60 rounded-2xl focus:outline-none focus:ring-4 focus:ring-terracotta-deep/5 focus:border-terracotta-deep/40 shadow-sm text-sm transition-all"
             />
           </div>
-          {/* Sort + Button */}
-          <div className="flex gap-2">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-              className="flex-1 px-3 py-3 md:py-4 bg-white border border-border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm font-medium shadow-sm cursor-pointer"
-            >
-              <option value="newest">Сначала новые</option>
-              <option value="price_asc">Дешевле</option>
-              <option value="price_desc">Дороже</option>
-            </select>
+          
+          <div className="flex gap-2 items-stretch h-11 md:h-12">
+            {/* Sort */}
+            <div className="relative flex-shrink-0 group">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="appearance-none h-full pl-4 pr-10 bg-white border border-border/60 rounded-2xl focus:outline-none focus:ring-4 focus:ring-terracotta-deep/5 focus:border-terracotta-deep/40 text-[13px] md:text-sm font-semibold shadow-sm cursor-pointer transition-all pr-12"
+              >
+                <option value="newest">Сначала новые</option>
+                <option value="price_asc">Дешевле</option>
+                <option value="price_desc">Дороже</option>
+              </select>
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none group-hover:text-terracotta-deep transition-colors" />
+            </div>
+
+            {/* Add Button */}
             <Button
               onClick={() => user ? setIsCreateModalOpen(true) : setIsAuthModalOpen(true)}
-              className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[50px] md:h-[58px] px-4 sm:px-8 shadow-md shadow-terracotta-deep/20 transition-all active:scale-[0.98] text-sm md:text-base whitespace-nowrap"
+              className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-2xl h-full px-5 md:px-7 shadow-lg shadow-terracotta-deep/15 transition-all active:scale-95 text-sm font-bold whitespace-nowrap"
             >
-              <Plus className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
+              <Plus className="w-4 h-4 mr-1.5" />
               Разместить
             </Button>
           </div>
