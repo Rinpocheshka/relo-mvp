@@ -35,6 +35,7 @@ interface Story {
   author_name?: string;
   author_avatar?: string;
   author_is_guide?: boolean;
+  comments_count?: number;
 }
 
 type Stage = 'planning' | 'living' | 'helping' | 'leaving';
@@ -159,7 +160,8 @@ export function HomePage() {
               display_name,
               avatar_url,
               is_guide
-            )
+            ),
+            story_comments(count)
           `)
           .order('created_at', { ascending: false })
           .limit(10);
@@ -169,7 +171,8 @@ export function HomePage() {
             ...s,
             author_name: s.author?.display_name || 'Пользователь',
             author_avatar: s.author?.avatar_url,
-            author_is_guide: !!s.author?.is_guide
+            author_is_guide: !!s.author?.is_guide,
+            comments_count: s.story_comments?.[0]?.count || 0
           })));
         }
       } finally {
@@ -437,9 +440,15 @@ export function HomePage() {
                         {story.content}
                       </p>
                       <div className="flex items-center justify-between mt-auto pt-4 border-t border-soft-sand/30">
-                         <span className="text-[10px] text-muted-foreground font-medium">
-                            {formatRelativeRu(new Date(story.created_at))}
-                         </span>
+                          <div className="flex items-center gap-3">
+                            <span className="text-[10px] text-muted-foreground font-medium">
+                               {formatRelativeRu(new Date(story.created_at))}
+                            </span>
+                            <div className="flex items-center gap-1 text-[10px] text-muted-foreground/60 font-bold">
+                              <MessageCircle className="w-3 h-3" />
+                              {story.comments_count}
+                            </div>
+                          </div>
                          <div className="flex items-center gap-1 text-[10px] font-black text-terracotta-deep uppercase tracking-tighter">
                             Читать <ArrowRight className="w-3 h-3" />
                          </div>
