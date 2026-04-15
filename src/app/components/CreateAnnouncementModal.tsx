@@ -448,7 +448,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
 
             {/* Footer */}
             {!success && (
-              <div className="p-8 pb-16 sm:pb-12 border-t border-border/40 bg-soft-sand/10 flex gap-3 safe-area-bottom">
+              <div className="px-8 pt-6 pb-20 sm:pb-24 border-t border-border/40 bg-soft-sand/10 flex gap-3 mt-auto">
                 <Button 
                   variant="outline" 
                   onClick={onClose}
