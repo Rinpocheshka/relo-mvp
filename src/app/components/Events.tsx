@@ -47,7 +47,7 @@ export function Events() {
 
   const handleToggleAttendance = async (event: Event) => {
     if (!user) {
-      alert('Пожалуйста, войдите, чтобы записаться на событие');
+      setIsAuthModalOpen(true);
       return;
     }
     try {
@@ -168,6 +168,10 @@ export function Events() {
   }, [selectedType, timeFilter]);
 
   const handleCreate = () => {
+    if (!user) {
+      setIsAuthModalOpen(true);
+      return;
+    }
     setEventToEdit(null);
     setIsFormOpen(true);
   };

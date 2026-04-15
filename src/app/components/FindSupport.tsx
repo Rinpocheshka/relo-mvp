@@ -27,6 +27,7 @@ import { formatRelativeRu } from '@/lib/date';
 import { AskQuestionModal } from './AskQuestionModal';
 import { useAuth } from '@/app/SupabaseAuthProvider';
 import { SuggestResourceModal } from './SuggestResourceModal';
+import { AuthModal } from './AuthWidget';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -158,6 +159,7 @@ export function FindSupport() {
 
   // Resource modals
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [resourceDetailOpen, setResourceDetailOpen] = useState(false);
   const [resourceFormOpen, setResourceFormOpen] = useState(false);
   const [editingResource, setEditingResource] = useState<Resource | null>(null);
@@ -366,7 +368,10 @@ export function FindSupport() {
   // ── Upvote ─────────────────────────────────────────────────────────────────
 
   const handleUpvote = async (answerId: string) => {
-    if (!user) return;
+    if (!user) {
+      setIsAuthModalOpen(true);
+      return;
+    }
     const already = upvotedIds.has(answerId);
 
     // Optimistic update
@@ -538,7 +543,7 @@ export function FindSupport() {
             </div>
             {activeTab === 'questions' && (
               <Button
-                onClick={() => setAskModalOpen(true)}
+                onClick={() => user ? setAskModalOpen(true) : setIsAuthModalOpen(true)}
                 className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[52px] md:h-[58px] px-6 md:px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95 font-bold text-sm md:text-base"
               >
                 <Plus className="w-5 h-5 mr-1 md:mr-2" />
@@ -547,7 +552,7 @@ export function FindSupport() {
             )}
             {activeTab === 'resources' && (
               <Button
-                onClick={() => setSuggestModalOpen(true)}
+                onClick={() => user ? setSuggestModalOpen(true) : setIsAuthModalOpen(true)}
                 className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[52px] md:h-[58px] px-6 md:px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95 font-bold text-sm md:text-base"
               >
                 <Plus className="w-5 h-5 mr-1 md:mr-2" />
@@ -819,6 +824,10 @@ export function FindSupport() {
           onSuccess={() => { setResourceFormOpen(false); void fetchResources(); }}
         />
       )}
+      <AuthModal 
+        open={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+      />
     </div>
   );
 }
