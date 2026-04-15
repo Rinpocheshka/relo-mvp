@@ -34,6 +34,7 @@ interface Story {
   created_at: string;
   author_name?: string;
   author_avatar?: string;
+  author_is_guide?: boolean;
 }
 
 type Stage = 'planning' | 'living' | 'helping' | 'leaving';
@@ -155,7 +156,8 @@ export function HomePage() {
             *,
             author:profiles!stories_author_id_fkey (
               display_name,
-              avatar_url
+              avatar_url,
+              is_guide
             )
           `)
           .order('created_at', { ascending: false })
@@ -165,7 +167,8 @@ export function HomePage() {
           setStories(data.map(s => ({
             ...s,
             author_name: s.author?.display_name || 'Пользователь',
-            author_avatar: s.author?.avatar_url
+            author_avatar: s.author?.avatar_url,
+            author_is_guide: !!s.author?.is_guide
           })));
         }
       } finally {
@@ -416,7 +419,7 @@ export function HomePage() {
                       className="bg-white rounded-[32px] p-6 border border-border/40 hover:border-terracotta-deep/30 transition-all cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 group"
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        <UserAvatar src={story.author_avatar} name={story.author_name || ''} size="sm" />
+                        <UserAvatar src={story.author_avatar} name={story.author_name || ''} size="sm" isGuide={story.author_is_guide} />
                         <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                            {story.author_name}
                         </div>

@@ -15,6 +15,7 @@ interface Comment {
   created_at: string;
   author_name?: string;
   author_avatar?: string;
+  author_is_guide?: boolean;
 }
 
 interface Story {
@@ -25,6 +26,7 @@ interface Story {
   created_at: string;
   author_name?: string;
   author_avatar?: string;
+  author_is_guide?: boolean;
 }
 
 interface StoryDetailsModalProps {
@@ -62,7 +64,8 @@ export function StoryDetailsModal({ isOpen, onClose, storyId }: StoryDetailsModa
           *,
           author:profiles!stories_author_id_fkey (
             display_name,
-            avatar_url
+            avatar_url,
+            is_guide
           )
         `)
         .eq('id', storyId)
@@ -73,7 +76,8 @@ export function StoryDetailsModal({ isOpen, onClose, storyId }: StoryDetailsModa
       setStory({
         ...storyData,
         author_name: storyData.author?.display_name || 'Пользователь',
-        author_avatar: storyData.author?.avatar_url
+        author_avatar: storyData.author?.avatar_url,
+        author_is_guide: !!storyData.author?.is_guide
       });
 
       // Fetch comments with author info
@@ -84,7 +88,8 @@ export function StoryDetailsModal({ isOpen, onClose, storyId }: StoryDetailsModa
           *,
           author:profiles!story_comments_author_id_fkey (
             display_name,
-            avatar_url
+            avatar_url,
+            is_guide
           )
         `)
         .eq('story_id', storyId)
@@ -95,7 +100,8 @@ export function StoryDetailsModal({ isOpen, onClose, storyId }: StoryDetailsModa
       setComments((commentsData || []).map(c => ({
         ...c,
         author_name: c.author?.display_name || 'Пользователь',
-        author_avatar: c.author?.avatar_url
+        author_avatar: c.author?.avatar_url,
+        author_is_guide: !!c.author?.is_guide
       })));
 
     } catch (e) {
@@ -121,7 +127,8 @@ export function StoryDetailsModal({ isOpen, onClose, storyId }: StoryDetailsModa
           *,
           author:profiles!story_comments_author_id_fkey (
             display_name,
-            avatar_url
+            avatar_url,
+            is_guide
           )
         `)
         .single();
@@ -131,7 +138,8 @@ export function StoryDetailsModal({ isOpen, onClose, storyId }: StoryDetailsModa
       const newComment: Comment = {
         ...data,
         author_name: data.author?.display_name || 'Вы',
-        author_avatar: data.author?.avatar_url
+        author_avatar: data.author?.avatar_url,
+        author_is_guide: !!data.author?.is_guide
       };
 
       setComments(prev => [...prev, newComment]);
@@ -189,7 +197,7 @@ export function StoryDetailsModal({ isOpen, onClose, storyId }: StoryDetailsModa
                 ) : story ? (
                   <article>
                     <div className="flex items-center gap-4 mb-8 pb-8 border-b border-border/10">
-                      <UserAvatar src={story.author_avatar} name={story.author_name || ''} size="lg" />
+                      <UserAvatar src={story.author_avatar} name={story.author_name || ''} size="lg" isGuide={story.author_is_guide} />
                       <div>
                         <div className="font-bold text-lg">{story.author_name}</div>
                         <div className="flex items-center text-xs text-muted-foreground gap-2">
@@ -234,7 +242,7 @@ export function StoryDetailsModal({ isOpen, onClose, storyId }: StoryDetailsModa
                   ) : (
                     comments.map(comment => (
                       <div key={comment.id} className="flex gap-3">
-                        <UserAvatar src={comment.author_avatar} name={comment.author_name || ''} size="sm" className="flex-shrink-0" />
+                        <UserAvatar src={comment.author_avatar} name={comment.author_name || ''} size="sm" isGuide={comment.author_is_guide} className="flex-shrink-0" />
                         <div className="flex-1 bg-white rounded-2xl p-3 shadow-sm border border-border/20">
                           <div className="flex justify-between items-start mb-1">
                             <span className="font-bold text-[13px]">{comment.author_name}</span>
