@@ -345,7 +345,7 @@ export function EventDetailsModal({
               </div>
 
               {/* Footer Actions */}
-              <div className="p-4 pb-8 sm:p-6 sm:pb-10 md:pb-12 bg-white/80 backdrop-blur-md border-t border-border/50 flex flex-col sm:flex-row gap-3 shrink-0 safe-area-bottom mt-auto">
+              <div className="p-8 pb-12 sm:pb-10 bg-white/80 backdrop-blur-md border-t border-border/50 flex flex-col sm:flex-row gap-3 shrink-0 mt-auto">
                 <div className="flex-1 flex gap-2 w-full">
                   <Button
                     onClick={user ? handleJoinToggle : onAuthRequired}
