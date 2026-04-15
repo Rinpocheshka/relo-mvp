@@ -366,7 +366,6 @@ export function Layout() {
                 <li><a href="#" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Подробнее о Relo.me</a></li>
                 <li><a href="#" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Стать Проводником города</a></li>
                 <li><a href="#" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Продвижение</a></li>
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Истории переезда</a></li>
               </ul>
             </div>
 
