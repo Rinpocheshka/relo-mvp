@@ -2,13 +2,16 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link, useNavigate } from 'react-router';
 import { Button } from './ui/button';
-import { MessageCircle, ArrowRight, Star, Users, Megaphone, Calendar, Heart, MapPin, Plus, Edit, Search } from 'lucide-react';
+import { MessageCircle, ArrowRight, Star, Users, Megaphone, Calendar, Heart, MapPin, Plus, Edit, Search, BookOpen, Loader2 } from 'lucide-react';
 import { MessageHelper } from './MessageHelper';
 import { UserAvatar } from './UserAvatar';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
 import { AuthModal } from './AuthWidget';
+import { WriteStoryModal } from './WriteStoryModal';
+import { StoryDetailsModal } from './StoryDetailsModal';
 import { translateTag } from '@/lib/tags';
+import { formatRelativeRu } from '@/lib/date';
 
 interface Person {
   id: string;
@@ -21,6 +24,16 @@ interface Person {
   avatar_url?: string;
   role?: string;
   last_seen?: string;
+}
+
+interface Story {
+  id: string;
+  author_id: string;
+  title: string;
+  content: string;
+  created_at: string;
+  author_name?: string;
+  author_avatar?: string;
 }
 
 type Stage = 'planning' | 'living' | 'helping' | 'leaving';
@@ -109,6 +122,12 @@ export function HomePage() {
   const [peopleLoading, setPeopleLoading] = useState(true);
   const [authOpen, setAuthOpen] = useState(false);
 
+  // Stories
+  const [stories, setStories] = useState<Story[]>([]);
+  const [storiesLoading, setStoriesLoading] = useState(true);
+  const [writeStoryOpen, setWriteStoryOpen] = useState(false);
+  const [detailsStoryId, setDetailsStoryId] = useState<string | null>(null);
+
   useEffect(() => {
     try {
       const stored = localStorage.getItem('reloOnboarding');
@@ -127,6 +146,33 @@ export function HomePage() {
   }, []);
 
   useEffect(() => {
+    async function fetchStories() {
+      setStoriesLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('stories')
+          .select(`
+            *,
+            author:profiles!stories_author_id_fkey (
+              display_name,
+              avatar_url
+            )
+          `)
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        if (!error && data) {
+          setStories(data.map(s => ({
+            ...s,
+            author_name: s.author?.display_name || 'Пользователь',
+            author_avatar: s.author?.avatar_url
+          })));
+        }
+      } finally {
+        setStoriesLoading(false);
+      }
+    }
+
     async function fetchMainData() {
       setPeopleLoading(true);
       
@@ -168,7 +214,9 @@ export function HomePage() {
       }
       setPeopleLoading(false);
     }
-    fetchMainData();
+
+    void fetchStories();
+    void fetchMainData();
   }, [session, user, city]);
 
   const navigate = useNavigate();
@@ -330,6 +378,73 @@ export function HomePage() {
               })}
             </div>
 
+            {/* Relocation Stories Section */}
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-dusty-indigo/10 flex items-center justify-center">
+                    <BookOpen className="w-6 h-6 text-dusty-indigo" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold">Истории релокаций</h2>
+                    <p className="text-sm text-muted-foreground">Опыт, который меняет жизнь</p>
+                  </div>
+                </div>
+                <Button 
+                  size="sm"
+                  onClick={() => user ? setWriteStoryOpen(true) : setAuthOpen(true)}
+                  className="bg-white hover:bg-white/90 text-dusty-indigo border border-border/40 rounded-full px-5 font-bold shadow-sm h-10 transition-all active:scale-95"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Написать
+                </Button>
+              </div>
+
+              {storiesLoading ? (
+                <div className="flex justify-center py-12">
+                   <Loader2 className="w-8 h-8 animate-spin text-terracotta-deep/20" />
+                </div>
+              ) : stories.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {stories.map((story, i) => (
+                    <motion.div
+                      key={story.id}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: i * 0.08 }}
+                      onClick={() => user ? setDetailsStoryId(story.id) : setAuthOpen(true)}
+                      className="bg-white rounded-[32px] p-6 border border-border/40 hover:border-terracotta-deep/30 transition-all cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 group"
+                    >
+                      <div className="flex items-center gap-3 mb-4">
+                        <UserAvatar src={story.author_avatar} name={story.author_name || ''} size="sm" />
+                        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                           {story.author_name}
+                        </div>
+                      </div>
+                      <h3 className="font-bold text-lg mb-3 leading-tight group-hover:text-terracotta-deep transition-colors line-clamp-2">
+                        {story.title}
+                      </h3>
+                      <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed mb-4">
+                        {story.content}
+                      </p>
+                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-soft-sand/30">
+                         <span className="text-[10px] text-muted-foreground font-medium">
+                            {formatRelativeRu(new Date(story.created_at))}
+                         </span>
+                         <div className="flex items-center gap-1 text-[10px] font-black text-terracotta-deep uppercase tracking-tighter">
+                            Читать <ArrowRight className="w-3 h-3" />
+                         </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-white rounded-[32px] border border-dashed border-border/50 p-12 text-center">
+                   <p className="text-muted-foreground">Тут пока пусто. Станьте первым, кто расскажет свою историю!</p>
+                </div>
+              )}
+            </section>
+
             <div className="bg-gradient-to-br from-dusty-indigo to-terracotta-deep rounded-[32px] p-8 md:p-10 text-white">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                 <div>
@@ -354,6 +469,23 @@ export function HomePage() {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      <WriteStoryModal 
+        isOpen={writeStoryOpen} 
+        onClose={() => setWriteStoryOpen(false)} 
+        onSuccess={() => {
+          // Re-fetch stories after new one added
+          // Note: In a real app we might just append locally or use an event
+          // For now, simpler to just trigger the effect again if needed or wait for poll
+          window.location.reload(); // Simple way to refresh all data for now
+        }} 
+      />
+
+      <StoryDetailsModal
+        isOpen={!!detailsStoryId}
+        onClose={() => setDetailsStoryId(null)}
+        storyId={detailsStoryId}
+      />
 
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
     </div>
