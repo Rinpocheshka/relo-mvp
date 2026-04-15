@@ -15,12 +15,12 @@ interface Props {
 }
 
 const CATEGORIES = [
-  { name: 'Жильё', icon: '/assets/icons/custom/luggage.png' },
-  { name: 'Вещи', icon: '/assets/icons/custom/travel.png' },
-  { name: 'Услуги', icon: '/assets/icons/custom/tickets.png' },
+  { name: 'Жильё', icon: '/assets/icons/custom/category_housing.png' },
+  { name: 'Вещи', icon: '/assets/icons/custom/category_stuff.png' },
+  { name: 'Услуги', icon: '/assets/icons/custom/category_services.png' },
   { name: 'Документы/визы', icon: '/assets/icons/custom/passport.png' },
-  { name: 'Обмен/деньги', icon: '/assets/icons/custom/travel.png' },
-  { name: 'Бесплатно', icon: '/assets/icons/custom/message.png' },
+  { name: 'Обмен/деньги', icon: '/assets/icons/custom/category_finance.png' },
+  { name: 'Бесплатно', icon: '/assets/icons/custom/category_free.png' },
 ];
 
 export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announcementToEdit }: Props) {
@@ -448,7 +448,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
 
             {/* Footer */}
             {!success && (
-              <div className="p-8 pb-12 sm:pb-10 border-t border-border/40 bg-soft-sand/10 flex gap-3 safe-area-bottom">
+              <div className="p-8 pb-16 sm:pb-12 border-t border-border/40 bg-soft-sand/10 flex gap-3 safe-area-bottom">
                 <Button 
                   variant="outline" 
                   onClick={onClose}
