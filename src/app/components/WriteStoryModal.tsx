@@ -64,7 +64,7 @@ export function WriteStoryModal({ isOpen, onClose, onSuccess }: WriteStoryModalP
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 16 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl overflow-hidden"
+            className="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[82vh]"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-8 pt-8 pb-6 border-b border-border/40">
@@ -84,8 +84,9 @@ export function WriteStoryModal({ isOpen, onClose, onSuccess }: WriteStoryModalP
                 <X className="w-4 h-4 text-muted-foreground" />
               </button>
             </div>
-
-            <div className="px-8 py-6 space-y-6">
+          
+            {/* Scrollable Content Area */}
+            <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6 custom-scrollbar">
               {/* Title */}
               <div>
                 <label className="text-sm font-semibold text-foreground block mb-2">
@@ -133,7 +134,8 @@ export function WriteStoryModal({ isOpen, onClose, onSuccess }: WriteStoryModalP
               )}
             </div>
 
-            <div className="px-8 pb-8 flex gap-3">
+            {/* Sticky Footer */}
+            <div className="px-8 pb-8 pt-4 flex gap-3 bg-white border-t border-border/10">
               <Button variant="outline" onClick={onClose} className="flex-1 h-12 rounded-[16px] border-border/60">
                 Отмена
               </Button>
