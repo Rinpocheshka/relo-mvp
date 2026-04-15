@@ -45,7 +45,7 @@ function HeaderAuth({ unreadCount }: { unreadCount: number }) {
               <UserAvatar 
                 src={profile?.avatar_url} 
                 name={profile?.display_name || user.email?.split('@')[0]} 
-                isGuide={profile?.is_guide} 
+                isGuide={!!profile?.is_guide} 
                 size="sm" 
               />
               {unreadCount > 0 && (
@@ -115,7 +115,12 @@ function MobileUserButton({ isActive }: { isActive: boolean }) {
     return (
       <>
         <Link to="/profile" className={`flex flex-col items-center justify-center gap-0.5 p-1 flex-1 min-w-0 rounded-[12px] transition-colors ${isActive ? 'text-terracotta-deep bg-terracotta-deep/8' : 'text-muted-foreground'}`}>
-          <UserAvatar profile={profile} />
+          <UserAvatar 
+            src={profile?.avatar_url} 
+            name={profile?.display_name || user?.email?.split('@')[0]} 
+            isGuide={!!profile?.is_guide}
+            size="sm"
+          />
           <span className="text-[9px] sm:text-[10px] font-medium leading-none text-center truncate w-full">Профиль</span>
         </Link>
       </>

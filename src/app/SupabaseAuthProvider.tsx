@@ -11,6 +11,7 @@ export interface Profile {
   interests: string[]
   role: string
   last_seen: string | null
+  is_guide: boolean
 }
 
 type AuthContextValue = {

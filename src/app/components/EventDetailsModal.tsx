@@ -51,6 +51,8 @@ export function EventDetailsModal({
   isOpen,
   onClose,
   event,
+  onJoined,
+  onLeft,
   onDeleted,
   onEdited,
   onAuthRequired
@@ -143,6 +145,11 @@ export function EventDetailsModal({
       return;
     }
 
+    if (!event.organizer_id) {
+      alert('Информация об организаторе недоступна.');
+      return;
+    }
+    
     openMessageModal(event.organizer_id, event.organizer || 'Организатор', {
       title: event.title,
       type: 'event',
@@ -327,7 +334,7 @@ export function EventDetailsModal({
                             <UserAvatar 
                               src={p.profiles?.avatar_url} 
                               name={p.profiles?.display_name} 
-                              isGuide={p.profiles?.is_guide} 
+                              isGuide={!!p.profiles?.is_guide} 
                               size="lg" 
                               className="!shadow-md !border-2 !border-white transition-all group-hover:-translate-y-1 group-hover:scale-105 active:scale-95" 
                               rounded="rounded-2xl"
@@ -349,7 +356,7 @@ export function EventDetailsModal({
                 <div className="flex-1 flex gap-2 w-full">
                   <Button
                     onClick={user ? handleJoinToggle : onAuthRequired}
-                    disabled={loading || (user && !!event.maxAttendees && participants.length >= event.maxAttendees && !isAttending)}
+                    disabled={loading || (!!user && !!event.maxAttendees && participants.length >= event.maxAttendees && !isAttending)}
                     className={`flex-1 h-14 rounded-2xl font-bold text-lg shadow-lg shadow-terracotta-deep/10 transition-all ${
                       isAttending 
                       ? 'bg-soft-sand text-foreground hover:bg-soft-sand/80' 

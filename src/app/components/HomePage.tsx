@@ -368,7 +368,7 @@ function CardItemContent({ person }: { person: Person }) {
         <UserAvatar 
           src={person.avatar_url} 
           name={person.display_name} 
-          isGuide={person.is_guide} 
+          isGuide={!!person.is_guide} 
           size="xl" 
           className="!shadow-md !border-2 !border-white" 
         >

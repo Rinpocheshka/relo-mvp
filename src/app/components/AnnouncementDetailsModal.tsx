@@ -21,6 +21,7 @@ interface Props {
 }
 
 export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDeleted, onEdited, onAuthRequired }: Props) {
+  if (!announcement) return null;
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [activeImageIndex, setActiveImageIndex] = useState(0);

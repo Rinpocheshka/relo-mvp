@@ -30,6 +30,16 @@ import { SuggestResourceModal } from './SuggestResourceModal';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+interface Question {
+  id: string;
+  question: string;
+  body?: string;
+  askedBy: string;
+  category: string;
+  createdAt?: string;
+  answers: number;
+  isAnswered: boolean;
+  viewsCount?: number;
   isAnonymous?: boolean;
   authorIsGuide?: boolean;
 }

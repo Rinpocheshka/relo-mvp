@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router';
 import { useAuth } from '../SupabaseAuthProvider';
 import { useMessages } from '../hooks/useMessages';
 import { useChats } from '../hooks/useChats';
+import { ArrowLeft, Send, MoreHorizontal, Smile, Paperclip } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { UserAvatar } from './UserAvatar';
@@ -55,7 +56,7 @@ export function ChatRoom() {
             <UserAvatar 
               src={profiles?.avatar_url} 
               name={profiles?.display_name} 
-              isGuide={profiles?.is_guide} 
+              isGuide={!!profiles?.is_guide} 
               size="lg" 
               className="!border-white !shadow-sm ring-1 ring-border/20"
             >

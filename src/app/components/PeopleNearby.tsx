@@ -311,7 +311,7 @@ export function PeopleNearby() {
                       <UserAvatar 
                         src={person.avatar_url} 
                         name={person.display_name} 
-                        isGuide={person.is_guide} 
+                        isGuide={!!person.is_guide} 
                         size="2xl" 
                         className="w-12 h-12 md:w-16 md:h-16 !shadow-sm !border-2 !border-white"
                       >

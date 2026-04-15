@@ -75,7 +75,7 @@ export function MessagesPage() {
                 <UserAvatar 
                   src={profiles?.avatar_url} 
                   name={profiles?.display_name} 
-                  isGuide={profiles?.is_guide} 
+                  isGuide={!!profiles?.is_guide} 
                   size="xl" 
                   className="w-12 h-12 md:w-14 md:h-14 !shadow-sm !border-2 !border-white"
                 >

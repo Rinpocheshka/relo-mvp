@@ -105,6 +105,7 @@ export function Profile() {
   const navigate = useNavigate();
   const location = useLocation();
   const { session, user, profile: globalProfile, loading: authLoading, refreshProfile } = useAuth();
+  const [authOpen, setAuthOpen] = useState(false);
   
   const [profile, setProfile] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -482,7 +483,7 @@ export function Profile() {
             <UserAvatar 
               src={isEditing ? editForm.avatar_url : profile?.avatar_url}
               name={isEditing ? editForm.display_name : profile?.display_name}
-              isGuide={profile?.is_guide}
+              isGuide={!!profile?.is_guide}
               size="3xl"
               className="w-32 h-32 mb-4 !shadow-md"
               badgeClassName="!bottom-1 !right-1 w-8 h-8 p-1.5"
