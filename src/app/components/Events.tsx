@@ -222,7 +222,7 @@ export function Events() {
               <Filter className="w-4 h-4 text-muted-foreground" />
               <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Категория</span>
             </div>
-            <div className="relative w-full overflow-hidden sm:overflow-visible -mx-4 uppercase" ref={emblaRef}>
+            <div className="overflow-hidden sm:overflow-visible -mx-4 sm:mx-0 uppercase" ref={emblaRef}>
               <div className="flex sm:flex-wrap gap-2 py-2 px-4 scrollbar-hide">
                 {eventTypes.map((type) => (
                   <div key={type.name} className="flex-shrink-0">

@@ -324,7 +324,15 @@ export function Layout() {
               <HeaderAuth unreadCount={unreadCount} />
             </div>
 
-            <div className="flex md:hidden items-center gap-2 ml-auto">
+            <div className="flex md:hidden items-center gap-3 ml-auto">
+              <Link to="/messages" className={`relative p-2 rounded-full transition-colors ${isActive('/messages') ? 'text-terracotta-deep bg-terracotta-deep/8' : 'text-muted-foreground hover:bg-soft-sand/40'}`}>
+                <MessageSquare className="w-6 h-6" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </Link>
               <MobileUserButton isActive={isActive('/profile')} />
             </div>
           </div>
@@ -441,10 +449,9 @@ export function Layout() {
         </div>
       </footer>
 
-      {/* ── Mobile Bottom Navigation ── */}
       <nav className="md:hidden fixed bottom-3 left-3 right-3 bg-white/90 backdrop-blur-xl shadow-xl border border-border/40 rounded-[20px] z-[70] p-1 safe-area-bottom">
         <div className="flex items-center justify-between">
-          {navItems.map((item) => {
+          {navItems.filter(item => item.path !== '/messages').map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
             return (
