@@ -45,8 +45,9 @@ export function UserAvatar({
   const currentSizeClass = sizeClasses[size];
   const currentBadgeSizeClass = badgeSizeClasses[size];
 
-    <div className={`relative shrink-0 ${currentSizeClass} ${rounded} ${className}`}>
-      <div className={`w-full h-full flex items-center justify-center overflow-hidden border border-border/10 shadow-sm ${rounded} ${!src ? 'bg-soft-sand font-black text-dusty-indigo' : ''}`}>
+  return (
+    <div className={`relative shrink-0 ${currentSizeClass} ${rounded} ${className} bg-transparent`}>
+      <div className={`w-full h-full flex items-center justify-center overflow-hidden border border-border/10 shadow-sm ${rounded} ${!src ? 'bg-soft-sand font-black text-dusty-indigo' : 'bg-transparent'}`}>
         {src ? (
           <img 
             src={src} 

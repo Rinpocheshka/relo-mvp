@@ -113,7 +113,7 @@ export function Profile() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { session, user, profile: globalProfile, loading: authLoading, refreshProfile } = useAuth();
+  const { user, profile: globalProfile, isAdmin: globalIsAdmin, loading: authLoading, refreshProfile } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
   
   const [profile, setProfile] = useState<UserData | null>(null);
@@ -142,7 +142,7 @@ export function Profile() {
   const [activitiesLoading, setActivitiesLoading] = useState(true);
 
   const isOwnProfile = !id || id === user?.id;
-  const targetId = isOwnProfile ? session?.user?.id : id;
+  const targetId = isOwnProfile ? user?.id : id;
   const { openMessageModal } = useMessageModal();
 
   const handleMessageClick = async () => {
@@ -274,7 +274,7 @@ export function Profile() {
   }, [targetId, authLoading, isOwnProfile]);
 
   const handleSave = async () => {
-    if (!session?.user?.id) return;
+    if (!user?.id) return;
     
     const finalCity = manualCity.trim() || editForm.city || '';
     
@@ -312,7 +312,7 @@ export function Profile() {
       
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const fileName = `${session?.user?.id}-${Math.random()}.${fileExt}`;
+      const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       let { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file);
@@ -365,7 +365,7 @@ export function Profile() {
   }
 
 
-  if (!session) {
+  if (!user) {
     return (
       <div className="bg-warm-milk py-16 flex flex-col items-center justify-center px-4 text-center">
         <div className="w-20 h-20 bg-terracotta-deep/10 rounded-full flex items-center justify-center mb-6">
@@ -396,7 +396,7 @@ export function Profile() {
     <div className="bg-warm-milk py-4 md:py-8 pb-12 md:pb-16">
       <div className="max-w-5xl mx-auto px-4">
         {/* Admin Controls - Floating Panel */}
-        {globalProfile?.role === 'admin' && (
+        {globalIsAdmin && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -521,7 +521,7 @@ export function Profile() {
                         </div>
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4" />
-                          <span>На платформе с {new Date(profile?.created_at || session?.user?.created_at || Date.now()).toLocaleDateString('ru-RU')}</span>
+                          <span>На платформе с {new Date(profile?.created_at || user?.created_at || Date.now()).toLocaleDateString('ru-RU')}</span>
                         </div>
                         {profile?.is_guide && (
                           <div className="flex items-center gap-2">
@@ -555,7 +555,7 @@ export function Profile() {
                           <Edit className="w-4 h-4 mr-2" />
                           Редактировать профиль
                         </Button>
-                      ) : (globalProfile?.role === 'admin' || user?.id === 'admin-id-fallback') ? (
+                      ) : globalIsAdmin ? (
                         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                           <button 
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsEditing(true); }}
@@ -938,7 +938,7 @@ export function Profile() {
           </div>
           
           {userAnnouncements.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
               {userAnnouncements.map((announcement, i) => (
                 <motion.div
                   key={announcement.id}
@@ -1059,7 +1059,7 @@ export function Profile() {
         </div>
 
         {userEvents.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
             {userEvents.map((event, i) => (
               <motion.div
                 key={event.id}

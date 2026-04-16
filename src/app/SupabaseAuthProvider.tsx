@@ -23,6 +23,7 @@ type AuthContextValue = {
   signInWithProvider: (provider: 'google' | 'apple') => Promise<void>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
+  isAdmin: boolean
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -178,6 +179,7 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
       signInWithProvider,
       signOut,
       refreshProfile,
+      isAdmin: profile?.role === 'admin',
     }),
     [session, user, profile, loading, refreshProfile]
   )

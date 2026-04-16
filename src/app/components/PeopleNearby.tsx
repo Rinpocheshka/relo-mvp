@@ -301,7 +301,7 @@ export function PeopleNearby() {
           </div>
         ) : (
           <div className="space-y-12">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
               {people.map((person, i) => (
                 <motion.div
                   key={person.id}
@@ -350,7 +350,7 @@ export function PeopleNearby() {
                     </div>
 
                     {/* Tags */}
-                    <div className="flex flex-wrap gap-2 mb-6 min-h-[32px]">
+                    <div className="flex flex-wrap gap-2 mb-6 min-h-[32px] content-start">
                       {(person.interests || []).slice(0, 3).map((interest) => (
                         <span
                           key={interest}
@@ -362,13 +362,13 @@ export function PeopleNearby() {
                     </div>
 
                     {/* Bio snippet */}
-                    <div className="mb-6 h-20 relative overflow-hidden">
+                    <div className="mb-6 h-[72px] relative overflow-hidden flex-shrink-0">
                       {person.bio ? (
                         <>
                           <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
                             {person.bio}
                           </p>
-                          <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-white to-transparent" />
+                          <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-white to-transparent pointer-events-none" />
                         </>
                       ) : (
                         <p className="text-sm text-muted-foreground/30 italic">

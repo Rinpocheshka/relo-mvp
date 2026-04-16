@@ -57,7 +57,7 @@ export function EventDetailsModal({
   onEdited,
   onAuthRequired
 }: EventDetailsModalProps) {
-  const { user, profile } = useAuth();
+  const { user, profile, isAdmin } = useAuth();
   const { openMessageModal } = useMessageModal();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [isAttending, setIsAttending] = useState(false);
@@ -65,7 +65,6 @@ export function EventDetailsModal({
   const [deleting, setDeleting] = useState(false);
 
   const isOrganizer = user && event.organizer_id === user.id;
-  const isAdmin = profile?.role === 'admin';
   const canManage = isOrganizer || isAdmin;
 
   useEffect(() => {

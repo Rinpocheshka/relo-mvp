@@ -219,7 +219,8 @@ export function Layout() {
     { path: '/home', icon: '/assets/icons/custom/danang_symbol.png', label: 'Главная' },
     { path: '/announcements', icon: '/assets/icons/custom/luggage.png', label: 'Объявления' },
     { path: '/events', icon: '/assets/icons/custom/afisha.png', label: 'Афиша' },
-    { path: '/support', icon: '/assets/icons/custom/support_tab.png', label: 'Найти опору' },
+    { path: '/support?tab=resources', icon: '/assets/icons/custom/support_tab.png', label: 'Найти опору' },
+    { path: '/support?tab=questions', icon: '/assets/icons/custom/message.png', label: 'Задать вопрос' },
     { path: '/people', icon: '/assets/icons/custom/people_tab.png', label: 'Люди рядом' },
     { path: '/messages', icon: '/assets/icons/custom/message.png', label: 'Сообщения' },
   ];
@@ -252,7 +253,13 @@ export function Layout() {
     }
   }, [user]);
 
-  const isActive = (path: string) => location.pathname.startsWith(path);
+  const isActive = (path: string) => {
+    const currentPath = location.pathname + location.search;
+    if (path === currentPath) return true;
+    // Special case for support page default tab
+    if (path === '/support?tab=resources' && location.pathname === '/support' && !location.search) return true;
+    return location.pathname === path;
+  };
 
   if (isLanding) return <Outlet />;
 
@@ -283,7 +290,7 @@ export function Layout() {
             {!user && <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />}
 
             {/* Desktop nav — centered */}
-            <nav className="hidden md:flex items-center gap-0.5 mx-auto">
+            <nav className="hidden md:flex items-center gap-0.5 mx-auto min-w-0">
               {navItems.filter(item => item.path !== '/messages').map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.path);
@@ -291,14 +298,14 @@ export function Layout() {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                    className={`relative flex items-center gap-2 px-2.5 lg:px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap shrink-0 ${
                       active
                         ? 'bg-terracotta-deep/10 text-terracotta-deep'
                         : 'text-muted-foreground hover:text-foreground hover:bg-soft-sand/40'
                     }`}
                   >
-                    <div className="relative">
-                      <img src={item.icon as string} className="w-6 h-6 object-contain" alt="" />
+                    <div className="relative shrink-0 flex items-center justify-center">
+                      <img src={item.icon as string} className="w-6 h-6 object-contain shrink-0" alt="" />
                       {item.path === '/messages' && unreadCount > 0 && (
                         <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
                           {unreadCount > 9 ? '9+' : unreadCount}

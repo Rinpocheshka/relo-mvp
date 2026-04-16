@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Search,
@@ -129,11 +130,21 @@ function useDebounce<T>(value: T, delay: number): T {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function FindSupport() {
-  const { user, profile } = useAuth();
-  const isAdmin = profile?.role === 'admin';
+  const { user, profile, isAdmin } = useAuth();
+  const [searchParams] = useSearchParams();
 
   // Tabs & filters
-  const [activeTab, setActiveTab] = useState<'questions' | 'resources'>('questions');
+  const [activeTab, setActiveTab] = useState<'questions' | 'resources'>(
+    (searchParams.get('tab') as 'questions' | 'resources') || 'resources'
+  );
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab === 'questions' || tab === 'resources') {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
   const [selectedCategory, setSelectedCategory] = useState('Все');
   const [searchInput, setSearchInput] = useState('');
   const [sortMode, setSortMode] = useState<SortMode>('new');
