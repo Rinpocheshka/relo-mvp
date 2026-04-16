@@ -350,7 +350,7 @@ export function PeopleNearby() {
                     </div>
 
                     {/* Tags */}
-                    <div className="flex flex-wrap gap-2 mb-6">
+                    <div className="flex flex-wrap gap-2 mb-6 min-h-[32px]">
                       {(person.interests || []).slice(0, 3).map((interest) => (
                         <span
                           key={interest}
@@ -362,14 +362,20 @@ export function PeopleNearby() {
                     </div>
 
                     {/* Bio snippet */}
-                    {person.bio && (
-                      <div className="mb-6 h-20 relative overflow-hidden">
-                        <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-                          {person.bio}
+                    <div className="mb-6 h-20 relative overflow-hidden">
+                      {person.bio ? (
+                        <>
+                          <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                            {person.bio}
+                          </p>
+                          <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-white to-transparent" />
+                        </>
+                      ) : (
+                        <p className="text-sm text-muted-foreground/30 italic">
+                          Информация не указана
                         </p>
-                        <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-white to-transparent" />
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
 
                   {/* Action */}
