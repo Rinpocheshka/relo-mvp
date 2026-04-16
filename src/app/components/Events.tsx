@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Calendar, Search, Plus, Users, MapPin, Clock, Filter, CheckCircle } from 'lucide-react';
+import useEmblaCarousel from 'embla-carousel-react';
 import { Button } from './ui/button';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
@@ -44,6 +45,12 @@ export function Events() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [eventToEdit, setEventToEdit] = useState<any>(null);
+
+  const [emblaRef] = useEmblaCarousel({ 
+    loop: true, 
+    align: 'start',
+    dragFree: true
+  });
 
   const handleToggleAttendance = async (event: Event) => {
     if (!user) {
@@ -212,25 +219,26 @@ export function Events() {
               <Filter className="w-4 h-4 text-muted-foreground" />
               <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Категория</span>
             </div>
-            <div className="relative w-full overflow-visible -mx-4">
-              <div className="flex gap-2 overflow-x-auto py-2 px-4 scrollbar-hide">
+            <div className="relative w-full overflow-hidden -mx-4 uppercase" ref={emblaRef}>
+              <div className="flex gap-2 py-2 px-4 scrollbar-hide">
                 {eventTypes.map((type) => (
-                  <button
-                    key={type.name}
-                    onClick={() => setSelectedType(type.name)}
-                    className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full whitespace-nowrap transition-all font-bold border shadow-sm ${
-                      selectedType === type.name
-                        ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-md shadow-dusty-indigo/10'
-                        : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground'
-                    }`}
-                  >
-                    <img 
-                      src={type.icon} 
-                      className={`w-5 h-5 sm:w-6 sm:h-6 object-contain transition-all duration-300 ${selectedType === type.name ? 'brightness-0 invert' : ''}`} 
-                      alt="" 
-                    />
-                    <span className="text-xs sm:text-sm">{type.name}</span>
-                  </button>
+                  <div key={type.name} className="flex-shrink-0">
+                    <button
+                      onClick={() => setSelectedType(type.name)}
+                      className={`flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full whitespace-nowrap transition-all font-bold border shadow-sm ${
+                        selectedType === type.name
+                          ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-md shadow-dusty-indigo/10'
+                          : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground'
+                      }`}
+                    >
+                      <img 
+                        src={type.icon} 
+                        className={`w-5 h-5 sm:w-6 sm:h-6 object-contain transition-all duration-300 ${selectedType === type.name ? 'brightness-0 invert' : ''}`} 
+                        alt="" 
+                      />
+                      <span className="text-xs sm:text-sm">{type.name}</span>
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>
