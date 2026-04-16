@@ -14,6 +14,7 @@ import { CreateAnnouncementModal } from './CreateAnnouncementModal';
 import { UserAvatar } from './UserAvatar';
 import { getOrCreateChat } from '@/lib/chatUtils';
 import { useMessageModal } from '../hooks/useMessageModal';
+import { formatRelativeRu } from '@/lib/date';
 
 interface Event {
   id: string;
@@ -46,6 +47,14 @@ interface UserData {
   contact_telegram?: string;
   contact_whatsapp?: string;
   role?: string;
+}
+
+interface Activity {
+  id: string;
+  type: string;
+  title: string;
+  subtitle: string;
+  created_at: string;
 }
 
 const SITUATION_TAGS = [
@@ -129,6 +138,8 @@ export function Profile() {
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
   const [isUpdatingPrivileges, setIsUpdatingPrivileges] = useState(false);
   const [isRevokeAdminModalOpen, setIsRevokeAdminModalOpen] = useState(false);
+  const [userActivities, setUserActivities] = useState<Activity[]>([]);
+  const [activitiesLoading, setActivitiesLoading] = useState(true);
 
   const isOwnProfile = !id || id === user?.id;
   const targetId = isOwnProfile ? session?.user?.id : id;
@@ -242,6 +253,20 @@ export function Profile() {
         setEditForm(initialData);
         setIsEditing(true);
       }
+
+      // Fetch User Activities
+      setActivitiesLoading(true);
+      const { data: activityData, error: activityError } = await supabase
+        .from('user_activities')
+        .select('*')
+        .eq('user_id', targetId)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (!activityError && activityData) {
+        setUserActivities(activityData);
+      }
+      setActivitiesLoading(false);
 
       setLoading(false);
     }
@@ -365,36 +390,7 @@ export function Profile() {
     return <div className="bg-warm-milk py-16 flex justify-center"><p>Пользователь не найден</p></div>;
   }
 
-  const activities = [
-    {
-      id: 1,
-      type: 'announcement',
-      title: 'Добавила объявление "Ищу соседку для аренды"',
-      date: '2 дня назад',
-      category: 'Жильё',
-    },
-    {
-      id: 2,
-      type: 'event',
-      title: 'Создала событие "Встреча дизайнеров"',
-      date: '5 дней назад',
-      category: 'Нетворкинг',
-    },
-    {
-      id: 3,
-      type: 'help',
-      title: 'Помогла новичку с выбором банка',
-      date: '1 неделю назад',
-      category: 'Опора',
-    },
-    {
-      id: 4,
-      type: 'review',
-      title: 'Получила отзыв от Ивана: "Очень помогла с поиском жилья!"',
-      date: '2 недели назад',
-      category: 'Отзыв',
-    },
-  ];
+  // Deprecated hardcoded activities
 
   return (
     <div className="bg-warm-milk py-4 md:py-8 pb-12 md:pb-16">
@@ -880,35 +876,48 @@ export function Profile() {
         >
           <h2 className="text-2xl font-bold mb-6">История активности</h2>
           <div className="space-y-4">
-            {activities.map((activity, i) => (
-              <motion.div
-                key={activity.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + i * 0.1 }}
-                className="flex items-start gap-4 p-4 rounded-[12px] hover:bg-soft-sand/20 transition-colors"
-              >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  activity.type === 'announcement' ? 'bg-terracotta-deep/10' :
-                  activity.type === 'event' ? 'bg-dusty-indigo/10' :
-                  activity.type === 'help' ? 'bg-warm-olive/10' :
-                  'bg-soft-sand/50'
-                }`}>
-                  {activity.type === 'announcement' && <MessageCircle className="w-5 h-5 text-terracotta-deep" />}
-                  {activity.type === 'event' && <Calendar className="w-5 h-5 text-dusty-indigo" />}
-                  {activity.type === 'help' && <Heart className="w-5 h-5 text-warm-olive" />}
-                  {activity.type === 'review' && <Star className="w-5 h-5 text-yellow-500" />}
-                </div>
-                <div className="flex-1">
-                  <p className="font-medium mb-1">{activity.title}</p>
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                    <span>{activity.category}</span>
-                    <span>•</span>
-                    <span>{activity.date}</span>
+            {activitiesLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-dusty-indigo/30" />
+              </div>
+            ) : userActivities.length > 0 ? (
+              userActivities.map((activity, i) => (
+                <motion.div
+                  key={activity.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 + i * 0.05 }}
+                  className="flex items-start gap-4 p-4 rounded-[12px] hover:bg-soft-sand/20 transition-colors"
+                >
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    activity.type === 'announcement' ? 'bg-terracotta-deep/10' :
+                    activity.type === 'event' ? 'bg-dusty-indigo/10' :
+                    activity.type === 'help' ? 'bg-warm-olive/10' :
+                    activity.type === 'story' ? 'bg-orange-100' :
+                    activity.type === 'review' ? 'bg-yellow-50' :
+                    'bg-soft-sand/50'
+                  }`}>
+                    {activity.type === 'announcement' && <MessageCircle className="w-5 h-5 text-terracotta-deep" />}
+                    {activity.type === 'event' && <Calendar className="w-5 h-5 text-dusty-indigo" />}
+                    {activity.type === 'help' && <Heart className="w-5 h-5 text-warm-olive" />}
+                    {activity.type === 'story' && <Users className="w-5 h-5 text-orange-600" />}
+                    {activity.type === 'review' && <Star className="w-5 h-5 text-yellow-500" />}
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                  <div className="flex-1">
+                    <p className="font-medium text-sm md:text-base mb-1">{activity.title}</p>
+                    <div className="flex items-center gap-3 text-[11px] md:text-xs text-muted-foreground">
+                      <span className="font-bold uppercase tracking-wider">{activity.subtitle}</span>
+                      <span>•</span>
+                      <span>{formatRelativeRu(new Date(activity.created_at))}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-muted-foreground italic text-sm">
+                Активности пока нет...
+              </div>
+            )}
           </div>
         </motion.div>
 

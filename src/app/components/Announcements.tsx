@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { Megaphone, Search, Plus, Home, Package, Briefcase, Heart, ChevronDown } from 'lucide-react';
+import useEmblaCarousel from 'embla-carousel-react';
 import { Button } from './ui/button';
 import { Link } from 'react-router';
 import { supabase } from '@/lib/supabaseClient';
@@ -43,6 +43,12 @@ export function Announcements() {
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
   const [announcementToEdit, setAnnouncementToEdit] = useState<Announcement | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+
+  const [emblaRef] = useEmblaCarousel({ 
+    loop: true, 
+    align: 'start',
+    dragFree: true
+  });
 
   const categories = [
     { name: 'Все', icon: '/assets/icons/custom/luggage.png' },
@@ -141,29 +147,30 @@ export function Announcements() {
           </p>
         </motion.div>
 
-        {/* Categories */}
-        <div className="mb-6 md:mb-8 -mx-3 sm:mx-0">
-          <div className="flex gap-2 sm:gap-3 overflow-x-auto py-2 px-3 sm:px-0 scrollbar-hide">
+        {/* Categories Carousel */}
+        <div className="mb-6 md:mb-8 -mx-3 sm:mx-0 overflow-hidden" ref={emblaRef}>
+          <div className="flex gap-2 sm:gap-3 py-2 px-3 sm:px-0 scrollbar-hide">
             {categories.map((category) => {
               return (
-                <button
-                  key={category.name}
-                  onClick={() => {
-                    setSelectedCategory(category.name);
-                  }}
-                  className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-3 rounded-full whitespace-nowrap transition-all duration-300 ${
-                    selectedCategory === category.name
-                      ? 'bg-terracotta-deep text-white shadow-md shadow-terracotta-deep/20'
-                      : 'bg-white text-foreground hover:bg-soft-sand/40 border border-border/60 hover:border-terracotta-deep/30'
-                  }`}
-                >
-                  <img 
-                    src={category.icon as string} 
-                    className={`w-5 h-5 sm:w-6 sm:h-6 object-contain transition-all duration-300 ${selectedCategory === category.name ? 'brightness-0 invert' : ''}`} 
-                    alt="" 
-                  />
-                  <span className="font-semibold text-sm">{category.name}</span>
-                </button>
+                <div key={category.name} className="flex-shrink-0">
+                  <button
+                    onClick={() => {
+                      setSelectedCategory(category.name);
+                    }}
+                    className={`flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-3 rounded-full whitespace-nowrap transition-all duration-300 ${
+                      selectedCategory === category.name
+                        ? 'bg-terracotta-deep text-white shadow-md shadow-terracotta-deep/20'
+                        : 'bg-white text-foreground hover:bg-soft-sand/40 border border-border/60 hover:border-terracotta-deep/30'
+                    }`}
+                  >
+                    <img 
+                      src={category.icon as string} 
+                      className={`w-5 h-5 sm:w-6 sm:h-6 object-contain transition-all duration-300 ${selectedCategory === category.name ? 'brightness-0 invert' : ''}`} 
+                      alt="" 
+                    />
+                    <span className="font-semibold text-sm">{category.name}</span>
+                  </button>
+                </div>
               );
             })}
           </div>
