@@ -1007,7 +1007,6 @@ export function Profile() {
             </div>
           )}
         </motion.div>
-      </div>
 
       {/* Announcements Details Modal */}
       {selectedAnnouncement && (
@@ -1048,7 +1047,7 @@ export function Profile() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
-        className="mt-12"
+        className="mt-8"
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">{isOwnProfile ? 'Мои события' : 'События'}</h2>
@@ -1126,6 +1125,8 @@ export function Profile() {
           </div>
         )}
       </motion.div>
+    </div>
+
 
       {/* Event Modals */}
       {selectedEvent && (
