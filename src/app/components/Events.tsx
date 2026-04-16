@@ -223,7 +223,7 @@ export function Events() {
               <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Категория</span>
             </div>
             <div className="overflow-hidden sm:overflow-visible -mx-4 sm:mx-0 uppercase" ref={emblaRef}>
-              <div className="flex sm:flex-wrap gap-2 py-2 px-4 scrollbar-hide">
+              <div className="flex sm:flex-wrap gap-2 py-2 px-5 sm:px-0 scrollbar-hide">
                 {eventTypes.map((type) => (
                   <div key={type.name} className="flex-shrink-0">
                     <button
@@ -254,7 +254,7 @@ export function Events() {
                 <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Когда</span>
               </div>
               <div className="relative w-full overflow-visible -mx-4">
-                <div className="flex gap-2.5 overflow-x-auto py-2 px-4 scrollbar-hide">
+                <div className="flex gap-2.5 overflow-x-auto py-2 px-5 scrollbar-hide">
                   {timeFilters.map((filter) => (
                     <button
                       key={filter}

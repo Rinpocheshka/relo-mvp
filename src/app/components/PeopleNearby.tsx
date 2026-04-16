@@ -220,7 +220,7 @@ export function PeopleNearby() {
 
         {/* Filters Carousel (Mobile) / Wrap (Desktop) */}
         <div className="mb-8 md:mb-10 overflow-hidden sm:overflow-visible -mx-4 sm:mx-0" ref={emblaRef}>
-          <div className="flex sm:flex-wrap py-2 px-4 sm:px-0 scrollbar-hide md:justify-center">
+          <div className="flex sm:flex-wrap py-2 px-5 sm:px-0 scrollbar-hide md:justify-center">
             {filters.map((f) => (
               <div key={f.name} className="flex-shrink-0 px-1">
                 <button

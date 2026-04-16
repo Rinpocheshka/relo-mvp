@@ -575,7 +575,7 @@ export function FindSupport() {
           <div className="flex flex-col gap-4 md:gap-5">
             {/* Row 1: Sort Buttons */}
             {activeTab === 'questions' && (
-              <div className="flex flex-shrink-0 -mx-4 px-4 overflow-x-auto scrollbar-hide">
+              <div className="flex flex-shrink-0 -mx-4 px-5 overflow-x-auto scrollbar-hide">
                 <div className="flex gap-1.5 bg-white border border-border/40 rounded-full px-1.5 py-1 shadow-sm whitespace-nowrap min-w-max">
                   {([['new', 'Новые'], ['unanswered', 'Без ответа'], ['popular', 'Популярные']] as [SortMode, string][]).map(([mode, label]) => (
                     <button
@@ -596,7 +596,7 @@ export function FindSupport() {
 
             {/* Row 2: Categories Carousel (Mobile) / Wrap (Desktop) */}
             <div className="overflow-hidden sm:overflow-visible -mx-4 sm:mx-0" ref={emblaRef}>
-              <div className="flex sm:flex-wrap sm:justify-center gap-2 md:gap-2.5 pb-2 px-4 sm:px-0">
+              <div className="flex sm:flex-wrap sm:justify-center gap-2 md:gap-2.5 pb-2 px-5 sm:px-0">
                 {categories.map((cat) => (
                   <div key={cat} className="flex-shrink-0">
                     <button
