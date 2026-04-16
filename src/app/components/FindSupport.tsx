@@ -251,6 +251,48 @@ export function FindSupport() {
     }
   }, [sortMode, selectedCategory, searchQuery, currentPage]);
 
+  const deepLinkId = searchParams.get('id');
+  useEffect(() => {
+    if (deepLinkId) {
+      // If question is already in list, expand it
+      if (questions.some(q => q.id === deepLinkId)) {
+        setExpandedQuestion(deepLinkId);
+      } else {
+        // If not in list, we could fetch it, but usually the first page contains recent ones
+        // For now, let's just set the expanded state and hope the fetchAnswers logic handles it
+        // Or we could fetch the specific question and add it to the list.
+        const fetchAndExpand = async () => {
+          const { data, error } = await supabase
+            .from('questions')
+            .select('id, question, category, asked_by, asked_by_name, created_at, views_count, answers(count), profiles:asked_by(is_guide)')
+            .eq('id', deepLinkId)
+            .single();
+          
+          if (!error && data) {
+            const cnt = Array.isArray((data as any).answers)
+              ? (data as any).answers[0]?.count ?? 0
+              : (data as any).answers?.count ?? 0;
+            const q: Question = {
+              id: data.id,
+              question: data.question || '',
+              category: data.category || 'Другое',
+              askedBy: (data as any).asked_by_name || 'Пользователь',
+              answers: Number(cnt) || 0,
+              isAnswered: (Number(cnt) || 0) > 0,
+              createdAt: data.created_at ? formatRelativeRu(new Date(data.created_at as string)) : undefined,
+              viewsCount: (data as any).views_count ?? 0,
+              isAnonymous: (data as any).is_anonymous as boolean,
+              authorIsGuide: (data as any).profiles?.is_guide as boolean,
+            };
+            setQuestions(prev => [q, ...prev.filter(x => x.id !== q.id)]);
+            setExpandedQuestion(q.id);
+          }
+        };
+        void fetchAndExpand();
+      }
+    }
+  }, [deepLinkId, questions.length]);
+
   useEffect(() => {
     setCurrentPage(1);
   }, [sortMode, selectedCategory, searchQuery]);

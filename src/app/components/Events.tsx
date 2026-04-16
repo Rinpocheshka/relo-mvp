@@ -97,6 +97,7 @@ export function Events() {
 
   const [searchParams] = useSearchParams();
   const shouldCreate = searchParams.get('create') === 'true';
+  const eventId = searchParams.get('id');
 
   useEffect(() => {
     if (shouldCreate) {
@@ -107,6 +108,42 @@ export function Events() {
       }
     }
   }, [shouldCreate, user]);
+
+  useEffect(() => {
+    if (eventId) {
+      const fetchSingle = async () => {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*, event_participants(user_id)')
+          .eq('id', eventId)
+          .single();
+        
+        if (!error && data) {
+          const startsAt = data.starts_at ? new Date(data.starts_at) : new Date();
+          const mapped: Event = {
+            id: data.id,
+            title: data.title || '',
+            type: data.type || '',
+            starts_at: data.starts_at,
+            date: startsAt.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' }),
+            time: startsAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+            location: data.location_text || '',
+            organizer: data.organizer_name || 'Организатор',
+            organizer_id: data.organizer_id,
+            attendees: (data.event_participants || []).length,
+            maxAttendees: data.max_attendees,
+            description: data.description || '',
+            price: data.price_text || 'Бесплатно',
+            images: data.images || [],
+            is_attending: user ? (data.event_participants || []).some((p: any) => p.user_id === user.id) : false,
+          };
+          setSelectedEvent(mapped);
+          setIsDetailsOpen(true);
+        }
+      };
+      void fetchSingle();
+    }
+  }, [eventId, user]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Button } from './ui/button';
 import { MessageCircle, ArrowRight, Star, Users, Megaphone, Calendar, Heart, MapPin, Plus, Edit, Search, BookOpen, Loader2 } from 'lucide-react';
 import { MessageHelper } from './MessageHelper';
@@ -130,6 +130,14 @@ export function HomePage() {
   const [writeStoryOpen, setWriteStoryOpen] = useState(false);
   const [detailsStoryId, setDetailsStoryId] = useState<string | null>(null);
   const [storyToEdit, setStoryToEdit] = useState<Story | null>(null);
+  const [searchParams] = useSearchParams();
+  const storyParamId = searchParams.get('story');
+
+  useEffect(() => {
+    if (storyParamId) {
+      setDetailsStoryId(storyParamId);
+    }
+  }, [storyParamId]);
 
   useEffect(() => {
     try {

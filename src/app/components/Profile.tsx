@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { MapPin, Calendar, Star, MessageCircle, Settings, Edit, Award, Heart, Save, X, Camera, Loader2, Send, Phone, Lock, Clock, Users, ChevronDown, Search } from 'lucide-react';
 import { Button } from './ui/button';
-import { useParams, useLocation, useNavigate } from 'react-router';
+import { useParams, useLocation, useNavigate, Link } from 'react-router';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
 import { AuthModal } from './AuthWidget';
@@ -887,36 +887,56 @@ export function Profile() {
               </div>
             ) : userActivities.length > 0 ? (
               userActivities.map((activity, i) => (
-                <motion.div
-                  key={activity.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 + i * 0.05 }}
-                  className="flex items-start gap-4 p-4 rounded-[12px] hover:bg-soft-sand/20 transition-colors"
-                >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    activity.type === 'announcement' ? 'bg-terracotta-deep/10' :
-                    activity.type === 'event' ? 'bg-dusty-indigo/10' :
-                    activity.type === 'help' ? 'bg-warm-olive/10' :
-                    activity.type === 'story' ? 'bg-orange-100' :
-                    activity.type === 'review' ? 'bg-yellow-50' :
-                    'bg-soft-sand/50'
-                  }`}>
-                    {activity.type === 'announcement' && <MessageCircle className="w-5 h-5 text-terracotta-deep" />}
-                    {activity.type === 'event' && <Calendar className="w-5 h-5 text-dusty-indigo" />}
-                    {activity.type === 'help' && <Heart className="w-5 h-5 text-warm-olive" />}
-                    {activity.type === 'story' && <Users className="w-5 h-5 text-orange-600" />}
-                    {activity.type === 'review' && <Star className="w-5 h-5 text-yellow-500" />}
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-sm md:text-base mb-1">{activity.title}</p>
-                    <div className="flex items-center gap-3 text-[11px] md:text-xs text-muted-foreground">
-                      <span className="font-bold uppercase tracking-wider">{activity.subtitle}</span>
-                      <span>•</span>
-                      <span>{formatRelativeRu(new Date(activity.created_at))}</span>
-                    </div>
-                  </div>
-                </motion.div>
+                  {(() => {
+                    const getLink = () => {
+                      if (!activity.entity_id) return null;
+                      switch (activity.type) {
+                        case 'announcement': return `/announcements?id=${activity.entity_id}`;
+                        case 'event': return `/events?id=${activity.entity_id}`;
+                        case 'help': return `/support?id=${activity.entity_id}`;
+                        case 'story': return `/home?story=${activity.entity_id}`;
+                        case 'review': return `/profile/${activity.entity_id}`;
+                        default: return null;
+                      }
+                    };
+                    const link = getLink();
+                    const Content = (
+                      <div className="flex items-start gap-4 p-4 rounded-[12px] hover:bg-soft-sand/20 transition-colors w-full">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                          activity.type === 'announcement' ? 'bg-terracotta-deep/10' :
+                          activity.type === 'event' ? 'bg-dusty-indigo/10' :
+                          activity.type === 'help' ? 'bg-warm-olive/10' :
+                          activity.type === 'story' ? 'bg-orange-100' :
+                          activity.type === 'review' ? 'bg-yellow-50' :
+                          'bg-soft-sand/50'
+                        }`}>
+                          {activity.type === 'announcement' && <MessageCircle className="w-5 h-5 text-terracotta-deep" />}
+                          {activity.type === 'event' && <Calendar className="w-5 h-5 text-dusty-indigo" />}
+                          {activity.type === 'help' && <Heart className="w-5 h-5 text-warm-olive" />}
+                          {activity.type === 'story' && <Users className="w-5 h-5 text-orange-600" />}
+                          {activity.type === 'review' && <Star className="w-5 h-5 text-yellow-500" />}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-sm md:text-base mb-1 group-hover:text-dusty-indigo transition-colors">{activity.title}</p>
+                          <div className="flex items-center gap-3 text-[11px] md:text-xs text-muted-foreground">
+                            <span className="font-bold uppercase tracking-wider">{activity.subtitle}</span>
+                            <span>•</span>
+                            <span>{formatRelativeRu(new Date(activity.created_at))}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+
+                    return link ? (
+                      <Link key={activity.id} to={link} className="block group">
+                        {Content}
+                      </Link>
+                    ) : (
+                      <div key={activity.id} className="block">
+                        {Content}
+                      </div>
+                    );
+                  })()}
               ))
             ) : (
               <div className="text-center py-8 text-muted-foreground italic text-sm">

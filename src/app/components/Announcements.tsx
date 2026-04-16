@@ -71,6 +71,7 @@ export function Announcements() {
 
   const [searchParams] = useSearchParams();
   const shouldCreate = searchParams.get('create') === 'true';
+  const announcementId = searchParams.get('id');
 
   useEffect(() => {
     if (shouldCreate) {
@@ -81,6 +82,38 @@ export function Announcements() {
       }
     }
   }, [shouldCreate, user]);
+
+  useEffect(() => {
+    if (announcementId) {
+      const fetchSingle = async () => {
+        const { data, error } = await supabase
+          .from('announcements')
+          .select('*')
+          .eq('id', announcementId)
+          .single();
+        
+        if (!error && data) {
+          const mapped: Announcement = {
+            id: data.id,
+            title: data.title || '',
+            category: data.category || '',
+            description: data.description || '',
+            author_name: data.author_name || 'Пользователь',
+            price_text: data.price_text || '',
+            price_numeric: data.price_numeric,
+            location_text: data.location_text || '',
+            created_at: data.created_at || '',
+            images: data.images || [],
+            author_id: data.author_id || '',
+            status: data.status || 'active',
+          };
+          setSelectedAnnouncement(mapped);
+          setIsDetailsModalOpen(true);
+        }
+      };
+      void fetchSingle();
+    }
+  }, [announcementId]);
 
   const fetchData = async () => {
     setLoading(true);
