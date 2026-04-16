@@ -7,7 +7,6 @@ import {
   MessageCircle,
   Star,
   ChevronDown,
-  CheckCircle2,
   Plus,
   ThumbsUp,
   ExternalLink,
@@ -18,10 +17,8 @@ import {
   Pencil,
   Trash2,
   X,
-  ImagePlus,
 } from 'lucide-react';
 import useEmblaCarousel from 'embla-carousel-react';
-declare const heic2any: any;
 import { Button } from './ui/button';
 import { UserAvatar } from './UserAvatar';
 import { supabase } from '@/lib/supabaseClient';

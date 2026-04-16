@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router';
 import { motion } from 'motion/react';
-import { Megaphone, Search, Plus, Home, Package, Briefcase, Heart, ChevronDown } from 'lucide-react';
+import { Megaphone, Search, Plus, Home, Briefcase, Heart, ChevronDown } from 'lucide-react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { Button } from './ui/button';
 import { Link } from 'react-router';

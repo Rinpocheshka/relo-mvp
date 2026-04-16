@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { MapPin, Calendar, Star, MessageCircle, Settings, Edit, Award, Heart, Save, X, Camera, Loader2, Send, Phone, Lock, Clock, Users, ChevronDown, Search } from 'lucide-react';
+import { MapPin, Calendar, Star, MessageCircle, Settings, Edit, Heart, Save, X, Camera, Loader2, Send, Phone, Clock, Users, ChevronDown, Search } from 'lucide-react';
 import { Button } from './ui/button';
 import { useParams, useLocation, useNavigate, Link } from 'react-router';
 import { supabase } from '../../lib/supabaseClient';
@@ -12,7 +12,6 @@ import { EventDetailsModal } from './EventDetailsModal';
 import { EventFormModal } from './EventFormModal';
 import { CreateAnnouncementModal } from './CreateAnnouncementModal';
 import { UserAvatar } from './UserAvatar';
-import { getOrCreateChat } from '@/lib/chatUtils';
 import { useMessageModal } from '../hooks/useMessageModal';
 import { formatRelativeRu } from '@/lib/date';
 
