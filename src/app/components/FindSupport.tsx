@@ -135,7 +135,7 @@ export function FindSupport() {
 
   // Tabs & filters
   const [activeTab, setActiveTab] = useState<'questions' | 'resources'>(
-    (searchParams.get('tab') as 'questions' | 'resources') || 'resources'
+    (searchParams.get('tab') as 'questions' | 'resources') || 'questions'
   );
 
   useEffect(() => {
