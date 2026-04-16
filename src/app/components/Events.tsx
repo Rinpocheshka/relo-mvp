@@ -49,7 +49,10 @@ export function Events() {
   const [emblaRef] = useEmblaCarousel({ 
     loop: true, 
     align: 'start',
-    dragFree: true
+    dragFree: true,
+    breakpoints: {
+      '(min-width: 640px)': { active: false }
+    }
   });
 
   const handleToggleAttendance = async (event: Event) => {
@@ -219,8 +222,8 @@ export function Events() {
               <Filter className="w-4 h-4 text-muted-foreground" />
               <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Категория</span>
             </div>
-            <div className="relative w-full overflow-hidden -mx-4 uppercase" ref={emblaRef}>
-              <div className="flex gap-2 py-2 px-4 scrollbar-hide">
+            <div className="relative w-full overflow-hidden sm:overflow-visible -mx-4 uppercase" ref={emblaRef}>
+              <div className="flex sm:flex-wrap gap-2 py-2 px-4 scrollbar-hide">
                 {eventTypes.map((type) => (
                   <div key={type.name} className="flex-shrink-0">
                     <button

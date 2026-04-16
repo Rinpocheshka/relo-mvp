@@ -79,7 +79,10 @@ export function PeopleNearby() {
   const [emblaRef] = useEmblaCarousel({ 
     loop: true, 
     align: 'start',
-    dragFree: true
+    dragFree: true,
+    breakpoints: {
+      '(min-width: 640px)': { active: false }
+    }
   });
 
   const filters = [
@@ -215,9 +218,9 @@ export function PeopleNearby() {
           </div>
         </div>
 
-        {/* Filters Carousel */}
-        <div className="mb-8 md:mb-10 relative w-full overflow-hidden -mx-4 px-4 sm:mx-0 sm:px-0" ref={emblaRef}>
-          <div className="flex py-2 px-0 scrollbar-hide md:justify-center">
+        {/* Filters Carousel (Mobile) / Wrap (Desktop) */}
+        <div className="mb-8 md:mb-10 relative w-full overflow-hidden sm:overflow-visible -mx-4 px-4 sm:mx-0 sm:px-0" ref={emblaRef}>
+          <div className="flex sm:flex-wrap py-2 px-0 scrollbar-hide md:justify-center">
             {filters.map((f) => (
               <div key={f.name} className="flex-shrink-0 px-1">
                 <button

@@ -168,7 +168,10 @@ export function FindSupport() {
   const [emblaRef] = useEmblaCarousel({ 
     loop: true, 
     align: 'start',
-    dragFree: true
+    dragFree: true,
+    breakpoints: {
+      '(min-width: 640px)': { active: false }
+    }
   });
 
   // Guides
@@ -591,9 +594,9 @@ export function FindSupport() {
               </div>
             )}
 
-            {/* Row 2: Categories Carousel */}
-            <div className="relative w-full overflow-hidden -mx-4 px-4 sm:mx-0 sm:px-0" ref={emblaRef}>
-              <div className="flex gap-2 md:gap-2.5 pb-2">
+            {/* Row 2: Categories Carousel (Mobile) / Wrap (Desktop) */}
+            <div className="relative w-full overflow-hidden sm:overflow-visible -mx-4 px-4 sm:mx-0 sm:px-0" ref={emblaRef}>
+              <div className="flex sm:flex-wrap sm:justify-center gap-2 md:gap-2.5 pb-2">
                 {categories.map((cat) => (
                   <div key={cat} className="flex-shrink-0">
                     <button

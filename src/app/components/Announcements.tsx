@@ -48,7 +48,10 @@ export function Announcements() {
   const [emblaRef] = useEmblaCarousel({ 
     loop: true, 
     align: 'start',
-    dragFree: true
+    dragFree: true,
+    breakpoints: {
+      '(min-width: 640px)': { active: false }
+    }
   });
 
   const categories = [
@@ -148,9 +151,9 @@ export function Announcements() {
           </p>
         </motion.div>
 
-        {/* Categories Carousel */}
-        <div className="mb-6 md:mb-8 -mx-3 sm:mx-0 overflow-hidden" ref={emblaRef}>
-          <div className="flex gap-2 sm:gap-3 py-2 px-3 sm:px-0 scrollbar-hide">
+        {/* Categories Carousel (Mobile) / Wrap (Desktop) */}
+        <div className="mb-6 md:mb-8 -mx-3 sm:mx-0 overflow-hidden sm:overflow-visible" ref={emblaRef}>
+          <div className="flex sm:flex-wrap sm:justify-center gap-2 sm:gap-3 py-2 px-3 sm:px-0 scrollbar-hide">
             {categories.map((category) => {
               return (
                 <div key={category.name} className="flex-shrink-0">
