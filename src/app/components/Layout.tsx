@@ -36,7 +36,8 @@ function HeaderAuth({ unreadCount }: { unreadCount: number }) {
   if (loading) return <div className="w-20 h-9 bg-soft-sand/30 rounded-full animate-pulse" />;
 
   if (user) {
-    const displayName = profile?.display_name || user.email?.split('@')[0] || 'Профиль';
+    const googleName = user.user_metadata?.full_name || user.user_metadata?.name;
+    const displayName = profile?.display_name || googleName || user.email?.split('@')[0] || 'Пользователь';
     return (
       <>
         <DropdownMenu>
@@ -44,7 +45,7 @@ function HeaderAuth({ unreadCount }: { unreadCount: number }) {
             <button className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-soft-sand/40 transition-colors relative">
               <UserAvatar 
                 src={profile?.avatar_url} 
-                name={profile?.display_name || user.email?.split('@')[0]} 
+                name={profile?.display_name || googleName || user.email?.split('@')[0]} 
                 isGuide={!!profile?.is_guide} 
                 size="sm" 
               />
@@ -117,7 +118,7 @@ function MobileUserButton({ isActive }: { isActive: boolean }) {
         <Link to="/profile" className={`flex flex-col items-center justify-center gap-0.5 p-1 flex-1 min-w-0 rounded-[12px] transition-colors ${isActive ? 'text-terracotta-deep bg-terracotta-deep/8' : 'text-muted-foreground'}`}>
           <UserAvatar 
             src={profile?.avatar_url} 
-            name={profile?.display_name || user?.email?.split('@')[0]} 
+            name={profile?.display_name || user.user_metadata?.full_name || user.user_metadata?.name || user?.email?.split('@')[0]} 
             isGuide={!!profile?.is_guide}
             size="sm"
           />

@@ -477,7 +477,7 @@ export function Profile() {
             <div className="flex flex-col items-center md:items-start group relative">
             <UserAvatar 
               src={isEditing ? editForm.avatar_url : profile?.avatar_url}
-              name={isEditing ? editForm.display_name : profile?.display_name}
+              name={isEditing ? editForm.display_name : (profile?.display_name || (isOwnProfile ? (user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0]) : ''))}
               isGuide={!!profile?.is_guide}
               size="3xl"
               className="w-32 h-32 mb-4 !shadow-md"
@@ -505,7 +505,10 @@ export function Profile() {
                 <>
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
                     <div>
-                      <h1 className="text-3xl font-bold mb-2">{profile?.display_name || 'Аноним'}</h1>
+                      <h1 className="text-3xl font-bold mb-2">
+                        {profile?.display_name || 
+                         (isOwnProfile ? (user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0]) : 'Пользователь')}
+                      </h1>
                       <p className="text-lg text-muted-foreground mb-3 flex items-center gap-2">
                         {STAGES.find(s => s.value === profile?.stage)?.icon && (
                           <img src={STAGES.find(s => s.value === profile?.stage)?.icon} className="w-5 h-5 object-contain" alt="" />
