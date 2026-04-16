@@ -876,7 +876,10 @@ export function Profile() {
           transition={{ delay: 0.4 }}
           className="bg-white rounded-[32px] border border-border/50 p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)]"
         >
-          <h2 className="text-2xl font-bold mb-6">История активности</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <h2 className="text-2xl font-bold">История активности</h2>
+            <span className="text-sm text-muted-foreground font-normal mt-1">(10 последних событий)</span>
+          </div>
           <div className="space-y-4">
             {activitiesLoading ? (
               <div className="flex justify-center py-8">
