@@ -1048,15 +1048,12 @@ export function Profile() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
-        className="mt-12 bg-white rounded-[32px] border border-border/50 p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)]"
+        className="mt-12"
       >
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-2xl font-black text-foreground">{isOwnProfile ? 'Мои события' : 'События'}</h2>
-            <p className="text-sm text-muted-foreground">Мероприятия, организованные пользователем</p>
-          </div>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold">{isOwnProfile ? 'Мои события' : 'События'}</h2>
           {eventsCount > 0 && (
-            <span className="px-4 py-1.5 bg-dusty-indigo/10 text-dusty-indigo text-xs font-bold rounded-full uppercase tracking-widest border border-dusty-indigo/20">
+            <span className="px-3 py-1 bg-dusty-indigo/10 text-dusty-indigo text-xs font-bold rounded-full">
               {eventsCount}
             </span>
           )}
@@ -1074,43 +1071,56 @@ export function Profile() {
                   setSelectedEvent(event);
                   setIsEventDetailsModalOpen(true);
                 }}
-                className="bg-white rounded-[24px] border border-border/50 hover:shadow-xl transition-all cursor-pointer overflow-hidden group flex flex-col h-full active:scale-[0.98] shadow-sm"
+                className="bg-white rounded-[24px] border border-border/50 hover:shadow-xl transition-all cursor-pointer overflow-hidden group flex flex-col h-full active:scale-[0.98]"
               >
-                <div className="h-40 bg-soft-sand/10 relative overflow-hidden">
+                {/* Image */}
+                <div className="h-48 bg-soft-sand/10 relative overflow-hidden">
                   {event.images && event.images.length > 0 ? (
                     <img src={event.images[0]} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-dusty-indigo/20 to-terracotta-deep/10" />
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
+                      <Calendar className="w-12 h-12" />
+                    </div>
                   )}
                   <div className="absolute top-3 left-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-[10px] font-bold text-dusty-indigo uppercase tracking-wider shadow-sm">
                     {event.type}
                   </div>
                 </div>
+
+                {/* Info */}
                 <div className="p-5 flex flex-col flex-1">
-                  <h3 className="font-bold text-lg mb-2 line-clamp-1 group-hover:text-dusty-indigo transition-colors">{event.title}</h3>
-                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-4 px-1">
-                    <Clock className="w-3 h-3 text-terracotta-deep" /> {event.date}
+                  <h3 className="font-bold text-lg mb-2 line-clamp-1 group-hover:text-dusty-indigo transition-colors">
+                    {event.title}
+                  </h3>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+                    <Clock className="w-3.5 h-3.5 text-terracotta-deep" />
+                    <span>{event.date}</span>
                   </div>
-                  <div className="mt-auto pt-4 border-t border-border/30 flex items-center justify-between text-xs font-bold text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Users className="w-3.5 h-3.5" /> {event.attendees}
+                  <div className="mt-auto flex items-center justify-between pt-4 border-t border-border/30">
+                    <div className="text-lg font-black text-foreground">
+                       {event.price}
                     </div>
-                    <div className="text-foreground">{event.price}</div>
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                      <Users className="w-3.5 h-3.5" />
+                      <span>{event.attendees}</span>
+                    </div>
                   </div>
                 </div>
               </motion.div>
             ))}
           </div>
         ) : (
-          <div className="p-12 text-center border-2 border-dashed border-border/40 rounded-[24px] bg-soft-sand/5">
-            <Calendar className="w-12 h-12 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-muted-foreground italic mb-6">Событий пока нет...</p>
+          <div className="bg-white rounded-[32px] border border-border/50 p-12 text-center shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
+            <div className="w-14 h-14 bg-dusty-indigo/5 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Calendar className="w-7 h-7 text-dusty-indigo/30" />
+            </div>
+            <p className="text-muted-foreground italic">Событий пока нет...</p>
             {isOwnProfile && (
               <Button 
+                className="mt-6 bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-full px-8"
                 onClick={() => navigate('/events')}
-                className="bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-full px-8 h-12 font-bold shadow-lg shadow-dusty-indigo/10"
               >
-                Перейти в Афишу
+                Создать первое
               </Button>
             )}
           </div>
