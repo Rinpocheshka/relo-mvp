@@ -181,7 +181,7 @@ export function PeopleNearby() {
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   return (
-    <div className="bg-warm-milk py-4 md:py-8 px-4 pb-12 md:pb-16">
+    <div className="bg-warm-milk py-4 md:py-8 px-4 pb-12 md:pb-16 overflow-x-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -219,8 +219,8 @@ export function PeopleNearby() {
         </div>
 
         {/* Filters Carousel (Mobile) / Wrap (Desktop) */}
-        <div className="mb-8 md:mb-10 overflow-hidden sm:overflow-visible -mx-4 sm:mx-0" ref={emblaRef}>
-          <div className="flex sm:flex-wrap py-2 px-5 sm:px-0 scrollbar-hide md:justify-center">
+        <div className="mb-8 md:mb-10 overflow-visible sm:overflow-visible -mx-4 sm:mx-0 px-5 sm:px-0" ref={emblaRef}>
+          <div className="flex sm:flex-wrap py-2 scrollbar-hide md:justify-center">
             {filters.map((f) => (
               <div key={f.name} className="flex-shrink-0 px-1">
                 <button

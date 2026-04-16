@@ -198,7 +198,7 @@ export function Events() {
   };
 
   return (
-    <div className="bg-warm-milk py-4 md:py-8 pb-12 md:pb-16">
+    <div className="bg-warm-milk py-4 md:py-8 pb-12 md:pb-16 overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <motion.div
@@ -222,8 +222,8 @@ export function Events() {
               <Filter className="w-4 h-4 text-muted-foreground" />
               <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Категория</span>
             </div>
-            <div className="overflow-hidden sm:overflow-visible -mx-4 sm:mx-0 uppercase" ref={emblaRef}>
-              <div className="flex sm:flex-wrap gap-2 py-2 px-5 sm:px-0 scrollbar-hide">
+            <div className="overflow-visible sm:overflow-visible -mx-4 sm:mx-0 uppercase px-5 sm:px-0" ref={emblaRef}>
+              <div className="flex sm:flex-wrap gap-2 py-2 scrollbar-hide">
                 {eventTypes.map((type) => (
                   <div key={type.name} className="flex-shrink-0">
                     <button

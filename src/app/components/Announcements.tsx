@@ -137,7 +137,7 @@ export function Announcements() {
 
 
   return (
-    <div className="bg-warm-milk py-4 md:py-8 pb-12 md:pb-16">
+    <div className="bg-warm-milk py-4 md:py-8 pb-12 md:pb-16 overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-3 sm:px-4">
         {/* Header */}
         <motion.div
@@ -152,8 +152,8 @@ export function Announcements() {
         </motion.div>
 
         {/* Categories Carousel (Mobile) / Wrap (Desktop) */}
-        <div className="mb-6 md:mb-8 -mx-4 sm:mx-0 overflow-hidden sm:overflow-visible" ref={emblaRef}>
-          <div className="flex sm:flex-wrap sm:justify-center gap-2 sm:gap-3 py-2 px-5 sm:px-0 scrollbar-hide">
+        <div className="mb-6 md:mb-8 -mx-4 sm:mx-0 overflow-visible sm:overflow-visible px-5 sm:px-0" ref={emblaRef}>
+          <div className="flex sm:flex-wrap sm:justify-center gap-2 sm:gap-3 py-2 scrollbar-hide">
             {categories.map((category) => {
               return (
                 <div key={category.name} className="flex-shrink-0">

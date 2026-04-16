@@ -595,8 +595,8 @@ export function FindSupport() {
             )}
 
             {/* Row 2: Categories Carousel (Mobile) / Wrap (Desktop) */}
-            <div className="overflow-hidden sm:overflow-visible -mx-4 sm:mx-0" ref={emblaRef}>
-              <div className="flex sm:flex-wrap sm:justify-center gap-2 md:gap-2.5 pb-2 px-5 sm:px-0">
+            <div className="overflow-visible sm:overflow-visible -mx-4 sm:mx-0 px-5 sm:px-0" ref={emblaRef}>
+              <div className="flex sm:flex-wrap sm:justify-center gap-2 md:gap-2.5 pb-2">
                 {categories.map((cat) => (
                   <div key={cat} className="flex-shrink-0">
                     <button
