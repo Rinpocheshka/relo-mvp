@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Users, Heart, MessageCircle, MapPin, Clock, Star, Lock, ChevronLeft, ChevronRight, ChevronDown, User as UserIcon } from 'lucide-react';
+import useEmblaCarousel from 'embla-carousel-react';
 import { Button } from './ui/button';
 import { AuthModal } from './AuthWidget';
 import { UserAvatar } from './UserAvatar';
@@ -74,6 +75,12 @@ export function PeopleNearby() {
   const [totalCount, setTotalCount] = useState(0);
   const [stats, setStats] = useState({ total: 0, newcomers: 0, guides: 0 });
   const PAGE_SIZE = 30;
+
+  const [emblaRef] = useEmblaCarousel({ 
+    loop: true, 
+    align: 'start',
+    dragFree: true
+  });
 
   const filters = [
     { name: 'Все', value: 'Все', icon: '/assets/icons/custom/people_all.png' },
@@ -208,18 +215,17 @@ export function PeopleNearby() {
           </div>
         </div>
 
-        {/* Filters with horizontal scroll on mobile */}
-        <div className="mb-8 md:mb-10 relative w-full overflow-visible -mx-4 px-4 sm:mx-0 sm:px-0">
-          <div className="flex overflow-x-auto md:overflow-visible py-2 px-0 scrollbar-hide md:justify-center">
-            <div className="flex flex-nowrap gap-2 items-center">
-              {filters.map((f) => (
+        {/* Filters Carousel */}
+        <div className="mb-8 md:mb-10 relative w-full overflow-hidden -mx-4 px-4 sm:mx-0 sm:px-0" ref={emblaRef}>
+          <div className="flex py-2 px-0 scrollbar-hide md:justify-center">
+            {filters.map((f) => (
+              <div key={f.name} className="flex-shrink-0 px-1">
                 <button
-                  key={f.name}
                   onClick={() => {
                     setSelectedFilter(f.value);
                     setCurrentPage(1);
                   }}
-                  className={`flex-shrink-0 flex items-center gap-2 px-4 h-11 md:h-12 rounded-full whitespace-nowrap text-xs md:text-sm font-bold transition-all duration-300 border shadow-sm ${
+                  className={`flex items-center gap-2 px-4 h-11 md:h-12 rounded-full whitespace-nowrap text-xs md:text-sm font-bold transition-all duration-300 border shadow-sm ${
                     selectedFilter === f.value
                       ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-md shadow-dusty-indigo/10'
                       : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground'
@@ -234,8 +240,8 @@ export function PeopleNearby() {
                   />
                   <span>{f.name}</span>
                 </button>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
 
