@@ -498,7 +498,7 @@ export function Layout() {
               <Link to="/events?create=true">🎪 Создать событие</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild className="rounded-[10px] px-3 py-2.5">
-              <Link to="/support?create=true">❓ Задать вопрос</Link>
+              <Link to="/support">❓ Задать вопрос</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
