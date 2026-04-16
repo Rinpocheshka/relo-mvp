@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useSearchParams } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { Calendar, Search, Plus, Users, MapPin, Clock, Filter, CheckCircle } from 'lucide-react';
 import useEmblaCarousel from 'embla-carousel-react';
@@ -93,6 +94,19 @@ export function Events() {
   ];
 
   const timeFilters = ['Все', 'Сегодня', 'Эта неделя', 'Этот месяц', 'Прошедшие'];
+
+  const [searchParams] = useSearchParams();
+  const shouldCreate = searchParams.get('create') === 'true';
+
+  useEffect(() => {
+    if (shouldCreate) {
+      if (user) {
+        setIsFormOpen(true);
+      } else {
+        setIsAuthModalOpen(true);
+      }
+    }
+  }, [shouldCreate, user]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);

@@ -492,10 +492,13 @@ export function Layout() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-52 rounded-[16px] shadow-xl border-border/50 p-1.5 mb-2 z-[70]">
             <DropdownMenuItem asChild className="rounded-[10px] px-3 py-2.5">
-              <Link to="/announcements">📋 Создать объявление</Link>
+              <Link to="/announcements?create=true">📋 Создать объявление</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild className="rounded-[10px] px-3 py-2.5">
-              <Link to="/events">🎪 Создать событие</Link>
+              <Link to="/events?create=true">🎪 Создать событие</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="rounded-[10px] px-3 py-2.5">
+              <Link to="/support?create=true">❓ Задать вопрос</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Search,
@@ -184,6 +185,19 @@ export function FindSupport() {
   const isAdmin = profile?.role === 'admin';
 
   const categories = activeTab === 'questions' ? QUESTION_CATEGORIES : RESOURCE_CATEGORIES;
+
+  const [searchParams] = useSearchParams();
+  const shouldCreate = searchParams.get('create') === 'true';
+
+  useEffect(() => {
+    if (shouldCreate) {
+      if (user) {
+        setAskModalOpen(true);
+      } else {
+        setIsAuthModalOpen(true);
+      }
+    }
+  }, [shouldCreate, user]);
 
   // ── Fetch Questions ────────────────────────────────────────────────────────
 
