@@ -227,14 +227,6 @@ export function Announcements() {
           </div>
         </div>
 
-        {/* Housing Article Link */}
-        {selectedCategory === 'Жильё' && (
-          <div className="mb-6">
-            <Link to="/support?article=housing-quirks" className="text-terracotta-deep hover:text-terracotta-deep/80 text-sm font-medium">
-              О странностях поиска жилья в Дананге →
-            </Link>
-          </div>
-        )}
 
 
 
