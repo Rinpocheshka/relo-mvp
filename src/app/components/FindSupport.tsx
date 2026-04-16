@@ -130,6 +130,7 @@ function useDebounce<T>(value: T, delay: number): T {
 
 export function FindSupport() {
   const { user, profile } = useAuth();
+  const isAdmin = profile?.role === 'admin';
 
   // Tabs & filters
   const [activeTab, setActiveTab] = useState<'questions' | 'resources'>('questions');
