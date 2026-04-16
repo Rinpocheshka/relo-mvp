@@ -19,6 +19,7 @@ import {
   X,
   ImagePlus,
 } from 'lucide-react';
+import useEmblaCarousel from 'embla-carousel-react';
 declare const heic2any: any;
 import { Button } from './ui/button';
 import { UserAvatar } from './UserAvatar';
@@ -158,11 +159,17 @@ export function FindSupport() {
   const [loadingR, setLoadingR] = useState(true);
 
   // Resource modals
-  const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [resourceDetailOpen, setResourceDetailOpen] = useState(false);
+  const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
   const [resourceFormOpen, setResourceFormOpen] = useState(false);
   const [editingResource, setEditingResource] = useState<Resource | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const [emblaRef] = useEmblaCarousel({ 
+    loop: true, 
+    align: 'start',
+    dragFree: true
+  });
 
   // Guides
   const [guides, setGuides] = useState<Guide[]>([]);
@@ -584,28 +591,31 @@ export function FindSupport() {
               </div>
             )}
 
-            {/* Row 2: Categories with horizontal scroll on mobile */}
-            <div className="flex overflow-x-auto gap-2 md:gap-2.5 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap scrollbar-hide">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`flex-shrink-0 px-3.5 py-2 md:px-5 md:py-3 rounded-full whitespace-nowrap text-[12px] md:text-sm font-bold transition-all duration-300 border flex items-center gap-1.5 md:gap-2 ${
-                    selectedCategory === cat
-                      ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-md shadow-dusty-indigo/10'
-                      : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
-                  }`}
-                >
-                  {CATEGORY_ICON_MAP[cat] && (
-                    <img 
-                      src={CATEGORY_ICON_MAP[cat]} 
-                      className={`w-4 h-4 md:w-6 md:h-6 object-contain transition-all duration-300 ${selectedCategory === cat ? 'brightness-0 invert' : ''}`} 
-                      alt="" 
-                    />
-                  )}
-                  {cat}
-                </button>
-              ))}
+            {/* Row 2: Categories Carousel */}
+            <div className="relative w-full overflow-hidden -mx-4 px-4 sm:mx-0 sm:px-0" ref={emblaRef}>
+              <div className="flex gap-2 md:gap-2.5 pb-2">
+                {categories.map((cat) => (
+                  <div key={cat} className="flex-shrink-0">
+                    <button
+                      onClick={() => setSelectedCategory(cat)}
+                      className={`px-3.5 py-2 md:px-5 md:py-3 rounded-full whitespace-nowrap text-[12px] md:text-sm font-bold transition-all duration-300 border flex items-center gap-1.5 md:gap-2 ${
+                        selectedCategory === cat
+                          ? 'bg-dusty-indigo text-white border-dusty-indigo shadow-md shadow-dusty-indigo/10'
+                          : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground shadow-sm'
+                      }`}
+                    >
+                      {CATEGORY_ICON_MAP[cat] && (
+                        <img 
+                          src={CATEGORY_ICON_MAP[cat] as string} 
+                          className={`w-4 h-4 md:w-5 md:h-5 object-contain transition-all duration-300 ${selectedCategory === cat ? 'brightness-0 invert' : ''}`} 
+                          alt="" 
+                        />
+                      )}
+                      <span>{cat}</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
