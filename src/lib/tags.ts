@@ -20,7 +20,6 @@ const TAG_TRANSLATIONS: Record<string, string> = {
   'settling': 'Осваиваюсь',
   'sharing': 'Делюсь опытом',
   'moving_on': 'Переезжаю дальше',
-  'living': 'Живу здесь',
   'settled': 'Уже на месте',
   'resident': 'Местный житель',
 

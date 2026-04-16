@@ -106,7 +106,6 @@ const STAGES = [
   { value: 'settling', label: 'Осваиваюсь', icon: '/assets/icons/custom/people_settling.png' },
   { value: 'sharing', label: 'Делюсь опытом', icon: '/assets/icons/custom/people_sharing.png' },
   { value: 'moving_on', label: 'Переезжаю дальше', icon: '/assets/icons/custom/people_moving.png' },
-  { value: 'living', label: 'Живу здесь', icon: '/assets/icons/custom/people_sharing.png' },
 ];
 
 export function Profile() {
