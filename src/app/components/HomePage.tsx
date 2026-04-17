@@ -426,54 +426,56 @@ export function HomePage() {
                    <Loader2 className="w-8 h-8 animate-spin text-terracotta-deep/20" />
                 </div>
               ) : stories.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {stories.map((story, i) => (
-                    <motion.div
-                      key={story.id}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: i * 0.08 }}
-                      onClick={() => user ? setDetailsStoryId(story.id) : setAuthOpen(true)}
-                      className="bg-white rounded-[32px] p-6 border border-border/40 hover:border-terracotta-deep/30 transition-all cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 group"
-                    >
-                      <div className="flex items-center gap-3 mb-4">
-                        <UserAvatar src={story.author_avatar} name={story.author_name || ''} size="sm" isGuide={story.author_is_guide} />
-                        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                           {story.author_name}
-                        </div>
-                      </div>
-                      <h3 className="font-bold text-lg mb-3 leading-tight group-hover:text-terracotta-deep transition-colors line-clamp-2">
-                        {story.title}
-                      </h3>
-                      <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed mb-4">
-                        {story.content}
-                      </p>
-                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-soft-sand/30">
-                          <div className="flex items-center gap-3">
-                            <span className="text-[10px] text-muted-foreground font-medium">
-                               {formatRelativeRu(new Date(story.created_at))}
-                            </span>
-                            <div className="flex items-center gap-1 text-[10px] text-muted-foreground/60 font-bold">
-                              <MessageCircle className="w-3 h-3" />
-                              {story.comments_count}
-                            </div>
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {stories.map((story, i) => (
+                      <motion.div
+                        key={story.id}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: i * 0.08 }}
+                        onClick={() => user ? setDetailsStoryId(story.id) : setAuthOpen(true)}
+                        className="bg-white rounded-[32px] p-6 border border-border/40 hover:border-terracotta-deep/30 transition-all cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 group"
+                      >
+                        <div className="flex items-center gap-3 mb-4">
+                          <UserAvatar src={story.author_avatar} name={story.author_name || ''} size="sm" isGuide={story.author_is_guide} />
+                          <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                             {story.author_name}
                           </div>
-                         <div className="flex items-center gap-1 text-[10px] font-black text-terracotta-deep uppercase tracking-tighter">
-                            Читать <ArrowRight className="w-3 h-3" />
-                         </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-                {stories.length === 3 && (
-                  <div className="mt-8 flex justify-center">
-                    <Link to="/stories">
-                      <Button variant="ghost" className="text-dusty-indigo hover:text-dusty-indigo/80 font-bold gap-2">
-                        Смотреть все истории <ArrowRight className="w-4 h-4" />
-                      </Button>
-                    </Link>
+                        </div>
+                        <h3 className="font-bold text-lg mb-3 leading-tight group-hover:text-terracotta-deep transition-colors line-clamp-2">
+                          {story.title}
+                        </h3>
+                        <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed mb-4">
+                          {story.content}
+                        </p>
+                        <div className="flex items-center justify-between mt-auto pt-4 border-t border-soft-sand/30">
+                            <div className="flex items-center gap-3">
+                              <span className="text-[10px] text-muted-foreground font-medium">
+                                 {formatRelativeRu(new Date(story.created_at))}
+                              </span>
+                              <div className="flex items-center gap-1 text-[10px] text-muted-foreground/60 font-bold">
+                                <MessageCircle className="w-3 h-3" />
+                                {story.comments_count}
+                              </div>
+                            </div>
+                           <div className="flex items-center gap-1 text-[10px] font-black text-terracotta-deep uppercase tracking-tighter">
+                              Читать <ArrowRight className="w-3 h-3" />
+                           </div>
+                        </div>
+                      </motion.div>
+                    ))}
                   </div>
-                )}
+                  {stories.length === 3 && (
+                    <div className="mt-8 flex justify-center">
+                      <Link to="/stories">
+                        <Button variant="ghost" className="text-dusty-indigo hover:text-dusty-indigo/80 font-bold gap-2">
+                          Смотреть все истории <ArrowRight className="w-4 h-4" />
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="bg-white rounded-[32px] border border-dashed border-border/50 p-12 text-center">
                    <p className="text-muted-foreground">Тут пока пусто. Станьте первым, кто расскажет свою историю!</p>
