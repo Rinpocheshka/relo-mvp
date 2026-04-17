@@ -57,7 +57,7 @@ export function Events() {
   });
 
   const [emblaRefTime] = useEmblaCarousel({ 
-    loop: false, 
+    loop: true, 
     align: 'start',
     dragFree: true
   });
