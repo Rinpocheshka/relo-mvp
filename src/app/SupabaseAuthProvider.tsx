@@ -84,26 +84,31 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
       if (existing) {
         setProfile(existing)
       } else {
-        // Create profile if it doesn't exist
+        // Create profile ONLY if it doesn't exist
         const metadata = user.user_metadata
         const fullName = metadata?.full_name || metadata?.name
         const defaultName = fullName || `User #${user.id.slice(-4)}`
         const avatarUrl = metadata?.avatar_url || null
         
         try {
+          // Use insert instead of upsert to be safe, or just provide role only on creation
           const { data: newProfile, error } = await supabase
             .from('profiles')
-            .upsert({ 
+            .insert({ 
               id: user.id,
               display_name: defaultName,
               avatar_url: avatarUrl,
               role: 'user'
-            }, { onConflict: 'id' })
+            })
             .select()
             .single()
           
           if (!error && newProfile) {
             setProfile(newProfile as Profile)
+          } else if (error && error.code === '23505') {
+            // Conflict (already exists), just fetch it again
+            const refreshed = await fetchProfile(user.id)
+            if (refreshed) setProfile(refreshed)
           }
         } catch (e) {
           console.error('Error creating profile:', e)
