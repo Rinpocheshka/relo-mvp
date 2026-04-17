@@ -391,7 +391,7 @@ export function Layout() {
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-terracotta-deep transition-colors"
                   >
-                    <TelegramIcon /> Написать в поддержку
+                    Написать в поддержку
                   </a>
                 </li>
                 <li><a href="#" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Правила сайта</a></li>
