@@ -131,6 +131,8 @@ export function HomePage() {
   const [detailsStoryId, setDetailsStoryId] = useState<string | null>(null);
   const [storyToEdit, setStoryToEdit] = useState<Story | null>(null);
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const storyParamId = searchParams.get('story');
 
   useEffect(() => {
     if (location.hash === '#stories') {
