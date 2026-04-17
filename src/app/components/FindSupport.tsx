@@ -563,7 +563,7 @@ export function FindSupport() {
         >
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-3">Вопросы и ответы</h1>
           <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
-            Задавай вопросы и получай проверенные ответы от проводников города
+            Здесь делятся опытом и поддержкой: задай вопрос – получишь ответ!
           </p>
         </motion.div>
 
