@@ -399,7 +399,7 @@ export function HomePage() {
             </div>
 
             {/* Relocation Stories Section */}
-            <section className="mb-12">
+            <section id="stories" className="mb-12">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-dusty-indigo/10 flex items-center justify-center">
