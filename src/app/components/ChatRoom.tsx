@@ -95,7 +95,7 @@ export function ChatRoom() {
               className="!border-white !shadow-sm ring-1 ring-border/20"
             >
               {/* Online indicator */}
-              <div className={`absolute bottom-0 left-0 w-3 h-3 border-2 border-white rounded-full transition-colors duration-500 ${status.isOnline ? 'bg-green-500' : 'bg-gray-300'}`} />
+              <div className={`absolute bottom-0 left-0 w-3 h-3 border-2 border-white rounded-full transition-colors duration-500 ${status.isOnline ? 'bg-green-500' : 'bg-amber-400'}`} />
             </UserAvatar>
             <div>
               <h3 className="font-bold text-base md:text-xl leading-tight font-manrope">
