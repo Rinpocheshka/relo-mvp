@@ -373,7 +373,7 @@ export function Layout() {
             <div>
               <h4 className="text-sm font-semibold mb-4 text-foreground">О проекте</h4>
               <ul className="space-y-2.5">
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Подробнее о Relo.me</a></li>
+                <li><a href="#" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Подробнее о <span className="text-warm-olive">Relo me</span></a></li>
                 <li><a href="#" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Стать Проводником города</a></li>
                 <li><a href="#" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Продвижение</a></li>
                 <li><a href="https://tally.so/r/VL106N" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Хочу <span className="text-warm-olive">relome</span> в моем городе</a></li>
