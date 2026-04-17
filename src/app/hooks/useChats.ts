@@ -7,6 +7,7 @@ export interface ChatParticipant {
     display_name: string;
     avatar_url: string;
     is_guide: boolean;
+    last_seen: string | null;
   };
 }
 
@@ -61,7 +62,8 @@ export function useChats(userId: string | undefined) {
             profiles (
               display_name,
               avatar_url,
-              is_guide
+              is_guide,
+              last_seen
             )
           )
         `)

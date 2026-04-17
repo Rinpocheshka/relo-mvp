@@ -40,6 +40,40 @@ export function ChatRoom() {
     if (ok) setInput('');
   };
 
+  const getOnlineStatus = (lastSeen: string | null | undefined): { isOnline: boolean; text: string } => {
+    if (!lastSeen) return { isOnline: false, text: 'Был(а) в сети давно' };
+    
+    const lastSeenDate = new Date(lastSeen);
+    const now = new Date();
+    const diffInMs = now.getTime() - lastSeenDate.getTime();
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+
+    if (diffInMinutes < 5) {
+      return { isOnline: true, text: 'В сети' };
+    }
+
+    if (diffInMinutes < 60) {
+      return { isOnline: false, text: `Был(а) в сети ${diffInMinutes} мин. назад` };
+    }
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+      return { isOnline: false, text: `Был(а) в сети ${diffInHours} ч. назад` };
+    }
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays === 1) {
+      return { isOnline: false, text: 'Был(а) в сети вчера' };
+    }
+
+    return { 
+      isOnline: false, 
+      text: `Был(а) в сети ${lastSeenDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}` 
+    };
+  };
+
+  const status = getOnlineStatus(profiles?.last_seen);
+
   return (
     <div className="fixed inset-0 bg-warm-milk z-[60] flex flex-col md:relative md:inset-auto md:min-h-[calc(100vh-140px)] md:bg-white md:rounded-[32px] md:border md:border-border/40 md:shadow-sm overflow-hidden md:max-w-4xl md:mx-auto md:my-8">
       {/* Header */}
@@ -60,14 +94,16 @@ export function ChatRoom() {
               size="lg" 
               className="!border-white !shadow-sm ring-1 ring-border/20"
             >
-              {/* Online indicator - moved to bottom-left to avoid overlap with guide star */}
-              <div className="absolute bottom-0 left-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
+              {/* Online indicator */}
+              <div className={`absolute bottom-0 left-0 w-3 h-3 border-2 border-white rounded-full transition-colors duration-500 ${status.isOnline ? 'bg-green-500' : 'bg-gray-300'}`} />
             </UserAvatar>
             <div>
               <h3 className="font-bold text-base md:text-xl leading-tight font-manrope">
                 {profiles?.display_name || 'Чат'}
               </h3>
-              <p className="text-[10px] md:text-xs text-green-600 font-bold uppercase tracking-wider">В сети</p>
+              <p className={`text-[10px] md:text-xs font-bold uppercase tracking-wider transition-colors duration-500 ${status.isOnline ? 'text-green-600' : 'text-muted-foreground/60'}`}>
+                {status.text}
+              </p>
             </div>
           </div>
         </div>
