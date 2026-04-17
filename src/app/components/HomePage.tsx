@@ -173,7 +173,7 @@ export function HomePage() {
             story_comments(count)
           `)
           .order('created_at', { ascending: false })
-          .limit(10);
+          .limit(3);
 
         if (!error && data) {
           setStories(data.map(s => ({
@@ -465,6 +465,15 @@ export function HomePage() {
                     </motion.div>
                   ))}
                 </div>
+                {stories.length === 3 && (
+                  <div className="mt-8 flex justify-center">
+                    <Link to="/stories">
+                      <Button variant="ghost" className="text-dusty-indigo hover:text-dusty-indigo/80 font-bold gap-2">
+                        Смотреть все истории <ArrowRight className="w-4 h-4" />
+                      </Button>
+                    </Link>
+                  </div>
+                )}
               ) : (
                 <div className="bg-white rounded-[32px] border border-dashed border-border/50 p-12 text-center">
                    <p className="text-muted-foreground">Тут пока пусто. Станьте первым, кто расскажет свою историю!</p>

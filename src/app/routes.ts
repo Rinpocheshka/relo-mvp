@@ -20,6 +20,7 @@ export const router = createBrowserRouter([
       { path: 'messages', lazy: () => import('./components/MessagesPage').then(m => ({ Component: m.MessagesPage })) },
       { path: 'messages/:chatId', lazy: () => import('./components/ChatRoom').then(m => ({ Component: m.ChatRoom })) },
       { path: 'search', lazy: () => import('./components/SearchResultsPage').then(m => ({ Component: m.SearchResultsPage })) },
+      { path: 'stories', lazy: () => import('./components/StoriesPage').then(m => ({ Component: m.StoriesPage })) },
       { path: '*', lazy: () => import('./components/NotFound').then(m => ({ Component: m.NotFound })) },
     ],
   },
