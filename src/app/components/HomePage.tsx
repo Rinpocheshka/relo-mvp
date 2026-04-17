@@ -563,8 +563,12 @@ function CardItemContent({ person }: { person: Person }) {
           size="xl" 
           className="!shadow-md !border-2 !border-white" 
         >
-          {/* Online indicator - moved to bottom-left to avoid overlap with guide star */}
-          <div className="absolute bottom-0 left-0 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full shadow-sm" title="В сети" />
+          {/* Online indicator */}
+          <div className={`absolute bottom-0 left-0 w-4 h-4 border-2 border-white rounded-full shadow-sm transition-colors duration-500 ${
+            person.last_seen && (new Date().getTime() - new Date(person.last_seen).getTime() < 5 * 60 * 1000)
+              ? 'bg-green-500' 
+              : 'bg-amber-400'
+          }`} title={person.last_seen && (new Date().getTime() - new Date(person.last_seen).getTime() < 5 * 60 * 1000) ? "В сети" : "Был в сети недавно"} />
         </UserAvatar>
         <div>
           <h3 className="font-bold text-lg text-foreground group-hover:text-terracotta-deep transition-colors w-full truncate">
