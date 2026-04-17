@@ -59,10 +59,7 @@ export function Events() {
   const [emblaRefTime] = useEmblaCarousel({ 
     loop: false, 
     align: 'start',
-    dragFree: true,
-    breakpoints: {
-      '(min-width: 640px)': { active: false }
-    }
+    dragFree: true
   });
 
   const handleToggleAttendance = async (event: Event) => {
@@ -313,8 +310,8 @@ export function Events() {
                 <Clock className="w-4 h-4 text-muted-foreground" />
                 <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Когда</span>
               </div>
-              <div className="relative w-full overflow-visible -mx-4 uppercase px-5 sm:px-0" ref={emblaRefTime}>
-                <div className="flex sm:flex-wrap gap-2.5 py-2 scrollbar-hide">
+              <div className="relative w-full overflow-hidden -mx-4 uppercase px-5 sm:px-0" ref={emblaRefTime}>
+                <div className="flex gap-2.5 py-2 scrollbar-hide">
                   {timeFilters.map((filter) => (
                     <div key={filter} className="flex-shrink-0">
                       <button
