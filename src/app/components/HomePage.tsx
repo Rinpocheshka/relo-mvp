@@ -64,7 +64,7 @@ const stageContent = {
       { text: 'Написать местным', icon: '/assets/icons/custom/people_tab.png', link: '/people' },
     ],
     sections: [
-      { icon: '/assets/icons/custom/support_tab.png', title: 'Ответы на вопросы «А как проще…»', subtitle: 'Найти опору', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
+      { icon: '/assets/icons/custom/support_tab.png', title: 'Ответы на вопросы «А как проще…»', subtitle: 'База знаний', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
       { icon: '/assets/icons/custom/category_housing.png', title: 'Актуальные объявления: жильё, услуги', subtitle: 'Объявления', link: '/announcements', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
       { icon: '/assets/icons/custom/events_all.png', title: 'Что происходит в Дананге?', subtitle: 'Афиша', link: '/events', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
     ],
@@ -80,7 +80,7 @@ const stageContent = {
     ],
     sections: [
       { icon: '/assets/icons/custom/category_housing.png', title: 'Самое актуальное на первое время', subtitle: 'Объявления', link: '/announcements', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
-      { icon: '/assets/icons/custom/support_tab.png', title: 'Честные вопросы и ответы на них', subtitle: 'Найти опору', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
+      { icon: '/assets/icons/custom/support_tab.png', title: 'Честные вопросы и ответы на них', subtitle: 'База знаний', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
       { icon: '/assets/icons/custom/events_all.png', title: 'Всегда есть куда сходить', subtitle: 'Афиша', link: '/events', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
     ],
   },
@@ -96,7 +96,7 @@ const stageContent = {
     sections: [
       { icon: '/assets/icons/custom/people_tab.png', title: 'Люди, которым ты можешь помочь', subtitle: 'Люди рядом', link: '/people', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
       { icon: '/assets/icons/custom/events_all.png', title: 'Организовать свою встречу', subtitle: 'Афиша', link: '/events', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
-      { icon: '/assets/icons/custom/support_tab.png', title: 'Ответить на вопросы новичков', subtitle: 'Найти опору', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
+      { icon: '/assets/icons/custom/support_tab.png', title: 'Ответить на вопросы новичков', subtitle: 'База знаний', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
     ],
   },
   leaving: {
@@ -111,7 +111,7 @@ const stageContent = {
     sections: [
       { icon: '/assets/icons/custom/category_housing.png', title: 'Продать то, что не влезет в чемодан', subtitle: 'Объявления', link: '/announcements', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
       { icon: '/assets/icons/custom/events_all.png', title: 'Сделать отвальную или встречу', subtitle: 'Афиша', link: '/events', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
-      { icon: '/assets/icons/custom/support_tab.png', title: 'Поделиться своими лайфхаками', subtitle: 'Найти опору', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
+      { icon: '/assets/icons/custom/support_tab.png', title: 'Поделиться своими лайфхаками', subtitle: 'База знаний', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
     ],
   },
 };
