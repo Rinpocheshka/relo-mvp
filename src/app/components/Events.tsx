@@ -56,6 +56,15 @@ export function Events() {
     }
   });
 
+  const [emblaRefTime] = useEmblaCarousel({ 
+    loop: false, 
+    align: 'start',
+    dragFree: true,
+    breakpoints: {
+      '(min-width: 640px)': { active: false }
+    }
+  });
+
   const handleToggleAttendance = async (event: Event) => {
     if (!user) {
       setIsAuthModalOpen(true);
@@ -304,20 +313,21 @@ export function Events() {
                 <Clock className="w-4 h-4 text-muted-foreground" />
                 <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Когда</span>
               </div>
-              <div className="relative w-full overflow-visible -mx-4">
-                <div className="flex gap-2.5 overflow-x-auto py-2 px-5 scrollbar-hide">
+              <div className="relative w-full overflow-visible -mx-4 uppercase px-5 sm:px-0" ref={emblaRefTime}>
+                <div className="flex sm:flex-wrap gap-2.5 py-2 scrollbar-hide">
                   {timeFilters.map((filter) => (
-                    <button
-                      key={filter}
-                      onClick={() => setTimeFilter(filter)}
-                      className={`flex-shrink-0 px-5 md:px-6 py-2.5 sm:py-3 rounded-full whitespace-nowrap transition-all font-bold border shadow-sm ${
-                        timeFilter === filter
-                          ? 'bg-warm-olive text-white border-warm-olive shadow-md shadow-warm-olive/10'
-                          : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground'
-                      }`}
-                    >
-                      <span className="text-xs sm:text-sm">{filter}</span>
-                    </button>
+                    <div key={filter} className="flex-shrink-0">
+                      <button
+                        onClick={() => setTimeFilter(filter)}
+                        className={`px-5 md:px-6 py-2.5 sm:py-3 rounded-full whitespace-nowrap transition-all font-bold border shadow-sm ${
+                          timeFilter === filter
+                            ? 'bg-warm-olive text-white border-warm-olive shadow-md shadow-warm-olive/10'
+                            : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground'
+                        }`}
+                      >
+                        <span className="text-xs sm:text-sm">{filter}</span>
+                      </button>
+                    </div>
                   ))}
                 </div>
               </div>
