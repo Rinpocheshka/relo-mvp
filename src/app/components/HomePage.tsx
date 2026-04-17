@@ -38,87 +38,75 @@ interface Story {
   comments_count?: number;
 }
 
-type Stage = 'planning' | 'living' | 'helping' | 'leaving';
+type Stage = 'planning' | 'just_arrived' | 'settling' | 'sharing' | 'moving_on';
 
 // ─── Stage label mapping (supports legacy & new values) ──────────────────────
 const STAGE_LABEL_MAP: Record<string, Stage> = {
   'planning': 'planning',
   'Планирую переезд': 'planning',
-  'living': 'living',
-  'Уже здесь': 'living',
-  'helping': 'helping',
-  'Помогаю другим': 'helping',
-  'leaving': 'leaving',
-  'Уезжаю': 'leaving',
+  'living': 'settling',
+  'just_arrived': 'just_arrived',
+  'Только приехал': 'just_arrived',
+  'settling': 'settling',
+  'Осваиваюсь': 'settling',
+  'helping': 'sharing',
+  'sharing': 'sharing',
+  'Делюсь опытом': 'sharing',
+  'leaving': 'moving_on',
+  'moving_on': 'moving_on',
+  'Переезжаю дальше': 'moving_on',
 };
+
+const commonSections = [
+  { icon: '/assets/icons/custom/support_tab.png', title: 'Ответы на ваши вопросы «А как проще…»', subtitle: 'База знаний', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
+  { icon: '/assets/icons/custom/category_housing.png', title: 'Актуальные объявления: Жилье, услуги, вещи', subtitle: 'Объявления', link: '/announcements', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
+  { icon: '/assets/icons/custom/events_all.png', title: 'Куда сходить в городе', subtitle: 'Афиша', link: '/events', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
+];
+
+const commonQuickLinks = [
+  { text: 'Жильё и сервисы', icon: '/assets/icons/custom/category_housing.png', link: '/announcements?category=housing' },
+  { text: 'Куда сходить', icon: '/assets/icons/custom/events_all.png', link: '/events' },
+  { text: 'Найти своих', icon: '/assets/icons/custom/people_tab.png', link: '/people' },
+  { text: 'Получить совет', icon: '/assets/icons/custom/support_tab.png', link: '/support' },
+];
 
 // ─── Stage content ─────────────────────────────────────────────────────────────
 const stageContent = {
   planning: {
     greeting: 'Переезд — это не про чемоданы.\nЭто про то, как создать новую жизнь.',
-    warmth: 'Ты выбираешь куда переехать. Посмотри, что происходит в Дананге, пообщайся с теми, кто уже там.',
-    quickLinks: [
-      { text: 'Найти жильё', icon: '/assets/icons/custom/category_housing.png', link: '/announcements?category=housing' },
-      { text: 'Найти ответы', icon: '/assets/icons/custom/support_tab.png', link: '/support' },
-      { text: 'События', icon: '/assets/icons/custom/events_all.png', link: '/events' },
-      { text: 'Написать местным', icon: '/assets/icons/custom/people_tab.png', link: '/people' },
-    ],
-    sections: [
-      { icon: '/assets/icons/custom/support_tab.png', title: 'Ответы на вопросы «А как проще…»', subtitle: 'База знаний', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
-      { icon: '/assets/icons/custom/category_housing.png', title: 'Актуальные объявления: жильё, услуги', subtitle: 'Объявления', link: '/announcements', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
-      { icon: '/assets/icons/custom/events_all.png', title: 'Что происходит в Дананге?', subtitle: 'Афиша', link: '/events', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
-    ],
+    warmth: 'Ты выбираешь куда переехать. Посмотри, что происходит в городе, пообщайся с теми, кто уже там.',
+    quickLinks: commonQuickLinks,
+    sections: commonSections,
   },
-  living: {
+  just_arrived: {
     greeting: 'Здесь есть люди, которые проходят тот же путь.',
     warmth: 'Первые дни в новом городе — давай разберёмся вместе.',
-    quickLinks: [
-      { text: 'Жильё и сервисы', icon: '/assets/icons/custom/category_housing.png', link: '/announcements?category=housing' },
-      { text: 'Куда сходить', icon: '/assets/icons/custom/events_all.png', link: '/events' },
-      { text: 'Найти своих', icon: '/assets/icons/custom/people_tab.png', link: '/people' },
-      { text: 'Получить совет', icon: '/assets/icons/custom/support_tab.png', link: '/support' },
-    ],
-    sections: [
-      { icon: '/assets/icons/custom/category_housing.png', title: 'Самое актуальное на первое время', subtitle: 'Объявления', link: '/announcements', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
-      { icon: '/assets/icons/custom/support_tab.png', title: 'Честные вопросы и ответы на них', subtitle: 'База знаний', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
-      { icon: '/assets/icons/custom/events_all.png', title: 'Всегда есть куда сходить', subtitle: 'Афиша', link: '/events', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
-    ],
+    quickLinks: commonQuickLinks,
+    sections: commonSections,
   },
-  helping: {
+  settling: {
+    greeting: 'Здесь есть люди, которые проходят тот же путь.',
+    warmth: 'Первые дни в новом городе — давай разберёмся вместе.',
+    quickLinks: commonQuickLinks,
+    sections: commonSections,
+  },
+  sharing: {
     greeting: 'Ты уже часть этого города —\nтебе есть чем поделиться 🌿',
     warmth: 'Активные пользователи видны лучше и помогают сообществу расти. Спасибо, что ты здесь!',
-    quickLinks: [
-      { text: 'Помочь новичкам', icon: '/assets/icons/custom/people_tab.png', link: '/people?filter=newcomers' },
-      { text: 'Провести событие', icon: '/assets/icons/custom/events_all.png', link: '/events/create' },
-      { text: 'Продать вещи', icon: '/assets/icons/custom/category_stuff.png', link: '/announcements' },
-      { text: 'Ответить на вопросы', icon: '/assets/icons/custom/support_tab.png', link: '/support' },
-    ],
-    sections: [
-      { icon: '/assets/icons/custom/people_tab.png', title: 'Люди, которым ты можешь помочь', subtitle: 'Люди рядом', link: '/people', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
-      { icon: '/assets/icons/custom/events_all.png', title: 'Организовать свою встречу', subtitle: 'Афиша', link: '/events', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
-      { icon: '/assets/icons/custom/support_tab.png', title: 'Ответить на вопросы новичков', subtitle: 'База знаний', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
-    ],
+    quickLinks: commonQuickLinks,
+    sections: commonSections,
   },
-  leaving: {
+  moving_on: {
     greeting: 'Освободи место\nдля нового опыта 👋',
     warmth: 'Уезжать — это тоже начало. Продай ненужное, сохрани контакты и передай эстафету.',
-    quickLinks: [
-      { text: 'Продать вещи', icon: '/assets/icons/custom/category_stuff.png', link: '/announcements?category=items' },
-      { text: 'Пересдать квартиру', icon: '/assets/icons/custom/category_housing.png', link: '/announcements?category=housing' },
-      { text: 'Сделать отвальную', icon: '/assets/icons/custom/events_all.png', link: '/events' },
-      { text: 'Сохранить контакты', icon: '/assets/icons/custom/people_tab.png', link: '/people' },
-    ],
-    sections: [
-      { icon: '/assets/icons/custom/category_housing.png', title: 'Продать то, что не влезет в чемодан', subtitle: 'Объявления', link: '/announcements', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
-      { icon: '/assets/icons/custom/events_all.png', title: 'Сделать отвальную или встречу', subtitle: 'Афиша', link: '/events', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
-      { icon: '/assets/icons/custom/support_tab.png', title: 'Поделиться своими лайфхаками', subtitle: 'База знаний', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
-    ],
+    quickLinks: commonQuickLinks,
+    sections: commonSections,
   },
 };
 
 export function HomePage() {
   const { session, user, profile } = useAuth();
-  const [currentStage, setCurrentStage] = useState<Stage>('living');
+  const [currentStage, setCurrentStage] = useState<Stage>('settling');
   const [city, setCity] = useState('Дананг');
   const [nearbyPeople, setNearbyPeople] = useState<Person[]>([]);
   const [peopleLoading, setPeopleLoading] = useState(true);
@@ -161,7 +149,7 @@ export function HomePage() {
         if (parsed.city) setCity(parsed.city);
       }
       if (storedStage) {
-        const mapped = STAGE_LABEL_MAP[storedStage] || 'living';
+        const mapped = STAGE_LABEL_MAP[storedStage] || 'settling';
         setCurrentStage(mapped);
       }
     } catch {
