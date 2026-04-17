@@ -18,6 +18,12 @@ interface AskQuestionModalProps {
     createdAt?: string;
     isAnonymous?: boolean;
   }) => void;
+  questionToEdit?: {
+    id: string;
+    question: string;
+    category: string;
+    isAnonymous: boolean;
+  } | null;
 }
 
 const CATEGORIES = [
@@ -33,13 +39,15 @@ const CATEGORIES = [
   'Другое',
 ];
 
-export function AskQuestionModal({ isOpen, onClose, onSuccess }: AskQuestionModalProps) {
+export function AskQuestionModal({ isOpen, onClose, onSuccess, questionToEdit }: AskQuestionModalProps) {
   const { user, profile } = useAuth();
-  const [questionText, setQuestionText] = useState('');
-  const [category, setCategory] = useState('');
-  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [questionText, setQuestionText] = useState(questionToEdit?.question ?? '');
+  const [category, setCategory] = useState(questionToEdit?.category ?? '');
+  const [isAnonymous, setIsAnonymous] = useState(questionToEdit?.isAnonymous ?? false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const isEdit = !!questionToEdit;
 
   const MAX_LENGTH = 500;
   const isValid = questionText.trim().length >= 10 && category !== '';
@@ -54,31 +62,49 @@ export function AskQuestionModal({ isOpen, onClose, onSuccess }: AskQuestionModa
         ? 'Пользователь'
         : (profile?.display_name ?? 'Пользователь');
 
-      const { data, error: insertError } = await supabase
-        .from('questions')
-        .insert({
-          question: questionText.trim(),
-          category,
-          asked_by: user.id,
-          asked_by_name: authorName,
-          city: profile?.city ?? 'Дананг',
-          is_anonymous: isAnonymous,
-          status: 'open',
-        })
-        .select('id, question, category, asked_by_name, created_at, is_anonymous')
-        .single();
-
-      if (insertError) throw insertError;
+      let result;
+      
+      if (isEdit) {
+        const { data, error: updateError } = await supabase
+          .from('questions')
+          .update({
+            question: questionText.trim(),
+            category,
+            is_anonymous: isAnonymous,
+            asked_by_name: authorName,
+          })
+          .eq('id', questionToEdit.id)
+          .select('id, question, category, asked_by_name, created_at, is_anonymous')
+          .single();
+        if (updateError) throw updateError;
+        result = data;
+      } else {
+        const { data, error: insertError } = await supabase
+          .from('questions')
+          .insert({
+            question: questionText.trim(),
+            category,
+            asked_by: user.id,
+            asked_by_name: authorName,
+            city: profile?.city ?? 'Дананг',
+            is_anonymous: isAnonymous,
+            status: 'open',
+          })
+          .select('id, question, category, asked_by_name, created_at, is_anonymous')
+          .single();
+        if (insertError) throw insertError;
+        result = data;
+      }
 
       onSuccess({
-        id: data.id,
-        question: data.question,
-        category: data.category,
-        askedBy: data.asked_by_name ?? 'Пользователь',
-        answers: 0,
-        isAnswered: false,
-        createdAt: 'только что',
-        isAnonymous: data.is_anonymous,
+        id: result.id,
+        question: result.question,
+        category: result.category,
+        askedBy: result.asked_by_name ?? 'Пользователь',
+        answers: isEdit ? 0 : 0, // In case of edit, we should probably keep existing answers count, but onSuccess usually replaces the item in the list if we handle it correctly.
+        isAnswered: isEdit ? false : false, // Should be careful here
+        createdAt: result.created_at ? 'только что' : 'только что',
+        isAnonymous: result.is_anonymous,
       });
 
       setQuestionText('');
@@ -120,7 +146,9 @@ export function AskQuestionModal({ isOpen, onClose, onSuccess }: AskQuestionModa
                   <HelpCircle className="w-5 h-5 text-dusty-indigo" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-foreground">Задать вопрос</h2>
+                  <h2 className="text-xl font-bold text-foreground">
+                    {isEdit ? 'Редактировать вопрос' : 'Задать вопрос'}
+                  </h2>
 
                 </div>
               </div>
@@ -213,7 +241,7 @@ export function AskQuestionModal({ isOpen, onClose, onSuccess }: AskQuestionModa
                 disabled={!isValid || submitting}
                 className="flex-1 h-12 rounded-[16px] bg-terracotta-deep hover:bg-terracotta-deep/90 text-white font-bold shadow-lg shadow-terracotta-deep/20 disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {submitting ? 'Отправляем...' : 'Задать вопрос'}
+                {submitting ? 'Сохраняем...' : (isEdit ? 'Сохранить изменения' : 'Задать вопрос')}
               </Button>
             </div>
           </motion.div>

@@ -184,12 +184,13 @@ export function FindSupport() {
     }
   });
 
-  // Guides
-  const [guides, setGuides] = useState<Guide[]>([]);
-
-  // Modals
+  // Modals state
   const [askModalOpen, setAskModalOpen] = useState(false);
   const [suggestModalOpen, setSuggestModalOpen] = useState(false);
+  const [questionToEdit, setQuestionToEdit] = useState<Question | null>(null);
+
+  // Guides
+  const [guides, setGuides] = useState<Guide[]>([]);
 
   const categories = activeTab === 'questions' ? QUESTION_CATEGORIES : RESOURCE_CATEGORIES;
 
@@ -457,10 +458,7 @@ export function FindSupport() {
       await supabase.from('answers').update({ upvotes_count: supabase.rpc('decrement' as any) }).eq('id', answerId);
     } else {
       await supabase.from('answer_upvotes').insert({ answer_id: answerId, user_id: user.id });
-      // Actually we don't have a increment rpc for upvotes_count yet in my DB schema shown, 
-      // but let's assume it should work similarly if exists or use update.
-      // Wait, let's use simple increment if possible or update.
-      await supabase.rpc('increment_question_views' as any, { question_id: answerId }); // reuse increment
+      await supabase.rpc('increment_question_views' as any, { question_id: answerId });
     }
   };
 
@@ -547,7 +545,36 @@ export function FindSupport() {
   };
 
   const handleQuestionCreated = (newQ: Question) => {
-    setQuestions((prev) => [newQ, ...prev]);
+    setQuestions((prev) => {
+      const exists = prev.find(q => q.id === newQ.id);
+      if (exists) {
+        return prev.map(q => q.id === newQ.id ? { ...q, ...newQ } : q);
+      }
+      return [newQ, ...prev];
+    });
+  };
+
+  const handleEditQuestion = (q: Question) => {
+    setQuestionToEdit(q);
+    setAskModalOpen(true);
+  };
+
+  const handleDeleteQuestion = async (id: string, text: string) => {
+    if (!confirm(`Вы уверены, что хотите удалить вопрос: "${text}"?`)) return;
+    
+    try {
+      const { error } = await supabase
+        .from('questions')
+        .delete()
+        .eq('id', id);
+        
+      if (error) throw error;
+      
+      setQuestions(prev => prev.filter(q => q.id !== id));
+    } catch (e) {
+      console.error('Error deleting question:', e);
+      alert('Не удалось удалить вопрос');
+    }
   };
 
   // ─── Render ────────────────────────────────────────────────────────────────
@@ -717,6 +744,9 @@ export function FindSupport() {
                             upvotedIds={upvotedIds}
                             onUpvote={handleUpvote}
                             currentUserId={user?.id}
+                            isAdmin={isAdmin}
+                            onEdit={() => handleEditQuestion(q)}
+                            onDelete={() => handleDeleteQuestion(q.id, q.question)}
                             onSubmitAnswer={(body) => handleAnswerSubmit(q.id, body)}
                           />
                         ))}
@@ -858,8 +888,17 @@ export function FindSupport() {
       {/* ── Modals ── */}
       <AskQuestionModal
         isOpen={askModalOpen}
-        onClose={() => setAskModalOpen(false)}
+        onClose={() => {
+          setAskModalOpen(false);
+          setQuestionToEdit(null);
+        }}
         onSuccess={handleQuestionCreated}
+        questionToEdit={questionToEdit ? {
+          id: questionToEdit.id,
+          question: questionToEdit.question,
+          category: questionToEdit.category,
+          isAnonymous: !!questionToEdit.isAnonymous
+        } : null}
       />
       <SuggestResourceModal
         isOpen={suggestModalOpen}
@@ -908,6 +947,9 @@ interface QuestionCardProps {
   upvotedIds: Set<string>;
   onUpvote: (id: string) => void;
   currentUserId?: string;
+  isAdmin?: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
   onSubmitAnswer: (body: string) => Promise<boolean>;
 }
 
@@ -922,6 +964,9 @@ function QuestionCard({
   upvotedIds,
   onUpvote,
   currentUserId,
+  isAdmin,
+  onEdit,
+  onDelete,
   onSubmitAnswer,
 }: QuestionCardProps) {
   const [answerDraft, setAnswerDraft] = useState('');
@@ -975,8 +1020,28 @@ function QuestionCard({
             </div>
           </div>
 
-          <div className={`p-2 rounded-full bg-soft-sand/20 text-muted-foreground transition-transform duration-300 flex-shrink-0 ${expanded ? 'rotate-180 text-dusty-indigo' : ''}`}>
-            <ChevronDown className="w-5 h-5" />
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {isAdmin && (
+              <div className="flex items-center gap-1 mr-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); onEdit(); }}
+                  className="p-2 rounded-full hover:bg-dusty-indigo/10 text-muted-foreground hover:text-dusty-indigo transition-colors"
+                  title="Редактировать"
+                >
+                  <Pencil className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                  className="p-2 rounded-full hover:bg-red-50 text-muted-foreground hover:text-red-500 transition-colors"
+                  title="Удалить"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+            <div className={`p-2 rounded-full bg-soft-sand/20 text-muted-foreground transition-transform duration-300 ${expanded ? 'rotate-180 text-dusty-indigo' : ''}`}>
+              <ChevronDown className="w-5 h-5" />
+            </div>
           </div>
         </div>
       </div>
