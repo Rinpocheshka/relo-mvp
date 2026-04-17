@@ -494,17 +494,17 @@ export function HomePage() {
             
             {/* Cooperation & Suggestions Block */}
             <div className="mt-8 bg-white rounded-[32px] p-8 border border-border/40 shadow-sm text-center">
-              <p className="text-lg md:text-xl font-medium text-foreground mb-4">
-                Хочешь добавить что-то еще? Есть предложения по сотрудничеству? — пиши
+              <p className="text-lg md:text-xl font-medium text-foreground">
+                Хочешь добавить что-то еще? Есть предложения по сотрудничеству? —{' '}
+                <a 
+                  href="https://t.me/Relome_help" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-terracotta-deep hover:text-terracotta-deep/80 underline decoration-2 underline-offset-4 transition-all"
+                >
+                  пиши
+                </a>
               </p>
-              <a 
-                href="https://t.me/Relome_help" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-terracotta-deep hover:text-terracotta-deep/80 font-bold transition-all text-lg"
-              >
-                <MessageCircle className="w-5 h-5" /> @Relome_help
-              </a>
             </div>
 
           </motion.div>
