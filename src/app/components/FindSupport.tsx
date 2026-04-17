@@ -597,7 +597,7 @@ export function FindSupport() {
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                placeholder={activeTab === 'questions' ? 'Поиск по вопросам...' : 'Поиск по ресурсам...'}
+                placeholder={activeTab === 'questions' ? 'Что узнаем про жизнь здесь сегодня?' : 'Поиск по ресурсам...'}
                 className="w-full pl-12 pr-4 py-3.5 md:py-4 bg-white border border-border/50 rounded-[16px] md:rounded-[20px] focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20 shadow-sm text-sm md:text-base"
               />
             </div>
