@@ -310,7 +310,7 @@ export function Events() {
                 <Clock className="w-4 h-4 text-muted-foreground" />
                 <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Когда</span>
               </div>
-              <div className="relative w-full overflow-hidden -mx-4 uppercase px-5 sm:px-0" ref={emblaRefTime}>
+              <div className="relative w-full overflow-hidden -mx-4 sm:mx-0 uppercase px-5 sm:px-0" ref={emblaRefTime}>
                 <div className="flex gap-2.5 py-2 scrollbar-hide">
                   {timeFilters.map((filter) => (
                     <div key={filter} className="flex-shrink-0">
