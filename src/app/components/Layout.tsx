@@ -365,7 +365,7 @@ export function Layout() {
                 <li><Link to="/events" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Афиша</Link></li>
                 <li><Link to="/people" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Люди рядом</Link></li>
                 <li><Link to="/support" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">База знаний</Link></li>
-                <li><Link to="/stories" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Истории релокации</Link></li>
+                <li><a href="https://relo-mvp.vercel.app/stories" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Истории релокации</a></li>
               </ul>
             </div>
 
