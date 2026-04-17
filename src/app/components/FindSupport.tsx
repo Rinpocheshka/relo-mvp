@@ -887,6 +887,7 @@ export function FindSupport() {
 
       {/* ── Modals ── */}
       <AskQuestionModal
+        key={questionToEdit?.id ?? 'new-question'}
         isOpen={askModalOpen}
         onClose={() => {
           setAskModalOpen(false);
