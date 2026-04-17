@@ -9,6 +9,7 @@ import {
   ChevronDown,
   Plus,
   ThumbsUp,
+  CheckCircle2,
   ExternalLink,
   SortDesc,
   Loader2,
