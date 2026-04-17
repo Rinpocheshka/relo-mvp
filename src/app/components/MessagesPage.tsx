@@ -95,7 +95,14 @@ export function MessagesPage() {
                     </h4>
                     <div className="flex items-center gap-1 text-[10px] md:text-xs text-muted-foreground whitespace-nowrap ml-2">
                        <Clock className="w-3 h-3" />
-                       {new Date(chat.last_message_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                       {(() => {
+                         const d = new Date(chat.last_message_at);
+                         const isToday = d.toDateString() === new Date().toDateString();
+                         const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                         if (isToday) return time;
+                         const date = d.toLocaleDateString([], { day: '2-digit', month: '2-digit' });
+                         return `${date} ${time}`;
+                       })()}
                     </div>
                   </div>
                   <p className="text-sm text-muted-foreground/80 line-clamp-1 leading-relaxed">
