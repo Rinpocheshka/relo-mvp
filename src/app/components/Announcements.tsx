@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router';
 import { motion } from 'motion/react';
-import { Megaphone, Search, Plus, Home, Briefcase, Heart, ChevronDown } from 'lucide-react';
+import { Megaphone, Search, Plus, Home, Briefcase, Heart, ChevronDown as ChevronDownIcon } from 'lucide-react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { Button } from './ui/button';
 import { Link } from 'react-router';
@@ -269,7 +269,7 @@ export function Announcements() {
                 <option value="Дананг, Вьетнам">Дананг</option>
                 <option value="Вьетнам">Весь Вьетнам</option>
               </select>
-              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none group-hover:text-terracotta-deep transition-colors" />
+              <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none group-hover:text-terracotta-deep transition-colors" />
             </div>
 
             {/* Sort */}
@@ -283,7 +283,7 @@ export function Announcements() {
                 <option value="price_asc">Дешевле</option>
                 <option value="price_desc">Дороже</option>
               </select>
-              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none group-hover:text-terracotta-deep transition-colors" />
+              <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none group-hover:text-terracotta-deep transition-colors" />
             </div>
 
             {/* Add Button */}

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Megaphone, Loader2, CheckCircle2, ImagePlus, Trash2 } from 'lucide-react';
+import { X, Megaphone, Loader2, CheckCircle2, ImagePlus, Trash2, ChevronDown as ChevronDownIcon } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '../SupabaseAuthProvider';
 import { supabase } from '@/lib/supabaseClient';
@@ -396,7 +396,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
                           <option value="Вьетнам">🇻🇳 Весь Вьетнам</option>
                           <option value="Дананг, Вьетнам">🏙️ Дананг</option>
                         </select>
-                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                        <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                       </div>
                     </div>
                     {/* Price Text */}
