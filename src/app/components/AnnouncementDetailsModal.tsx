@@ -192,7 +192,10 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
                     <div className="flex flex-wrap gap-4 text-sm text-muted-foreground font-medium">
                       <div className="flex items-start gap-2 bg-white/80 border border-border/40 px-3 py-1.5 rounded-xl">
                         <MapPin className="w-4 h-4 text-terracotta-deep shrink-0 mt-0.5" />
-                        <span className="break-words min-w-0">{announcement.location_text}</span>
+                        <span className="break-words min-w-0">
+                          {announcement.city === 'Вьетнам' ? '🇻🇳 Весь Вьетнам' : '🏙️ Дананг'}
+                          {announcement.location_text ? `, ${announcement.location_text}` : ''}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2 bg-white/80 border border-border/40 px-3 py-1.5 rounded-xl">
                         <Calendar className="w-4 h-4 text-dusty-indigo" />

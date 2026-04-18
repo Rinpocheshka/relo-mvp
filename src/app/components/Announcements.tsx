@@ -25,6 +25,7 @@ export interface Announcement {
   created_at: string;
   images: string[];
   author_id: string;
+  city: string;
   status: string;
 }
 
@@ -36,6 +37,7 @@ export function Announcements() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<'newest' | 'price_asc' | 'price_desc'>('newest');
+  const [selectedCity, setSelectedCity] = useState('Все');
   const PAGE_SIZE = 27;
 
 
@@ -105,6 +107,7 @@ export function Announcements() {
             created_at: data.created_at || '',
             images: data.images || [],
             author_id: data.author_id || '',
+            city: data.city || 'Дананг, Вьетнам',
             status: data.status || 'active',
           };
           setSelectedAnnouncement(mapped);
@@ -122,6 +125,12 @@ export function Announcements() {
       let query = supabase
         .from('announcements')
         .select('*', { count: 'exact' });
+
+      if (selectedCity !== 'Все') {
+        // Map friendly labels to technical values if needed, 
+        // but here we use the values we saved: "Вьетнам" or "Дананг, Вьетнам"
+        query = query.eq('city', selectedCity);
+      }
 
       // Apply sorting
       if (sortBy === 'newest') {
@@ -153,6 +162,7 @@ export function Announcements() {
         created_at: (row.created_at ?? '') as string,
         images: (row.images ?? []) as string[],
         author_id: (row.author_id ?? '') as string,
+        city: (row.city ?? 'Дананг, Вьетнам') as string,
         status: (row.status ?? 'active') as string,
       }));
       setAnnouncements(mapped);
@@ -166,7 +176,7 @@ export function Announcements() {
 
   useEffect(() => {
     void fetchData();
-  }, [page, sortBy]);
+  }, [page, sortBy, selectedCity]);
 
   const filteredAnnouncements = useMemo(() => {
     if (selectedCategory === 'Все') return announcements;
@@ -245,6 +255,23 @@ export function Announcements() {
           </div>
           
           <div className="flex gap-2 items-stretch h-11 md:h-12">
+            {/* City Filter */}
+            <div className="relative flex-shrink-0 group">
+              <select
+                value={selectedCity}
+                onChange={(e) => {
+                  setSelectedCity(e.target.value);
+                  setPage(1);
+                }}
+                className="appearance-none h-full pl-4 pr-10 bg-white border border-border/60 rounded-2xl focus:outline-none focus:ring-4 focus:ring-terracotta-deep/5 focus:border-terracotta-deep/40 text-[13px] md:text-sm font-semibold shadow-sm cursor-pointer transition-all pr-12"
+              >
+                <option value="Все">🏙️ Все города</option>
+                <option value="Дананг, Вьетнам">Дананг</option>
+                <option value="Вьетнам">Весь Вьетнам</option>
+              </select>
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none group-hover:text-terracotta-deep transition-colors" />
+            </div>
+
             {/* Sort */}
             <div className="relative flex-shrink-0 group">
               <select

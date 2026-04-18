@@ -38,6 +38,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
     price_numeric: '',
     location_text: '',
     description: '',
+    city: 'Дананг, Вьетнам',
   });
   const [existingImages, setExistingImages] = useState<string[]>([]);
 
@@ -50,6 +51,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
         price_numeric: announcementToEdit.price_numeric?.toString() || '',
         location_text: announcementToEdit.location_text || '',
         description: announcementToEdit.description || '',
+        city: announcementToEdit.city || 'Дананг, Вьетнам',
       });
       setExistingImages(announcementToEdit.images || []);
       setSelectedAttachments([]);
@@ -61,6 +63,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
         price_numeric: '',
         location_text: '',
         description: '',
+        city: profile?.city || 'Дананг, Вьетнам',
       });
       setExistingImages([]);
       setSelectedAttachments([]);
@@ -195,7 +198,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
           description: form.description,
           author_id: user.id,
           author_name: profile.display_name || 'Пользователь',
-          city: profile.city || 'Дананг',
+          city: form.city,
           status: 'active',
           images: finalImages
         };
@@ -219,6 +222,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
           price_numeric: '',
           location_text: '',
           description: '',
+          city: profile?.city || 'Дананг, Вьетнам',
         });
         setSelectedAttachments([]);
       }, 2000);
@@ -379,7 +383,22 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
                     />
                   </div>
 
-                  <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    {/* City Selection */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold ml-1">Город</label>
+                      <div className="relative">
+                        <select 
+                          className="w-full p-4 pr-10 bg-soft-sand/20 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm appearance-none cursor-pointer font-medium"
+                          value={form.city}
+                          onChange={(e) => setForm({ ...form, city: e.target.value })}
+                        >
+                          <option value="Вьетнам">🇻🇳 Весь Вьетнам</option>
+                          <option value="Дананг, Вьетнам">🏙️ Дананг</option>
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                      </div>
+                    </div>
                     {/* Price Text */}
                     <div className="space-y-2">
                       <div className="flex justify-between items-center ml-1">
@@ -410,7 +429,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
                         required
                         type="text"
                         maxLength={30}
-                        placeholder="Напр: Сон Тра, Дананг"
+                        placeholder="Напр: Сон Тра"
                         value={form.location_text}
                         onChange={(e) => setForm({ ...form, location_text: e.target.value })}
                         className="w-full p-4 bg-soft-sand/20 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 text-sm"
