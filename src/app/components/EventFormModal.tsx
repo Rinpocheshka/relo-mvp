@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Calendar, MapPin, Clock, Users, Upload, Image as ImageIcon, AlertCircle, Trash2, Wallet, Loader2 } from 'lucide-react';
+import { X, Calendar, MapPin, Clock, Users, Upload, Image as ImageIcon, AlertCircle, Trash2, Wallet, Loader2, ChevronDown as ChevronDownIcon } from 'lucide-react';
 import { Button } from './ui/button';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
@@ -32,6 +32,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
     minute: '00',
     location_text: '',
     price_text: 'Бесплатно',
+    city: profile?.city || 'Дананг, Вьетнам',
     max_attendees: '',
   });
 
@@ -58,6 +59,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
         minute: startsAt.getMinutes().toString().padStart(2, '0'),
         location_text: eventToEdit.location_text || '',
         price_text: eventToEdit.price_text || 'Бесплатно',
+        city: eventToEdit.city || 'Весь Вьетнам',
         max_attendees: eventToEdit.max_attendees?.toString() || '',
       });
       setExistingImages(eventToEdit.images || []);
@@ -72,6 +74,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
         minute: '00',
         location_text: '',
         price_text: 'Бесплатно',
+        city: profile?.city || 'Дананг, Вьетнам',
         max_attendees: '',
       });
       setExistingImages([]);
@@ -189,7 +192,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
         price_text: formData.price_text,
         organizer_id: user.id,
         organizer_name: profile?.display_name || user.email?.split('@')[0],
-        city: profile?.city || 'Не указано',
+        city: formData.city,
         images: finalImages,
         max_attendees: formData.max_attendees ? parseInt(formData.max_attendees) : null,
         starts_at: combinedStartsAt,
@@ -306,9 +309,25 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
                       value={formData.price_text}
                       onChange={e => setFormData({ ...formData, price_text: e.target.value })}
                     />
-                  </div>
                 </div>
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {/* City selection */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 px-1">Город</label>
+                  <div className="relative">
+                    <select
+                      className="w-full px-5 py-4 bg-soft-sand/20 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracotta-deep/20 transition-all font-medium appearance-none cursor-pointer"
+                      value={formData.city}
+                      onChange={e => setFormData({ ...formData, city: e.target.value })}
+                    >
+                      <option value="Вьетнам">🇻🇳 Весь Вьетнам</option>
+                      <option value="Дананг, Вьетнам">🏙️ Дананг, Вьетнам</option>
+                    </select>
+                    <ChevronDownIcon className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                  </div>
+                </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Date & Time */}

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
-import { Calendar, Search, Plus, Users, MapPin, Clock, Filter, CheckCircle } from 'lucide-react';
+import { Calendar, Search, Plus, Users, MapPin, Clock, Filter, CheckCircle, ChevronDown as ChevronDownIcon } from 'lucide-react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { Button } from './ui/button';
 import { supabase } from '@/lib/supabaseClient';
@@ -26,12 +26,14 @@ interface Event {
   description: string;
   price: string;
   images: string[];
+  city?: string;
   is_attending?: boolean;
 }
 
 export function Events() {
   const { user } = useAuth();
   const [selectedType, setSelectedType] = useState('Все');
+  const [selectedCity, setSelectedCity] = useState('Все');
   const [timeFilter, setTimeFilter] = useState('Все');
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -167,6 +169,10 @@ export function Events() {
         query = query.eq('type', selectedType);
       }
 
+      if (selectedCity !== 'Все') {
+        query = query.eq('city', selectedCity);
+      }
+
       if (timeFilter !== 'Все') {
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -212,6 +218,7 @@ export function Events() {
           description: row.description || '',
           price: row.price_text || 'Бесплатно',
           images: row.images || [],
+          city: row.city,
           is_attending: user ? participants.some((p: any) => p.user_id === user.id) : false,
         };
       });
@@ -223,16 +230,16 @@ export function Events() {
     } finally {
       setLoading(false);
     }
-  }, [user, currentPage, selectedType, timeFilter, PAGE_SIZE]);
+  }, [user, currentPage, selectedType, selectedCity, timeFilter, PAGE_SIZE]);
 
   useEffect(() => {
     fetchData();
-  }, [fetchData, currentPage, selectedType, timeFilter]);
+  }, [fetchData, currentPage, selectedType, selectedCity, timeFilter]);
 
   // Reset page on filter change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedType, timeFilter]);
+  }, [selectedType, selectedCity, timeFilter]);
 
   const handleCreate = () => {
     if (!user) {
@@ -327,6 +334,25 @@ export function Events() {
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>
+
+            <div className="space-y-3 md:space-y-4 min-w-[160px] md:min-w-[200px]">
+              <div className="flex items-center gap-2 px-1">
+                <MapPin className="w-4 h-4 text-muted-foreground" />
+                <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Город</span>
+              </div>
+              <div className="relative group h-[46px] md:h-[52px]">
+                <select
+                  value={selectedCity}
+                  onChange={(e) => setSelectedCity(e.target.value)}
+                  className="appearance-none w-full h-full pl-5 pr-12 bg-white border border-border/60 rounded-full focus:outline-none focus:ring-4 focus:ring-terracotta-deep/5 focus:border-terracotta-deep/40 text-sm font-bold shadow-sm cursor-pointer transition-all"
+                >
+                  <option value="Все">🏙️ Все города</option>
+                  <option value="Дананг, Вьетнам">🏙️ Дананг</option>
+                  <option value="Вьетнам">🇻🇳 Весь Вьетнам</option>
+                </select>
+                <ChevronDownIcon className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none group-hover:text-terracotta-deep transition-colors" />
               </div>
             </div>
 
