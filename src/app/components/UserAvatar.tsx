@@ -22,13 +22,13 @@ const sizeClasses = {
 };
 
 const badgeSizeClasses = {
-  'xs': 'w-2.5 h-2.5 p-0.5',
-  'sm': 'w-3.5 h-3.5 p-0.5',
-  'md': 'w-4 h-4 p-0.5',
-  'lg': 'w-4.5 h-4.5 p-0.5',
-  'xl': 'w-5 h-5 p-0.5',
-  '2xl': 'w-6 h-6 p-1',
-  '3xl': 'w-8 h-8 p-1',
+  'xs': 'w-3 h-3',
+  'sm': 'w-4.5 h-4.5',
+  'md': 'w-5.5 h-5.5',
+  'lg': 'w-6.5 h-6.5',
+  'xl': 'w-8 h-8',
+  '2xl': 'w-10 h-10',
+  '3xl': 'w-12 h-12',
 };
 
 export function UserAvatar({ 
@@ -61,7 +61,7 @@ export function UserAvatar({
       </div>
 
       {isGuide && (
-        <div className={`absolute -bottom-0.5 -right-0.5 rounded-full bg-white shadow-md border border-border/10 flex items-center justify-center overflow-hidden ${currentBadgeSizeClass} ${badgeClassName}`}>
+        <div className={`absolute -bottom-1 -right-1 flex items-center justify-center ${currentBadgeSizeClass} ${badgeClassName}`}>
           <img src="/assets/icons/custom/guide_badge.png" className="w-full h-full object-contain" alt="Guide" />
         </div>
       )}

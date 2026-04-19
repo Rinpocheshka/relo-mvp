@@ -25,6 +25,7 @@ import { UserAvatar } from './UserAvatar';
 import { supabase } from '@/lib/supabaseClient';
 import { formatRelativeRu } from '@/lib/date';
 import { AskQuestionModal } from './AskQuestionModal';
+import { CreateArticleModal } from './CreateArticleModal';
 import { useAuth } from '@/app/SupabaseAuthProvider';
 import { SuggestResourceModal } from './SuggestResourceModal';
 import { AuthModal } from './AuthWidget';
@@ -35,6 +36,8 @@ interface Question {
   id: string;
   question: string;
   body?: string;
+  type?: 'question' | 'article';
+  image_url?: string | null;
   askedBy: string;
   category: string;
   createdAt?: string;
@@ -188,6 +191,8 @@ export function FindSupport() {
   const [askModalOpen, setAskModalOpen] = useState(false);
   const [suggestModalOpen, setSuggestModalOpen] = useState(false);
   const [questionToEdit, setQuestionToEdit] = useState<Question | null>(null);
+  const [articleModalOpen, setArticleModalOpen] = useState(false);
+  const [articleToEdit, setArticleToEdit] = useState<Question | null>(null);
 
   // Guides
   const [guides, setGuides] = useState<Guide[]>([]);
@@ -202,7 +207,7 @@ export function FindSupport() {
     try {
       let q = supabase
         .from('questions')
-        .select('id, question, category, asked_by, asked_by_name, created_at, views_count, answers(count), profiles:asked_by(is_guide)', { count: 'exact' });
+        .select('id, question, body, type, image_url, category, asked_by, asked_by_name, created_at, views_count, answers(count), profiles:asked_by(is_guide)', { count: 'exact' });
 
       // Server-side filtering
       if (selectedCategory !== 'Все') q = q.eq('category', selectedCategory);
@@ -229,6 +234,9 @@ export function FindSupport() {
         return {
           id: row.id as string,
           question: (row.question ?? '') as string,
+          body: (row as any).body as string | undefined,
+          type: ((row as any).type ?? 'question') as 'question' | 'article',
+          image_url: (row as any).image_url as string | null,
           category: (row.category ?? 'Другое') as string,
           askedBy: ((row as any).asked_by_name ?? 'Пользователь') as string,
           answers: Number(cnt) || 0,
@@ -555,8 +563,13 @@ export function FindSupport() {
   };
 
   const handleEditQuestion = (q: Question) => {
-    setQuestionToEdit(q);
-    setAskModalOpen(true);
+    if (q.type === 'article') {
+      setArticleToEdit(q);
+      setArticleModalOpen(true);
+    } else {
+      setQuestionToEdit(q);
+      setAskModalOpen(true);
+    }
   };
 
   const handleDeleteQuestion = async (id: string, text: string) => {
@@ -629,13 +642,24 @@ export function FindSupport() {
               />
             </div>
             {activeTab === 'questions' && (
-              <Button
-                onClick={() => user ? setAskModalOpen(true) : setIsAuthModalOpen(true)}
-                className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[52px] md:h-[58px] px-6 md:px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95 font-bold text-sm md:text-base"
-              >
-                <Plus className="w-5 h-5 mr-1 md:mr-2" />
-                Задать вопрос
-              </Button>
+              <>
+                <Button
+                  onClick={() => user ? setAskModalOpen(true) : setIsAuthModalOpen(true)}
+                  className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] h-[52px] md:h-[58px] px-6 md:px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95 font-bold text-sm md:text-base"
+                >
+                  <Plus className="w-5 h-5 mr-1 md:mr-2" />
+                  Задать вопрос
+                </Button>
+                {(isAdmin || profile?.is_guide) && (
+                  <Button
+                    onClick={() => user ? (setArticleToEdit(null), setArticleModalOpen(true)) : setIsAuthModalOpen(true)}
+                    className="bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-[16px] h-[52px] md:h-[58px] px-6 md:px-8 shadow-lg shadow-dusty-indigo/20 transition-all active:scale-95 font-bold text-sm md:text-base"
+                  >
+                    <Plus className="w-5 h-5 mr-1 md:mr-2" />
+                    Добавить статью
+                  </Button>
+                )}
+              </>
             )}
             {activeTab === 'resources' && isAdmin && (
               <Button
@@ -901,6 +925,16 @@ export function FindSupport() {
           isAnonymous: !!questionToEdit.isAnonymous
         } : null}
       />
+      <CreateArticleModal
+        key={articleToEdit?.id ?? 'new-article'}
+        isOpen={articleModalOpen}
+        onClose={() => {
+          setArticleModalOpen(false);
+          setArticleToEdit(null);
+        }}
+        onSuccess={handleQuestionCreated}
+        articleToEdit={articleToEdit}
+      />
       <SuggestResourceModal
         isOpen={suggestModalOpen}
         onClose={() => setSuggestModalOpen(false)}
@@ -979,10 +1013,15 @@ function QuestionCard({
           <div className="flex-1 min-w-0">
             {/* Badges */}
             <div className="flex flex-wrap gap-2 mb-3">
+              {q.type === 'article' && (
+                <span className="px-3 py-1 bg-dusty-indigo/10 text-dusty-indigo text-[11px] font-black uppercase tracking-wider rounded-md flex items-center gap-1">
+                  📄 Статья
+                </span>
+              )}
               <span className="px-3 py-1 bg-soft-sand/40 text-warm-olive text-[11px] font-black uppercase tracking-wider rounded-md">
                 {q.category}
               </span>
-              {q.isAnswered && (
+              {q.isAnswered && q.type !== 'article' && (
                 <span className="px-3 py-1 bg-green-50 text-green-600 text-[11px] font-black uppercase tracking-wider rounded-md flex items-center gap-1.5 border border-green-100">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Есть ответ
                 </span>
@@ -992,6 +1031,9 @@ function QuestionCard({
             <h3 className={`text-lg md:text-xl font-bold text-foreground mb-3 leading-snug group-hover:text-dusty-indigo transition-colors break-words ${!expanded ? 'line-clamp-1' : ''}`}>
               {q.question}
             </h3>
+            {q.type === 'article' && q.body && !expanded && (
+              <p className="text-sm text-muted-foreground line-clamp-2 mb-2 leading-relaxed">{q.body}</p>
+            )}
 
             <div className="flex items-center gap-3 text-xs text-muted-foreground/60">
               <span className="font-medium flex items-center gap-1.5">
@@ -1008,7 +1050,7 @@ function QuestionCard({
               )}
               <span className="w-1 h-1 bg-border rounded-full" />
               <span className="flex items-center gap-1">
-                <MessageCircle className="w-3.5 h-3.5" /> {q.answers}
+                <MessageCircle className="w-3.5 h-3.5" /> {q.answers} {q.type === 'article' ? 'комм.' : ''}
               </span>
               {(q.viewsCount ?? 0) > 0 && (
                 <>
@@ -1058,6 +1100,24 @@ function QuestionCard({
             className="overflow-hidden"
           >
             <div className="px-6 md:px-8 pb-6 border-t border-border/40 pt-6 space-y-4">
+              {/* Article: full image + body */}
+              {q.type === 'article' && q.image_url && (
+                <div className="w-full aspect-video rounded-[16px] overflow-hidden mb-2">
+                  <img src={q.image_url} alt={q.question} className="w-full h-full object-cover" />
+                </div>
+              )}
+              {q.type === 'article' && q.body && (
+                <div className="prose prose-sm max-w-none text-foreground whitespace-pre-wrap leading-relaxed text-sm mb-4">
+                  {q.body.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
+                    /^https?:\/\//.test(part)
+                      ? <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-dusty-indigo underline break-all">{part}</a>
+                      : <span key={i}>{part}</span>
+                  )}
+                </div>
+              )}
+              {q.type === 'article' && (
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Комментарии</p>
+              )}
               {answersLoading && answers.length === 0 ? (
                 <div className="flex justify-center py-6">
                   <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -1065,7 +1125,7 @@ function QuestionCard({
               ) : answers.length === 0 ? (
                 <div className="bg-soft-sand/10 rounded-[20px] p-6 text-center border border-dashed border-border/40">
                   <p className="text-muted-foreground text-sm">
-                    Пока ответов нет.
+                    {q.type === 'article' ? 'Пока комментариев нет.' : 'Пока ответов нет.'}
                   </p>
                 </div>
               ) : (
