@@ -184,12 +184,16 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
 
       // 2. Prepare payload
       const combinedStartsAt = new Date(`${formData.date}T${formData.hour}:${formData.minute}:00`).toISOString();
+      const priceMatch = formData.price_text.replace(/\s/g, '').match(/\d+/);
+      const price_numeric = priceMatch ? parseInt(priceMatch[0], 10) : null;
+
       const payload = {
         title: formData.title,
         type: formData.type,
         description: formData.description,
         location_text: formData.location_text,
         price_text: formData.price_text,
+        price_numeric: price_numeric,
         organizer_id: user.id,
         organizer_name: profile?.display_name || user.email?.split('@')[0],
         city: formData.city,
@@ -322,8 +326,8 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
                       value={formData.city}
                       onChange={e => setFormData({ ...formData, city: e.target.value })}
                     >
-                      <option value="Вьетнам">🇻🇳 Весь Вьетнам</option>
                       <option value="Дананг, Вьетнам">🏙️ Дананг, Вьетнам</option>
+                      <option value="Вьетнам">🇻🇳 Весь Вьетнам</option>
                     </select>
                     <ChevronDownIcon className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                   </div>

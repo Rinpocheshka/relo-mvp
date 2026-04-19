@@ -40,6 +40,7 @@ export function Events() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [sortBy, setSortBy] = useState<'newest' | 'price_asc' | 'price_desc'>('newest');
   const PAGE_SIZE = 30;
 
   // Modal states
@@ -194,8 +195,16 @@ export function Events() {
         }
       }
 
+      // Apply ordering
+      if (sortBy === 'newest') {
+        query = query.order('created_at', { ascending: false });
+      } else if (sortBy === 'price_asc') {
+        query = query.order('price_numeric', { ascending: true, nullsFirst: false });
+      } else if (sortBy === 'price_desc') {
+        query = query.order('price_numeric', { ascending: false, nullsFirst: false });
+      }
+
       const { data, error, count } = await query
-        .order('created_at', { ascending: false })
         .range((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE - 1);
 
       if (error) throw error;
@@ -230,16 +239,16 @@ export function Events() {
     } finally {
       setLoading(false);
     }
-  }, [user, currentPage, selectedType, selectedCity, timeFilter, PAGE_SIZE]);
+  }, [user, currentPage, selectedType, selectedCity, timeFilter, sortBy, PAGE_SIZE]);
 
   useEffect(() => {
     fetchData();
-  }, [fetchData, currentPage, selectedType, selectedCity, timeFilter]);
+  }, [fetchData, currentPage, selectedType, selectedCity, timeFilter, sortBy]);
 
   // Reset page on filter change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedType, selectedCity, timeFilter]);
+  }, [selectedType, selectedCity, timeFilter, sortBy]);
 
   const handleCreate = () => {
     if (!user) {
@@ -334,6 +343,25 @@ export function Events() {
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>
+
+            <div className="space-y-3 md:space-y-4 min-w-[160px] md:min-w-[200px]">
+              <div className="flex items-center gap-2 px-1">
+                <Filter className="w-4 h-4 text-muted-foreground" />
+                <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Сортировка</span>
+              </div>
+              <div className="relative group h-[46px] md:h-[52px]">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  className="appearance-none w-full h-full pl-5 pr-12 bg-white border border-border/60 rounded-full focus:outline-none focus:ring-4 focus:ring-terracotta-deep/5 focus:border-terracotta-deep/40 text-sm font-bold shadow-sm cursor-pointer transition-all"
+                >
+                  <option value="newest">🆕 Сначала новые</option>
+                  <option value="price_asc">💰 Дешевле</option>
+                  <option value="price_desc">💎 Дороже</option>
+                </select>
+                <ChevronDownIcon className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none group-hover:text-terracotta-deep transition-colors" />
               </div>
             </div>
 
