@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+﻿import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { Calendar, Search, Plus, Users, MapPin, Clock, Filter, CheckCircle, ChevronDown as ChevronDownIcon } from 'lucide-react';
@@ -169,7 +169,7 @@ export function Events() {
         query = query.eq('type', selectedType);
       }
 
-      if (selectedCity !== 'Все') {
+      if (selectedCity !== 'Все' && selectedCity !== 'Вьетнам') {
         query = query.eq('city', selectedCity);
       }
 

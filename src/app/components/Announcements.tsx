@@ -126,9 +126,9 @@ export function Announcements() {
         .from('announcements')
         .select('*', { count: 'exact' });
 
-      if (selectedCity !== 'Все') {
-        // Map friendly labels to technical values if needed, 
-        // but here we use the values we saved: "Вьетнам" or "Дананг, Вьетнам"
+      if (selectedCity !== 'Все' && selectedCity !== 'Вьетнам') {
+        // Only filter by exact city when a specific city is chosen.
+        // 'Весь Вьетнам' is a top-level umbrella — show all cities.
         query = query.eq('city', selectedCity);
       }
 
