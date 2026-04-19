@@ -329,6 +329,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
                     <ChevronDownIcon className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                   </div>
                 </div>
+              </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Date & Time */}
