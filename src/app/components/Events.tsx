@@ -312,10 +312,9 @@ export function Events() {
           </div>
 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
-            <div className="space-y-3 md:space-y-4 flex-1">
+            <div className="space-y-3 md:space-y-4">
               <div className="flex items-center gap-2 px-1">
-                <Clock className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Когда</span>
+                <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">🕑 Когда</span>
               </div>
               <div className="relative w-full overflow-hidden -mx-4 sm:mx-0 uppercase px-5 sm:px-0" ref={emblaRefTime}>
                 <div className="flex gap-2.5 py-2 scrollbar-hide">
@@ -337,16 +336,12 @@ export function Events() {
               </div>
             </div>
 
-            <div className="space-y-3 md:space-y-4 min-w-[160px] md:min-w-[200px]">
-              <div className="flex items-center gap-2 px-1">
-                <MapPin className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-widest">Город</span>
-              </div>
-              <div className="relative group h-[46px] md:h-[52px]">
+            <div className="flex items-center gap-3 self-end md:mb-4">
+              <div className="relative group">
                 <select
                   value={selectedCity}
                   onChange={(e) => setSelectedCity(e.target.value)}
-                  className="appearance-none w-full h-full pl-5 pr-12 bg-white border border-border/60 rounded-full focus:outline-none focus:ring-4 focus:ring-terracotta-deep/5 focus:border-terracotta-deep/40 text-sm font-bold shadow-sm cursor-pointer transition-all"
+                  className="appearance-none h-[52px] md:h-[58px] pl-5 pr-12 bg-white border border-border/60 rounded-[20px] focus:outline-none focus:ring-4 focus:ring-terracotta-deep/5 focus:border-terracotta-deep/40 text-sm font-bold shadow-sm cursor-pointer transition-all pr-12"
                 >
                   <option value="Все">🏙️ Все города</option>
                   <option value="Дананг, Вьетнам">Дананг</option>
@@ -354,15 +349,15 @@ export function Events() {
                 </select>
                 <ChevronDownIcon className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none group-hover:text-terracotta-deep transition-colors" />
               </div>
-            </div>
 
-            <Button 
-              onClick={handleCreate}
-              className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[16px] md:rounded-[20px] h-[52px] md:h-[58px] px-6 md:px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95 mb-0 md:mb-4 shrink-0 text-sm md:text-base font-bold"
-            >
-              <Plus className="w-5 h-5 mr-1 md:mr-2" />
-              Создать событие
-            </Button>
+              <Button 
+                onClick={handleCreate}
+                className="bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-[20px] h-[52px] md:h-[58px] px-6 md:px-8 shadow-lg shadow-terracotta-deep/20 transition-all active:scale-95 shrink-0 text-sm md:text-base font-bold"
+              >
+                <Plus className="w-5 h-5 mr-1 md:mr-2" />
+                Создать событие
+              </Button>
+            </div>
           </div>
         </div>
 
