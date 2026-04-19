@@ -17,6 +17,7 @@ interface AskQuestionModalProps {
     isAnswered: boolean;
     createdAt?: string;
     isAnonymous?: boolean;
+    authorIsGuide?: boolean;
   }) => void;
   questionToEdit?: {
     id: string;
@@ -105,6 +106,7 @@ export function AskQuestionModal({ isOpen, onClose, onSuccess, questionToEdit }:
         isAnswered: isEdit ? false : false, // Should be careful here
         createdAt: result.created_at ? 'только что' : 'только что',
         isAnonymous: result.is_anonymous,
+        authorIsGuide: profile?.is_guide,
       });
 
       setQuestionText('');

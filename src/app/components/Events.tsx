@@ -33,7 +33,7 @@ interface Event {
 export function Events() {
   const { user } = useAuth();
   const [selectedType, setSelectedType] = useState('Все');
-  const [selectedCity, setSelectedCity] = useState('Все');
+  const [selectedCity, setSelectedCity] = useState('Вьетнам');
   const [timeFilter, setTimeFilter] = useState('Все');
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -169,7 +169,7 @@ export function Events() {
         query = query.eq('type', selectedType);
       }
 
-      if (selectedCity !== 'Все' && selectedCity !== 'Вьетнам') {
+      if (selectedCity !== 'Вьетнам') {
         query = query.eq('city', selectedCity);
       }
 
@@ -343,9 +343,8 @@ export function Events() {
                   onChange={(e) => setSelectedCity(e.target.value)}
                   className="appearance-none h-[52px] md:h-[58px] pl-5 pr-12 bg-white border border-border/60 rounded-[20px] focus:outline-none focus:ring-4 focus:ring-terracotta-deep/5 focus:border-terracotta-deep/40 text-sm font-bold shadow-sm cursor-pointer transition-all pr-12"
                 >
-                  <option value="Все">🏙️ Все города</option>
-                  <option value="Дананг, Вьетнам">Дананг</option>
-                  <option value="Вьетнам">Весь Вьетнам</option>
+                  <option value="Вьетнам">🇻🇳 Весь Вьетнам</option>
+                  <option value="Дананг, Вьетнам">🏙️ Дананг</option>
                 </select>
                 <ChevronDownIcon className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none group-hover:text-terracotta-deep transition-colors" />
               </div>

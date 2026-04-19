@@ -207,7 +207,7 @@ export function FindSupport() {
     try {
       let q = supabase
         .from('questions')
-        .select('id, question, body, type, image_url, category, asked_by, asked_by_name, created_at, views_count, answers(count), profiles:asked_by(is_guide)', { count: 'exact' });
+        .select('id, question, body, type, image_url, category, asked_by, asked_by_name, created_at, views_count, is_anonymous, answers(count), profiles:asked_by(is_guide)', { count: 'exact' });
 
       // Server-side filtering
       if (selectedCategory !== 'Все') q = q.eq('category', selectedCategory);
@@ -243,8 +243,8 @@ export function FindSupport() {
           isAnswered: (Number(cnt) || 0) > 0,
           createdAt: row.created_at ? formatRelativeRu(new Date(row.created_at as string)) : undefined,
           viewsCount: (row as any).views_count ?? 0,
-          isAnonymous: (row as any).is_anonymous as boolean,
-          authorIsGuide: (row as any).profiles?.is_guide as boolean,
+          isAnonymous: !!(row as any).is_anonymous,
+          authorIsGuide: (row as any).profiles?.is_guide ?? false,
         };
       });
 
@@ -1009,12 +1009,12 @@ function QuestionCard({
   return (
     <div className={`group rounded-[28px] border transition-all duration-300 shadow-sm hover:shadow-md overflow-hidden ${
       q.type === 'article'
-        ? 'bg-gradient-to-br from-dusty-indigo/5 to-white border-dusty-indigo/30 hover:border-dusty-indigo/50 hover:shadow-dusty-indigo/10'
+        ? 'bg-[#F3F1F9] border-dusty-indigo/40 hover:border-dusty-indigo/60 hover:shadow-dusty-indigo/10'
         : 'bg-white border-border/60 hover:border-dusty-indigo/20'
     }`}>
       {/* Article: colored top accent bar */}
       {q.type === 'article' && (
-        <div className="h-1 w-full bg-gradient-to-r from-dusty-indigo to-[#8E78B2]" />
+        <div className="h-1.5 w-full bg-gradient-to-r from-dusty-indigo to-[#8E78B2]" />
       )}
       <div className="p-6 md:p-8 cursor-pointer" onClick={onToggle}>
         <div className="flex items-start justify-between gap-6">
