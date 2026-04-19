@@ -1007,7 +1007,15 @@ function QuestionCard({
   const [answerDraft, setAnswerDraft] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   return (
-    <div className="group bg-white rounded-[28px] border border-border/60 hover:border-dusty-indigo/20 transition-all duration-300 shadow-sm hover:shadow-md overflow-hidden">
+    <div className={`group rounded-[28px] border transition-all duration-300 shadow-sm hover:shadow-md overflow-hidden ${
+      q.type === 'article'
+        ? 'bg-gradient-to-br from-dusty-indigo/5 to-white border-dusty-indigo/30 hover:border-dusty-indigo/50 hover:shadow-dusty-indigo/10'
+        : 'bg-white border-border/60 hover:border-dusty-indigo/20'
+    }`}>
+      {/* Article: colored top accent bar */}
+      {q.type === 'article' && (
+        <div className="h-1 w-full bg-gradient-to-r from-dusty-indigo to-[#8E78B2]" />
+      )}
       <div className="p-6 md:p-8 cursor-pointer" onClick={onToggle}>
         <div className="flex items-start justify-between gap-6">
           <div className="flex-1 min-w-0">
@@ -1039,7 +1047,7 @@ function QuestionCard({
               <span className="font-medium flex items-center gap-1.5">
                 {q.isAnonymous ? 'Анонимно' : `от ${q.askedBy}`}
                 {!q.isAnonymous && q.authorIsGuide && (
-                  <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                  <img src="/assets/icons/custom/guide_badge.png" className="w-4 h-4 object-contain" alt="Guide" />
                 )}
               </span>
               {q.createdAt && (
@@ -1233,7 +1241,7 @@ function AnswerCard({
           <div className="flex items-center gap-2 mb-1.5">
             <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
               {a.author}
-              {a.authorIsGuide && <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />}
+              {a.authorIsGuide && <img src="/assets/icons/custom/guide_badge.png" className="w-3.5 h-3.5 object-contain" alt="Guide" />}
             </span>
             {a.createdAt && (
               <span className="text-xs text-muted-foreground/60">{a.createdAt}</span>

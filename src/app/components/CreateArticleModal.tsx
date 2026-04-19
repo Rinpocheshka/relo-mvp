@@ -199,7 +199,7 @@ export function CreateArticleModal({ isOpen, onClose, onSuccess, articleToEdit }
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 16 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl my-8 flex flex-col max-h-[90vh]"
+            className="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl my-8 flex flex-col max-h-[90vh] overflow-hidden"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-8 py-6 border-b border-border/40 shrink-0">
