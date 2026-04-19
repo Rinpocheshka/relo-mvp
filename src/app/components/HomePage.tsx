@@ -403,8 +403,8 @@ export function HomePage() {
             <section id="stories" className="mb-12">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-dusty-indigo/10 flex items-center justify-center">
-                    <BookOpen className="w-6 h-6 text-dusty-indigo" />
+                  <div className="w-12 h-12 rounded-2xl bg-dusty-indigo/10 flex items-center justify-center overflow-hidden">
+                    <img src="/assets/icons/custom/stories_large.png" className="w-full h-full object-contain p-2" alt="" />
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold">Истории релокаций</h2>

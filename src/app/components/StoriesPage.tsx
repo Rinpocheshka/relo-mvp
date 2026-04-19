@@ -85,8 +85,8 @@ export function StoriesPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-dusty-indigo/10 flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-dusty-indigo" />
+            <div className="w-12 h-12 rounded-2xl bg-dusty-indigo/10 flex items-center justify-center overflow-hidden">
+              <img src="/assets/icons/custom/stories_large.png" className="w-full h-full object-contain p-2" alt="" />
             </div>
             <div>
               <h1 className="text-3xl font-bold">Истории релокаций</h1>
