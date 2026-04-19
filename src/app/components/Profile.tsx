@@ -493,7 +493,7 @@ export function Profile() {
             </UserAvatar>
               {!isEditing && profile?.is_guide && (
                 <div className="flex items-center gap-2 px-3 py-1 bg-warm-olive/10 text-warm-olive rounded-full">
-                  <Star className="w-4 h-4 fill-warm-olive" />
+                  <img src="/assets/icons/custom/guide_badge.png" className="w-4 h-4 object-contain" alt="Guide" />
                   <span className="text-sm font-medium">Проводник</span>
                 </div>
               )}
