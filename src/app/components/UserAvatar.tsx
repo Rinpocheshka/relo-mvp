@@ -1,4 +1,4 @@
-import { Star } from 'lucide-react';
+
 
 interface UserAvatarProps {
   src?: string | null;
@@ -61,8 +61,8 @@ export function UserAvatar({
       </div>
 
       {isGuide && (
-        <div className={`absolute -bottom-0.5 -right-0.5 rounded-full bg-white shadow-md border border-border/10 flex items-center justify-center ${currentBadgeSizeClass} ${badgeClassName}`}>
-          <Star className="w-full h-full text-yellow-500 fill-yellow-500" />
+        <div className={`absolute -bottom-0.5 -right-0.5 rounded-full bg-white shadow-md border border-border/10 flex items-center justify-center overflow-hidden ${currentBadgeSizeClass} ${badgeClassName}`}>
+          <img src="/assets/icons/custom/guide_badge.png" className="w-full h-full object-contain" alt="Guide" />
         </div>
       )}
     </div>
