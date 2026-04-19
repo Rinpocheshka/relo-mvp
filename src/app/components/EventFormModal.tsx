@@ -310,9 +310,9 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
                       value={formData.price_text}
                       onChange={e => setFormData({ ...formData, price_text: e.target.value })}
                     />
+                  </div>
                 </div>
               </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* City selection */}
                 <div>
