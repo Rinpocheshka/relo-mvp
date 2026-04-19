@@ -103,7 +103,7 @@ const CATEGORY_ICON_MAP: Record<string, string> = {
   'Куда сходить': '/assets/icons/custom/signpost.png',
   'Здоровье': '/assets/icons/custom/category_health.png',
   'Для бизнеса': '/assets/icons/custom/category_write.png',
-  'О платформе': '/assets/icons/custom/message.png',
+  'О платформе': '/assets/icons/custom/platform_about.png',
   'Другое': '/assets/icons/custom/coconut.png',
 };
 
