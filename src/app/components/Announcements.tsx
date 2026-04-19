@@ -37,7 +37,7 @@ export function Announcements() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<'newest' | 'price_asc' | 'price_desc'>('newest');
-  const [selectedCity, setSelectedCity] = useState('Вьетнам');
+  const [selectedCity, setSelectedCity] = useState('Все');
   const PAGE_SIZE = 27;
 
 
@@ -126,10 +126,12 @@ export function Announcements() {
         .from('announcements')
         .select('*', { count: 'exact' });
 
-      if (selectedCity !== 'Вьетнам') {
-        // Only filter by exact city when a specific city is chosen.
-        // 'Весь Вьетнам' is a top-level umbrella — show all cities.
-        query = query.eq('city', selectedCity);
+      if (selectedCity !== 'Все') {
+        if (selectedCity === 'Вьетнам') {
+          query = query.ilike('city', '%Вьетнам%');
+        } else {
+          query = query.eq('city', selectedCity);
+        }
       }
 
       // Apply sorting
@@ -265,7 +267,8 @@ export function Announcements() {
                 }}
                 className="appearance-none h-full pl-4 pr-10 bg-white border border-border/60 rounded-2xl focus:outline-none focus:ring-4 focus:ring-terracotta-deep/5 focus:border-terracotta-deep/40 text-[13px] md:text-sm font-semibold shadow-sm cursor-pointer transition-all pr-12"
               >
-                <option value="Вьетнам">🇻🇳 Весь Вьетнам</option>
+                <option value="Все">🌍 Все локации</option>
+                  <option value="Вьетнам">🇻🇳 Весь Вьетнам</option>
                   <option value="Дананг, Вьетнам">🏙️ Дананг</option>
               </select>
               <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none group-hover:text-terracotta-deep transition-colors" />
