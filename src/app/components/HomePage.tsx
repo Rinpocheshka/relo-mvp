@@ -339,14 +339,14 @@ export function HomePage() {
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: i * 0.1 }}
-                      className="group bg-white rounded-[32px] p-5 border border-border/40 hover:border-terracotta-deep/30 transition-all hover:shadow-xl hover:-translate-y-1 relative"
+                      className="group bg-white rounded-[32px] p-5 border border-border/40 hover:border-terracotta-deep/30 transition-all hover:shadow-xl hover:-translate-y-1 relative h-full flex flex-col"
                     >
                       {user ? (
-                        <Link to={person.id === user?.id ? "/profile?edit=true" : `/profile/${person.id}`} className="block">
+                        <Link to={person.id === user?.id ? "/profile?edit=true" : `/profile/${person.id}`} className="flex-1 flex flex-col">
                           <CardItemContent person={person} />
                         </Link>
                       ) : (
-                        <div onClick={() => setAuthOpen(true)} className="cursor-pointer">
+                        <div onClick={() => setAuthOpen(true)} className="cursor-pointer flex-1 flex flex-col">
                           <CardItemContent person={person} />
                         </div>
                       )}
@@ -439,7 +439,7 @@ export function HomePage() {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: i * 0.08 }}
                         onClick={() => user ? setDetailsStoryId(story.id) : setAuthOpen(true)}
-                        className="bg-white rounded-[32px] p-6 border border-border/40 hover:border-terracotta-deep/30 transition-all cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 group"
+                        className="bg-white rounded-[32px] p-6 border border-border/40 hover:border-terracotta-deep/30 transition-all cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 group h-full flex flex-col"
                       >
                         <div className="flex items-center gap-3 mb-4">
                           <UserAvatar src={story.author_avatar} name={story.author_name || ''} size="sm" isGuide={story.author_is_guide} />
