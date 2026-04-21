@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import {
   Home, Megaphone, Calendar, User as UserIcon, Users, Search, Plus,
@@ -147,7 +147,7 @@ export function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, loading, isAdmin } = useAuth();
-  const [pendingCount, setPendingCount] = React.useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
   const isLanding = location.pathname === '/';
   const [city, setCity] = useState<string>('');
   const [authOpen, setAuthOpen] = useState(false);
