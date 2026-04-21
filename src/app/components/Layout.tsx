@@ -5,6 +5,7 @@ import {
   LogOut, ChevronDown, Settings, Edit, Heart, MessageSquare
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { Toaster } from 'sonner';
 import { Button } from './ui/button';
 import { UserAvatar } from './UserAvatar';
 import { AuthModal } from './AuthWidget';
@@ -25,10 +26,8 @@ const TelegramIcon = () => (
   </svg>
 );
 
-
-
 // ─── Header Auth Block ────────────────────────────────────────────────────────
-function HeaderAuth({ unreadCount }: { unreadCount: number }) {
+function HeaderAuth({ unreadCount, isAdmin, pendingCount }: { unreadCount: number; isAdmin: boolean; pendingCount: number }) {
   const { user, profile, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [authOpen, setAuthOpen] = useState(false);
@@ -76,6 +75,22 @@ function HeaderAuth({ unreadCount }: { unreadCount: number }) {
                   )}
                 </Link>
               </DropdownMenuItem>
+
+              {isAdmin && (
+                <DropdownMenuItem asChild className="rounded-[12px] cursor-pointer hover:bg-soft-sand/30 font-medium">
+                  <Link to="/admin/moderation" className="flex items-center justify-between w-full px-2 py-1.5">
+                    <div className="flex items-center gap-2">
+                       <Settings className="w-4 h-4" /> Модерация
+                    </div>
+                    {pendingCount > 0 && (
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">
+                        {pendingCount}
+                      </span>
+                    )}
+                  </Link>
+                </DropdownMenuItem>
+              )}
+
               <DropdownMenuSeparator className="my-1 bg-soft-sand/10" />
               <DropdownMenuItem onClick={signOut} className="rounded-[12px] cursor-pointer text-destructive focus:text-destructive hover:bg-red-50/50 flex items-center gap-2 px-3 py-1.5">
                 <LogOut className="w-4 h-4" /> Выйти
@@ -204,7 +219,7 @@ export function Layout() {
               city: data.city,
               stage: data.stage,
               interests: [...(data.situation || []), ...(data.interests || [])],
-            }).then(({ error }: { error: any }) => {
+            }).then(({ error }) => {
               if (!error) {
                 localStorage.removeItem('reloOnboarding');
               }
@@ -254,7 +269,6 @@ export function Layout() {
     }
   }, [user]);
 
-
   useEffect(() => {
     if (!isAdmin) { setPendingCount(0); return; }
     const fetch = async () => {
@@ -262,7 +276,9 @@ export function Layout() {
       setPendingCount(count ?? 0);
     };
     void fetch();
-    const ch = supabase.channel('layout_moderation_count').on('postgres_changes', { event: '*', schema: 'public', table: 'announcements' }, () => void fetch()).subscribe();
+    const ch = supabase.channel('layout_moderation_count')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'announcements' }, () => void fetch())
+      .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [isAdmin]);
 
@@ -313,11 +329,6 @@ export function Layout() {
                   >
                     <div className="relative">
                       <img src={item.icon as string} className="w-6 h-6 object-contain" alt="" />
-                      {item.path === '/messages' && unreadCount > 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
-                          {unreadCount > 9 ? '9+' : unreadCount}
-                        </span>
-                      )}
                     </div>
                     {item.label}
                     {active && (
@@ -332,22 +343,9 @@ export function Layout() {
               })}
             </nav>
 
-            {/* Right side */}
             <div className="hidden md:flex items-center gap-2 flex-shrink-0 ml-auto xl:ml-0">
-              {/* Moderation link for admins */}
-              {isAdmin && (
-                <Link
-                  to="/admin/moderation"
-                  className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all ${isActive('/admin/moderation') ? 'bg-amber-100 text-amber-700' : 'text-amber-600 hover:bg-amber-50 border border-amber-200'}`}
-                >
-                  {pendingCount > 0 && (
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">{pendingCount > 9 ? '9+' : pendingCount}</span>
-                  )}
-                  🔧 Модерация
-                </Link>
-              )}
               {/* Auth — Profile or Login */}
-              <HeaderAuth unreadCount={unreadCount} />
+              <HeaderAuth unreadCount={unreadCount} isAdmin={isAdmin} pendingCount={pendingCount} />
             </div>
 
             <div className="flex md:hidden items-center gap-3 ml-auto">
@@ -374,15 +372,12 @@ export function Layout() {
       <footer className="bg-white border-t border-border/50 mt-8 md:mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
           <div className="grid md:grid-cols-4 gap-8">
-            {/* Brand */}
             <div className="md:col-span-1">
               <img src="/assets/logo/Relo_me.png" alt="Relo.me" className="h-8 w-auto object-contain mb-4" />
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                 Экосистема поддержки релокантов. Жильё, люди, советы и события — в одном месте.
               </p>
             </div>
-
-            {/* Navigation */}
             <div>
               <h4 className="text-sm font-semibold mb-4 text-foreground">Сервисы</h4>
               <ul className="space-y-2.5">
@@ -393,8 +388,6 @@ export function Layout() {
                 <li><a href="https://relo-mvp.vercel.app/stories" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Истории релокации</a></li>
               </ul>
             </div>
-
-            {/* About */}
             <div>
               <h4 className="text-sm font-semibold mb-4 text-foreground">О проекте</h4>
               <ul className="space-y-2.5">
@@ -404,102 +397,41 @@ export function Layout() {
                 <li><a href="https://tally.so/r/VL106N" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Хочу <span className="text-warm-olive">Relo me</span> в моем городе</a></li>
               </ul>
             </div>
-
-            {/* Support — hidden in header, lives here */}
             <div>
               <h4 className="text-sm font-semibold mb-4 text-foreground">Поддержка</h4>
               <ul className="space-y-2.5">
-                <li>
-                  <a
-                    href="https://t.me/relome_world"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-terracotta-deep transition-colors"
-                  >
-                    Написать в поддержку
-                  </a>
-                </li>
+                <li><a href="https://t.me/relome_world" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Написать в поддержку</a></li>
                 <li><a href="#" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Правила сайта</a></li>
                 <li><a href="#" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Политика конфиденциальности</a></li>
                 <li><a href="mailto:relome.world@gmail.com" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">relome.world@gmail.com</a></li>
               </ul>
             </div>
           </div>
-
-          {/* Social + copy */}
           <div className="mt-10 pt-8 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-muted-foreground">© 2026 Relo me — система для удобной жизни релокантов</p>
             <div className="flex gap-3">
-              {/* Telegram */}
-              <a href="https://t.me/relome_world" target="_blank" rel="noopener noreferrer" aria-label="Telegram"
-                className="w-8 h-8 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-full flex items-center justify-center transition-colors text-muted-foreground">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.888-.662 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-                </svg>
-              </a>
-              {/* WhatsApp */}
-              <a href="https://wa.me/79213429291" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"
-                className="w-8 h-8 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-full flex items-center justify-center transition-colors text-muted-foreground">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path d="M12.01 2.014a10.01 10.01 0 0 0-8.5 15.28L2 22l4.87-1.25a9.96 9.96 0 0 0 5.14 1.41h.01a10.03 10.03 0 0 0 10-10.04 10.01 10.01 0 0 0-10.01-10.1zm0 18.23a8.21 8.21 0 0 1-4.18-1.14l-.3-.18-3.1.81.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24a8.24 8.24 0 0 1 8.23 8.24 8.24 8.24 0 0 1-8.26 8.24zm4.53-6.17c-.25-.13-1.47-.73-1.7-.81-.23-.08-.4-.13-.57.12-.17.25-.65.81-.79.98-.15.17-.3.19-.55.06a6.83 6.83 0 0 1-3.32-2.05c-.32-.37-.54-.83-.72-1.14-.17-.31-.02-.48.11-.6.11-.11.25-.3.37-.45.09-.13.13-.22.19-.37.06-.15.03-.28-.03-.41-.06-.13-.57-1.38-.78-1.89-.2-.5-.4-.43-.55-.43h-.47c-.17 0-.45.06-.68.32-.23.25-.87.85-.87 2.08s.89 2.42 1.01 2.58c.13.17 1.76 2.69 4.26 3.77 1.49.65 2.15.7 2.92.59.88-.13 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.19-.06-.1-.23-.16-.48-.28z"/>
-                </svg>
-              </a>
-              {/* TikTok */}
-              <a href="https://www.tiktok.com/@relo.me" target="_blank" rel="noopener noreferrer" aria-label="TikTok"
-                className="w-8 h-8 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-full flex items-center justify-center transition-colors text-muted-foreground">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.06-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93v7.24a8.1 8.1 0 0 1-5 7.42 8.13 8.13 0 0 1-9.98-3.9 8.01 8.01 0 0 1 1-8.52 8.1 8.1 0 0 1 6.57-2.6v4.13a4.01 4.01 0 0 0-2.31 7.23 4.06 4.06 0 0 0 4.1.6 4.01 4.01 0 0 0 2.22-3.66l.01-15.9Z"/>
-                </svg>
-              </a>
-              {/* Instagram */}
-              <a href="https://www.instagram.com/relome.world" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
-                className="w-8 h-8 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-full flex items-center justify-center transition-colors text-muted-foreground">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
-                </svg>
-              </a>
-              {/* Facebook */}
-              <a href="https://facebook.com/relome" target="_blank" rel="noopener noreferrer" aria-label="Facebook"
-                className="w-8 h-8 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-full flex items-center justify-center transition-colors text-muted-foreground">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-                </svg>
-              </a>
-              {/* Email */}
-              <a href="mailto:relome.world@gmail.com" aria-label="Email"
-                className="w-8 h-8 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-full flex items-center justify-center transition-colors text-muted-foreground">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                  <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                </svg>
+              <a href="https://t.me/relome_world" target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-soft-sand/40 hover:bg-terracotta-deep/10 hover:text-terracotta-deep rounded-full flex items-center justify-center transition-colors text-muted-foreground">
+                <TelegramIcon />
               </a>
             </div>
           </div>
         </div>
       </footer>
 
+      {/* Mobile Nav */}
       <nav className="md:hidden fixed bottom-3 left-3 right-3 bg-white/90 backdrop-blur-xl shadow-xl border border-border/40 rounded-[20px] z-[70] p-1 safe-area-bottom">
         <div className="flex items-center justify-between">
           {navItems.filter(item => item.path !== '/messages').map((item) => {
-            const Icon = item.icon;
             const active = isActive(item.path);
             return (
               <Link
                 key={item.path}
                 to={item.path}
                 className={`flex flex-col items-center justify-center gap-1 py-1 flex-1 min-w-0 rounded-[12px] transition-all ${
-                  active
-                    ? 'text-terracotta-deep bg-terracotta-deep/8'
-                    : 'text-muted-foreground hover:bg-soft-sand/20'
+                  active ? 'text-terracotta-deep bg-terracotta-deep/8' : 'text-muted-foreground hover:bg-soft-sand/20'
                 }`}
               >
-                <div className="relative">
-                  <img src={item.icon as string} className="w-6 h-6 object-contain" alt="" />
-                  {item.path === '/messages' && unreadCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </span>
-                  )}
-                </div>
+                <img src={item.icon as string} className="w-6 h-6 object-contain" alt="" />
                 <span className="text-[10px] font-medium leading-none text-center w-full px-0.5">{item.label}</span>
               </Link>
             );
@@ -507,14 +439,11 @@ export function Layout() {
         </div>
       </nav>
 
-      {/* ── Mobile FAB ── */}
+      {/* Mobile FAB */}
       <div className="md:hidden fixed bottom-24 right-4 z-[70]">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button
-              className="w-12 h-12 bg-terracotta-deep text-white rounded-full shadow-lg flex items-center justify-center hover:bg-terracotta-deep/90 transition-all active:scale-95"
-              aria-label="Создать"
-            >
+            <button className="w-12 h-12 bg-terracotta-deep text-white rounded-full shadow-lg flex items-center justify-center hover:bg-terracotta-deep/90 transition-all active:scale-95">
               <Plus className="w-5 h-5" />
             </button>
           </DropdownMenuTrigger>
@@ -532,8 +461,8 @@ export function Layout() {
         </DropdownMenu>
       </div>
 
-      {/* Spacer for mobile nav */}
       <div className="md:hidden h-24" />
+      <Toaster position="top-center" richColors />
     </div>
   );
 }

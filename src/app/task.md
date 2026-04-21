@@ -7,3 +7,8 @@
 - `[x]` Refactor `AnnouncementDetailsModal.tsx` to use openMessageModal
 - `[x]` Add unread message indicator block/badge to `Layout.tsx` nav items
 - `[x]` Enhance `MessagesPage.tsx` to visually distinguish unread messages
+- `[x]` Update `Layout.tsx` to include `Toaster`
+- `[x]` Implement `fetchAllCounts` in `AnnouncementModerationPage.tsx`
+- `[x]` Update tab UI to show counts for all states
+- `[x]` Integrate `sonner` toast in moderation actions
+- `[x]` Final verification of moderation flow

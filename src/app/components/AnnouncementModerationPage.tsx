@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/app/SupabaseAuthProvider';
 import { CheckCircle2, XCircle, Clock, Eye, MapPin, Tag, User, Calendar, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/app/components/ui/button';
 
 type Status = 'pending' | 'active' | 'rejected' | 'all';
@@ -33,7 +34,7 @@ export function AnnouncementModerationPage() {
   const [filter, setFilter] = useState<Status>('pending');
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
-  const [pendingCount, setPendingCount] = useState(0);
+  const [counts, setCounts] = useState({ pending: 0, active: 0, rejected: 0, all: 0 });
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
@@ -49,22 +50,42 @@ export function AnnouncementModerationPage() {
     setLoading(false);
   }, [filter]);
 
-  const fetchPendingCount = useCallback(async () => {
-    const { count } = await supabase
-      .from('announcements')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'pending');
-    setPendingCount(count ?? 0);
+  const fetchCounts = useCallback(async () => {
+    const [pendingRes, activeRes, rejectedRes, allRes] = await Promise.all([
+      supabase.from('announcements').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+      supabase.from('announcements').select('id', { count: 'exact', head: true }).eq('status', 'active'),
+      supabase.from('announcements').select('id', { count: 'exact', head: true }).eq('status', 'rejected'),
+      supabase.from('announcements').select('id', { count: 'exact', head: true }),
+    ]);
+
+    setCounts({
+      pending: pendingRes.count ?? 0,
+      active: activeRes.count ?? 0,
+      rejected: rejectedRes.count ?? 0,
+      all: allRes.count ?? 0,
+    });
   }, []);
 
   useEffect(() => { void fetchAnnouncements(); }, [fetchAnnouncements]);
-  useEffect(() => { void fetchPendingCount(); }, [fetchPendingCount]);
+  useEffect(() => { void fetchCounts(); }, [fetchCounts]);
 
   const setStatus = async (id: string, status: 'active' | 'rejected') => {
     setActionLoading(id);
-    await supabase.from('announcements').update({ status }).eq('id', id);
-    await Promise.all([fetchAnnouncements(), fetchPendingCount()]);
-    setActionLoading(null);
+    try {
+      const { error } = await supabase.from('announcements').update({ status }).eq('id', id);
+      if (!error) {
+        toast.success(status === 'active' ? 'Объявление одобрено' : 'Объявление отклонено');
+        await Promise.all([fetchAnnouncements(), fetchCounts()]);
+      } else {
+        console.error('Moderation error:', error);
+        toast.error(`Ошибка: ${error.message}`);
+      }
+    } catch (e) {
+      console.error('Unexpected error during moderation:', e);
+      toast.error('Произошла непредвиденная ошибка');
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   if (authLoading) {
@@ -76,11 +97,11 @@ export function AnnouncementModerationPage() {
   }
   if (!isAdmin) return <Navigate to="/" replace />;
 
-  const FILTERS: { value: Status; label: string }[] = [
-    { value: 'pending',  label: `На модерации${pendingCount > 0 ? ` (${pendingCount})` : ''}` },
-    { value: 'active',   label: 'Опубликованные' },
-    { value: 'rejected', label: 'Отклонённые' },
-    { value: 'all',      label: 'Все' },
+  const FILTERS: { value: Status; label: string; count: number }[] = [
+    { value: 'pending',  label: 'На модерации', count: counts.pending },
+    { value: 'active',   label: 'Опубликованные', count: counts.active },
+    { value: 'rejected', label: 'Отклонённые',   count: counts.rejected },
+    { value: 'all',      label: 'Все',           count: counts.all },
   ];
 
   return (
@@ -90,9 +111,9 @@ export function AnnouncementModerationPage() {
         <div className="max-w-5xl mx-auto px-4 py-5 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-foreground">Модерация объявлений</h1>
-            {pendingCount > 0 && (
+            {counts.pending > 0 && (
               <p className="text-sm text-amber-600 font-medium mt-0.5">
-                {pendingCount} объявление{pendingCount === 1 ? '' : pendingCount < 5 ? 'я' : 'й'} ожидает проверки
+                {counts.pending} объявление{counts.pending === 1 ? '' : counts.pending < 5 ? 'я' : 'й'} ожидает проверки
               </p>
             )}
           </div>
@@ -109,13 +130,20 @@ export function AnnouncementModerationPage() {
             <button
               key={f.value}
               onClick={() => setFilter(f.value)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-2 ${
                 filter === f.value
                   ? 'bg-terracotta-deep text-white shadow-md shadow-terracotta-deep/20'
                   : 'bg-white border border-border/60 text-muted-foreground hover:border-terracotta-deep/40'
-              } ${f.value === 'pending' && pendingCount > 0 ? 'ring-2 ring-amber-400/50' : ''}`}
+              } ${f.value === 'pending' && counts.pending > 0 ? 'ring-2 ring-amber-400/50' : ''}`}
             >
               {f.label}
+              {f.count > 0 && (
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                  filter === f.value ? 'bg-white/20 text-white' : 'bg-soft-sand text-muted-foreground'
+                }`}>
+                  {f.count}
+                </span>
+              )}
             </button>
           ))}
         </div>
