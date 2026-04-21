@@ -1740,7 +1740,7 @@ function GuidesPanel({ guides }: { guides: Guide[] }) {
             className="bg-white p-5 rounded-[24px] border border-border/60 shadow-sm hover:shadow-md transition-all group"
           >
             <div className="flex items-start gap-4 mb-4">
-              <Link to={`/profile?id=${guide.id}`} className="shrink-0">
+              <Link to={`/profile/${guide.id}`} className="shrink-0">
                 <UserAvatar 
                   src={guide.avatarUrl} 
                   name={guide.name} 
@@ -1750,7 +1750,7 @@ function GuidesPanel({ guides }: { guides: Guide[] }) {
                 />
               </Link>
               <div className="flex-1 min-w-0">
-                <Link to={`/profile?id=${guide.id}`} className="hover:text-terracotta-deep transition-colors">
+                <Link to={`/profile/${guide.id}`} className="hover:text-terracotta-deep transition-colors">
                   <h3 className="font-bold text-lg text-foreground truncate group-hover:text-terracotta-deep transition-colors">
                     {guide.name}
                   </h3>
