@@ -318,14 +318,14 @@ export function HomePage() {
 
             <section className="mb-12">
               <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-warm-olive/10 flex items-center justify-center overflow-hidden">
+                <Link to="/people" className="flex items-center gap-4 group/header">
+                  <div className="w-12 h-12 rounded-2xl bg-warm-olive/10 flex items-center justify-center overflow-hidden group-hover/header:scale-105 transition-transform">
                     <img src="/assets/images/community-puzzle.jpg" className="w-full h-full object-cover scale-110" alt="" />
                   </div>
-                  <h2 className="text-2xl font-bold">Люди рядом</h2>
-                </div>
-                <Link to="/people" className="flex items-center gap-1.5 text-sm font-bold text-terracotta-deep hover:text-terracotta-deep/80 transition-colors">
-                  Все люди <ArrowRight className="w-4 h-4" />
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-2xl font-bold group-hover/header:text-terracotta-deep transition-colors">Люди рядом</h2>
+                    <ArrowRight className="w-5 h-5 text-terracotta-deep opacity-0 -translate-x-2 group-hover/header:opacity-100 group-hover/header:translate-x-0 transition-all" />
+                  </div>
                 </Link>
               </div>
 
