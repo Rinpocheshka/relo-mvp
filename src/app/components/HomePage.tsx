@@ -403,15 +403,18 @@ export function HomePage() {
             {/* Relocation Stories Section */}
             <section id="stories" className="mb-12">
               <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-dusty-indigo/10 flex items-center justify-center overflow-hidden">
+                <Link to="/stories" className="flex items-center gap-4 group/header">
+                  <div className="w-12 h-12 rounded-2xl bg-dusty-indigo/10 flex items-center justify-center overflow-hidden group-hover/header:rotate-3 transition-transform">
                     <img src="/assets/icons/custom/stories_large.png" className="w-full h-full object-contain p-2" alt="" />
                   </div>
-                  <div>
-                    <h2 className="text-2xl font-bold">Истории релокаций</h2>
-                    <p className="text-sm text-muted-foreground">Опыт, который меняет жизнь</p>
+                  <div className="flex items-center gap-2">
+                    <div>
+                      <h2 className="text-2xl font-bold group-hover/header:text-dusty-indigo transition-colors">Истории релокаций</h2>
+                      <p className="text-sm text-muted-foreground">Опыт, который меняет жизнь</p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-dusty-indigo opacity-0 -translate-x-2 group-hover/header:opacity-100 group-hover/header:translate-x-0 transition-all" />
                   </div>
-                </div>
+                </Link>
                 <Button 
                   size="sm"
                   onClick={() => user ? setWriteStoryOpen(true) : setAuthOpen(true)}
@@ -467,15 +470,6 @@ export function HomePage() {
                       </motion.div>
                     ))}
                   </div>
-                  {stories.length === 3 && (
-                    <div className="mt-8 flex justify-center">
-                      <Link to="/stories">
-                        <Button variant="ghost" className="text-dusty-indigo hover:text-dusty-indigo/80 font-bold gap-2">
-                          Смотреть все истории <ArrowRight className="w-4 h-4" />
-                        </Button>
-                      </Link>
-                    </div>
-                  )}
                 </>
               ) : (
                 <div className="bg-white rounded-[32px] border border-dashed border-border/50 p-12 text-center">
