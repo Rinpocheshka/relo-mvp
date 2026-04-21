@@ -23,6 +23,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { Button } from './ui/button';
 import { UserAvatar } from './UserAvatar';
 import { supabase } from '@/lib/supabaseClient';
+import { useMessageModal } from '../hooks/useMessageModal';
 import { formatRelativeRu } from '@/lib/date';
 import { AskQuestionModal } from './AskQuestionModal';
 import { CreateArticleModal } from './CreateArticleModal';
@@ -177,6 +178,7 @@ export function FindSupport() {
   const [resourceFormOpen, setResourceFormOpen] = useState(false);
   const [editingResource, setEditingResource] = useState<Resource | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const { openMessageModal } = useMessageModal();
 
   const [emblaRef] = useEmblaCarousel({ 
     loop: true, 
@@ -889,7 +891,12 @@ export function FindSupport() {
 
           {/* ── Sidebar ── */}
           <aside className="lg:col-span-4 space-y-6 h-fit sticky top-24">
-            <GuidesPanel guides={guides} />
+            <GuidesPanel 
+              guides={guides} 
+              user={user} 
+              onMessage={(id, name) => openMessageModal(id, name)} 
+              onAuth={() => setIsAuthModalOpen(true)} 
+            />
 
             {/* CTA cards */}
             <div className="relative overflow-hidden bg-gradient-to-br from-[#CD7F67] to-[#8E78B2] p-8 rounded-[32px] text-white shadow-xl shadow-terracotta-deep/10 group">
@@ -1724,7 +1731,17 @@ function ResourceFormModal({
   );
 }
 
-function GuidesPanel({ guides }: { guides: Guide[] }) {
+function GuidesPanel({ 
+  guides, 
+  user, 
+  onMessage, 
+  onAuth 
+}: { 
+  guides: Guide[]; 
+  user: any; 
+  onMessage: (id: string, name: string) => void;
+  onAuth: () => void;
+}) {
   if (guides.length === 0) return null;
 
   return (
@@ -1784,12 +1801,11 @@ function GuidesPanel({ guides }: { guides: Guide[] }) {
             <Button
               className="w-full bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full h-11 font-bold shadow-sm transition-all"
               onClick={() => {
-                const contact = guide.contactTelegram
-                  ? `https://t.me/${guide.contactTelegram.replace('@', '')}`
-                  : guide.contactWhatsapp
-                  ? `https://wa.me/${guide.contactWhatsapp}`
-                  : null;
-                if (contact) window.open(contact, '_blank', 'noopener,noreferrer');
+                if (!user) {
+                  onAuth();
+                  return;
+                }
+                onMessage(guide.id, guide.name);
               }}
             >
               <MessageCircle className="w-4 h-4 mr-2" />
