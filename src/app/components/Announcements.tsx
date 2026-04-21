@@ -124,7 +124,8 @@ export function Announcements() {
     try {
       let query = supabase
         .from('announcements')
-        .select('*', { count: 'exact' });
+        .select('*', { count: 'exact' })
+        .eq('status', 'active');
 
       if (selectedCity !== 'Все') {
         if (selectedCity === 'Вьетнам') {

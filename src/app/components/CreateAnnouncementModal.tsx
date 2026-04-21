@@ -24,11 +24,12 @@ const CATEGORIES = [
 ];
 
 export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announcementToEdit }: Props) {
-  const { user, profile } = useAuth();
+  const { user, profile, isAdmin } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [processingFiles, setProcessingFiles] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
@@ -199,7 +200,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
           author_id: user.id,
           author_name: profile.display_name || 'Пользователь',
           city: form.city,
-          status: 'active',
+          status: isAdmin ? 'active' : 'pending',
           images: finalImages
         };
 
@@ -210,6 +211,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
       if (dbError) throw dbError;
 
       setSuccess(true);
+      setIsPending(!isAdmin);
       setTimeout(() => {
         setSuccess(false);
         onSuccess();
@@ -274,6 +276,15 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-8">
               {success ? (
+                isPending ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2">Отправлено на модерацию</h3>
+                  <p className="text-muted-foreground">Объявление появится в ленте после проверки администратором.</p>
+                </div>
+                ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
                     <CheckCircle2 className="w-10 h-10 text-green-600" />
@@ -281,6 +292,7 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
                   <h3 className="text-2xl font-bold mb-2">Опубликовано!</h3>
                   <p className="text-muted-foreground">Ваше объявление уже в ленте.</p>
                 </div>
+                )
               ) : (
                 <form id="announcement-form" onSubmit={handleSubmit} className="space-y-6">
                   {/* Category Selection */}

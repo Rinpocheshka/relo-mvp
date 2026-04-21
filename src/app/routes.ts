@@ -21,6 +21,7 @@ export const router = createBrowserRouter([
       { path: 'messages/:chatId', lazy: () => import('./components/ChatRoom').then(m => ({ Component: m.ChatRoom })) },
       { path: 'search', lazy: () => import('./components/SearchResultsPage').then(m => ({ Component: m.SearchResultsPage })) },
       { path: 'stories', lazy: () => import('./components/StoriesPage').then(m => ({ Component: m.StoriesPage })) },
+      { path: 'admin/moderation', lazy: () => import('./components/AnnouncementModerationPage').then(m => ({ Component: m.AnnouncementModerationPage })) },
       { path: '*', lazy: () => import('./components/NotFound').then(m => ({ Component: m.NotFound })) },
     ],
   },
