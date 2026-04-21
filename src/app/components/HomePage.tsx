@@ -68,6 +68,7 @@ const commonQuickLinks = [
   { text: 'Куда сходить', icon: '/assets/icons/custom/events_all.png', link: '/events' },
   { text: 'Найти своих', icon: '/assets/icons/custom/people_tab.png', link: '/people' },
   { text: 'Получить совет', icon: '/assets/icons/custom/support_tab.png', link: '/support' },
+  { text: 'Почитать истории', icon: '/assets/icons/custom/stories_large.png', link: '/stories' },
 ];
 
 // ─── Stage content ─────────────────────────────────────────────────────────────
