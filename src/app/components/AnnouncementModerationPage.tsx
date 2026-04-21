@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { Button } from '@/app/components/ui/button';
 
 type Status = 'pending' | 'active' | 'rejected' | 'all';
-type Collection = 'announcements' | 'events';
+type Collection = 'announcements' | 'events' | 'stories';
 
 interface ModeratedItem {
   id: string;
@@ -43,7 +43,10 @@ export function AnnouncementModerationPage() {
     setLoading(true);
     let q = supabase
       .from(collection)
-      .select('*')
+      .select(collection === 'stories' ? `
+        *,
+        author:profiles!stories_author_id_fkey (display_name, city)
+      ` : '*')
       .order('created_at', { ascending: false });
     if (filter !== 'all') q = q.eq('status', filter);
     const { data } = await q;
@@ -52,10 +55,10 @@ export function AnnouncementModerationPage() {
     const mapped = (data ?? []).map((row: any) => ({
       id: row.id,
       title: row.title ?? '',
-      category: collection === 'announcements' ? row.category : row.type,
-      description: row.description ?? '',
-      author_name: collection === 'announcements' ? row.author_name : row.organizer_name,
-      city: row.city ?? '',
+      category: collection === 'announcements' ? row.category : (collection === 'events' ? row.type : 'История'),
+      description: row.description ?? row.content ?? '',
+      author_name: collection === 'announcements' ? row.author_name : (collection === 'events' ? row.organizer_name : row.author?.display_name),
+      city: row.city ?? row.author?.city ?? '',
       price_text: row.price_text ?? '',
       images: row.images ?? [],
       status: row.status ?? 'active',
@@ -147,20 +150,27 @@ export function AnnouncementModerationPage() {
 
       <div className="max-w-5xl mx-auto px-4 pt-6">
         {/* Collection Toggle */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
           <Button
             variant={collection === 'announcements' ? 'default' : 'outline'}
             onClick={() => setCollection('announcements')}
-            className={`rounded-full shadow-sm font-semibold ${collection === 'announcements' ? 'bg-terracotta-deep hover:bg-terracotta-deep' : ''}`}
+            className={`rounded-full shadow-sm font-semibold whitespace-nowrap ${collection === 'announcements' ? 'bg-terracotta-deep hover:bg-terracotta-deep' : ''}`}
           >
             Объявления
           </Button>
           <Button
             variant={collection === 'events' ? 'default' : 'outline'}
             onClick={() => setCollection('events')}
-            className={`rounded-full shadow-sm font-semibold ${collection === 'events' ? 'bg-warm-olive hover:bg-warm-olive' : ''}`}
+            className={`rounded-full shadow-sm font-semibold whitespace-nowrap ${collection === 'events' ? 'bg-warm-olive hover:bg-warm-olive' : ''}`}
           >
             События (Афиша)
+          </Button>
+          <Button
+            variant={collection === 'stories' ? 'default' : 'outline'}
+            onClick={() => setCollection('stories')}
+            className={`rounded-full shadow-sm font-semibold whitespace-nowrap ${collection === 'stories' ? 'bg-dusty-indigo hover:bg-dusty-indigo' : ''}`}
+          >
+            Истории
           </Button>
         </div>
 

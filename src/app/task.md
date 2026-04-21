@@ -1,14 +1,16 @@
-- `[x]` Create MessageModalContext & Provider
-- `[x]` Create MessageComposeModal component (with Textarea & Supabase integration)
-- `[x]` Wrap application in MessageModalProvider
-- `[x]` Refactor `Profile.tsx` to use openMessageModal
-- `[x]` Refactor `PeopleNearby.tsx` to use openMessageModal
-- `[x]` Refactor `EventDetailsModal.tsx` to use openMessageModal
-- `[x]` Refactor `AnnouncementDetailsModal.tsx` to use openMessageModal
-- `[x]` Add unread message indicator block/badge to `Layout.tsx` nav items
-- `[x]` Enhance `MessagesPage.tsx` to visually distinguish unread messages
-- `[x]` Update `Layout.tsx` to include `Toaster`
-- `[x]` Implement `fetchAllCounts` in `AnnouncementModerationPage.tsx`
-- `[x]` Update tab UI to show counts for all states
-- `[x]` Integrate `sonner` toast in moderation actions
-- `[x]` Final verification of moderation flow
+- [x] Add `status` column to `events` table (default 'pending')
+- [x] Set existing `events` to `active`
+- [x] Update `Events.tsx` to retrieve only `active` status events
+- [x] Update `EventFormModal.tsx` to pass `status: 'pending'` and show 'sent to moderation' toast
+- [x] Update `Layout.tsx` to fetch pending count for both announcements and events
+- [x] Refactor `AnnouncementModerationPage.tsx` into a unified `ModerationPage.tsx` with tabs
+- [x] Build and verify
+
+### Stories Moderation
+- [ ] Add `status` column to `stories` table (default 'pending')
+- [ ] Set existing `stories` to `active`
+- [ ] Update `StoriesPage.tsx` to retrieve only `active` status stories
+- [ ] Update `WriteStoryModal.tsx` to pass `status: 'pending'` and show 'sent to moderation' toast
+- [ ] Update `Layout.tsx` to fetch pending count for `announcements`, `events`, and `stories`
+- [ ] Update `AnnouncementModerationPage.tsx` to handle the `stories` collection
+- [ ] Build and verify

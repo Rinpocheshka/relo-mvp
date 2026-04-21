@@ -4,6 +4,7 @@ import { X, BookOpen, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/app/SupabaseAuthProvider';
+import { toast } from 'sonner';
 
 interface WriteStoryModalProps {
   isOpen: boolean;
@@ -51,7 +52,8 @@ export function WriteStoryModal({ isOpen, onClose, onSuccess, storyToEdit }: Wri
           .from('stories')
           .update({
             title: title.trim(),
-            content: content.trim()
+            content: content.trim(),
+            status: 'pending'
           })
           .eq('id', storyToEdit.id);
         
@@ -60,12 +62,18 @@ export function WriteStoryModal({ isOpen, onClose, onSuccess, storyToEdit }: Wri
         const { error: insertError } = await supabase.from('stories').insert({
           title: title.trim(),
           content: content.trim(),
-          author_id: user.id
+          author_id: user.id,
+          status: 'pending'
         });
 
         if (insertError) throw insertError;
       }
 
+      if (storyToEdit ? false : false) {} // placeholder for parity if needed
+      
+      toast.success('История отправлена на модерацию', {
+        description: 'Она появится в списке после одобрения модератором.'
+      });
       onSuccess();
       onClose();
       setTitle('');

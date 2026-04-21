@@ -54,6 +54,7 @@ export function StoriesPage() {
           ),
           story_comments(count)
         `)
+        .eq('status', 'active')
         .order('created_at', { ascending: false });
 
       if (!error && data) {
