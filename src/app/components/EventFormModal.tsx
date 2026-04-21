@@ -4,6 +4,7 @@ import { X, Calendar, MapPin, Clock, Users, Upload, Image as ImageIcon, AlertCir
 import { Button } from './ui/button';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../SupabaseAuthProvider';
+import { toast } from 'sonner';
 
 declare const heic2any: any;
 
@@ -197,6 +198,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
         images: finalImages,
         max_attendees: formData.max_attendees ? parseInt(formData.max_attendees) : null,
         starts_at: combinedStartsAt,
+        status: 'pending',
       };
 
       // 3. Upsert
@@ -213,6 +215,9 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
       }
 
       if (result.error) throw result.error;
+      toast.success('Событие отправлено на модерацию', {
+        description: 'Оно появится на странице после одобрения администратором.'
+      });
       onSuccess();
       onClose();
     } catch (err) {

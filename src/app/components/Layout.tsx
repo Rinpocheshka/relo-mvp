@@ -272,12 +272,17 @@ export function Layout() {
   useEffect(() => {
     if (!isAdmin) { setPendingCount(0); return; }
     const fetch = async () => {
-      const { count } = await supabase.from('announcements').select('id', { count: 'exact', head: true }).eq('status', 'pending');
-      setPendingCount(count ?? 0);
+      const [annRes, evRes] = await Promise.all([
+        supabase.from('announcements').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+        supabase.from('events').select('id', { count: 'exact', head: true }).eq('status', 'pending')
+      ]);
+      setPendingCount((annRes.count ?? 0) + (evRes.count ?? 0));
     };
     void fetch();
+    const chParams = { event: '*', schema: 'public' } as const;
     const ch = supabase.channel('layout_moderation_count')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'announcements' }, () => void fetch())
+      .on('postgres_changes', { ...chParams, table: 'announcements' }, () => void fetch())
+      .on('postgres_changes', { ...chParams, table: 'events' }, () => void fetch())
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [isAdmin]);

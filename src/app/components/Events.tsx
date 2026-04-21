@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { Calendar, Search, Plus, Users, MapPin, Clock, Filter, CheckCircle, ChevronDown as ChevronDownIcon } from 'lucide-react';
@@ -162,7 +162,8 @@ export function Events() {
         .select(`
           *,
           event_participants(user_id)
-        `, { count: 'exact' });
+        `, { count: 'exact' })
+        .eq('status', 'active');
 
       // Apply filters
       if (selectedType !== 'Все') {
