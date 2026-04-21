@@ -176,7 +176,7 @@ export function AnnouncementModerationPage() {
             onClick={() => setCollection('events')}
             className={`rounded-full shadow-sm font-semibold whitespace-nowrap ${collection === 'events' ? 'bg-warm-olive hover:bg-warm-olive' : ''}`}
           >
-            События (Афиша)
+            Афиша
           </Button>
           <Button
             variant={collection === 'stories' ? 'default' : 'outline'}
@@ -190,7 +190,7 @@ export function AnnouncementModerationPage() {
             onClick={() => setCollection('questions')}
             className={`rounded-full shadow-sm font-semibold whitespace-nowrap ${collection === 'questions' ? 'bg-amber-600 hover:bg-amber-600' : ''}`}
           >
-            Статьи (БЗ)
+            Статьи
           </Button>
         </div>
 

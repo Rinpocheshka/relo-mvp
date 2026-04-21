@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { useSearchParams, Link } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Search,
@@ -1740,15 +1740,21 @@ function GuidesPanel({ guides }: { guides: Guide[] }) {
             className="bg-white p-5 rounded-[24px] border border-border/60 shadow-sm hover:shadow-md transition-all group"
           >
             <div className="flex items-start gap-4 mb-4">
-              <UserAvatar 
-                src={guide.avatarUrl} 
-                name={guide.name} 
-                isGuide={guide.isGuide} 
-                size="xl" 
-                className="!shadow-sm !border-2 !border-white group-hover:scale-105 transition-transform" 
-              />
+              <Link to={`/profile?id=${guide.id}`} className="shrink-0">
+                <UserAvatar 
+                  src={guide.avatarUrl} 
+                  name={guide.name} 
+                  isGuide={guide.isGuide} 
+                  size="xl" 
+                  className="!shadow-sm !border-2 !border-white hover:scale-105 transition-transform" 
+                />
+              </Link>
               <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-lg text-foreground truncate">{guide.name}</h3>
+                <Link to={`/profile?id=${guide.id}`} className="hover:text-terracotta-deep transition-colors">
+                  <h3 className="font-bold text-lg text-foreground truncate group-hover:text-terracotta-deep transition-colors">
+                    {guide.name}
+                  </h3>
+                </Link>
                 <p className="text-xs font-bold text-warm-olive/70 uppercase tracking-tighter mb-1.5">Проводник города</p>
                 {guide.rating && (
                   <div className="flex items-center gap-1">
