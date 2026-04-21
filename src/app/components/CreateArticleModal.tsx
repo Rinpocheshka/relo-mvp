@@ -124,6 +124,11 @@ export function CreateArticleModal({ isOpen, onClose, onSuccess, articleToEdit }
         finalImageUrl = await uploadImage();
       }
 
+      // If user is admin, article is active immediately. Otherwise, it's pending.
+      const { data: profileData } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+      const userIsAdmin = profileData?.role === 'admin';
+      const status = userIsAdmin ? 'active' : 'pending';
+
       const payload = {
         type: 'article',
         question: title.trim(),
@@ -133,7 +138,7 @@ export function CreateArticleModal({ isOpen, onClose, onSuccess, articleToEdit }
         asked_by: user.id,
         asked_by_name: profile?.display_name ?? 'Администратор',
         city: profile?.city ?? 'Дананг',
-        status: 'open',
+        status: status,
       };
       
       let result;
@@ -158,19 +163,27 @@ export function CreateArticleModal({ isOpen, onClose, onSuccess, articleToEdit }
         result = data;
       }
 
-      onSuccess({
-        id: result.id,
-        question: result.question,
-        body: result.body,
-        type: result.type,
-        image_url: result.image_url,
-        category: result.category,
-        askedBy: result.asked_by_name ?? 'Пользователь',
-        answers: isEdit ? (articleToEdit.answers || 0) : 0,
-        isAnswered: isEdit ? (articleToEdit.isAnswered || false) : false,
-        createdAt: result.created_at ? 'только что' : 'только что',
-        authorIsGuide: profile?.is_guide,
-      });
+      if (status === 'pending') {
+        import('sonner').then(({ toast }) => {
+          toast.success('Статья отправлена на модерацию', {
+            description: 'Она появится в базе знаний после проверки администратором.'
+          });
+        });
+      } else {
+        onSuccess({
+          id: result.id,
+          question: result.question,
+          body: result.body,
+          type: result.type,
+          image_url: result.image_url,
+          category: result.category,
+          askedBy: result.asked_by_name ?? 'Пользователь',
+          answers: isEdit ? (articleToEdit.answers || 0) : 0,
+          isAnswered: isEdit ? (articleToEdit.isAnswered || false) : false,
+          createdAt: result.created_at ? 'только что' : 'только что',
+          authorIsGuide: profile?.is_guide,
+        });
+      }
 
       onClose();
     } catch (e) {

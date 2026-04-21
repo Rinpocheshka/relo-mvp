@@ -207,7 +207,8 @@ export function FindSupport() {
     try {
       let q = supabase
         .from('questions')
-        .select('id, question, body, type, image_url, category, asked_by, asked_by_name, created_at, views_count, is_anonymous, answers(count), profiles:asked_by(is_guide)', { count: 'exact' });
+        .select('id, question, body, type, image_url, category, asked_by, asked_by_name, created_at, views_count, is_anonymous, status, answers(count), profiles:asked_by(is_guide)', { count: 'exact' })
+        .eq('status', 'active');
 
       // Server-side filtering
       if (selectedCategory !== 'Все') q = q.eq('category', selectedCategory);
@@ -271,8 +272,9 @@ export function FindSupport() {
         const fetchAndExpand = async () => {
           const { data, error } = await supabase
             .from('questions')
-            .select('id, question, category, asked_by, asked_by_name, created_at, views_count, answers(count), profiles:asked_by(is_guide)')
+            .select('id, question, category, asked_by, asked_by_name, created_at, views_count, status, answers(count), profiles:asked_by(is_guide)')
             .eq('id', deepLinkId)
+            .eq('status', 'active')
             .single();
           
           if (!error && data) {

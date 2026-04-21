@@ -272,12 +272,13 @@ export function Layout() {
   useEffect(() => {
     if (!isAdmin) { setPendingCount(0); return; }
     const fetch = async () => {
-      const [annRes, evRes, stRes] = await Promise.all([
+      const [annRes, evRes, stRes, artRes] = await Promise.all([
         supabase.from('announcements').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
         supabase.from('events').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-        supabase.from('stories').select('id', { count: 'exact', head: true }).eq('status', 'pending')
+        supabase.from('stories').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+        supabase.from('questions').select('id', { count: 'exact', head: true }).eq('status', 'pending').eq('type', 'article')
       ]);
-      setPendingCount((annRes.count ?? 0) + (evRes.count ?? 0) + (stRes.count ?? 0));
+      setPendingCount((annRes.count ?? 0) + (evRes.count ?? 0) + (stRes.count ?? 0) + (artRes.count ?? 0));
     };
     void fetch();
     const chParams = { event: '*', schema: 'public' } as const;
@@ -285,6 +286,7 @@ export function Layout() {
       .on('postgres_changes', { ...chParams, table: 'announcements' }, () => void fetch())
       .on('postgres_changes', { ...chParams, table: 'events' }, () => void fetch())
       .on('postgres_changes', { ...chParams, table: 'stories' }, () => void fetch())
+      .on('postgres_changes', { ...chParams, table: 'questions' }, () => void fetch())
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [isAdmin]);

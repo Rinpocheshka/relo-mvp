@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { Button } from '@/app/components/ui/button';
 
 type Status = 'pending' | 'active' | 'rejected' | 'all';
-type Collection = 'announcements' | 'events' | 'stories';
+type Collection = 'announcements' | 'events' | 'stories' | 'questions';
 
 interface ModeratedItem {
   id: string;
@@ -48,19 +48,24 @@ export function AnnouncementModerationPage() {
         author:profiles!stories_author_id_fkey (display_name, city)
       ` : '*')
       .order('created_at', { ascending: false });
+
+    if (collection === 'questions') {
+      q = q.eq('type', 'article');
+    }
+
     if (filter !== 'all') q = q.eq('status', filter);
     const { data } = await q;
     
     // Map data to generic ModeratedItem based on collection schema
     const mapped = (data ?? []).map((row: any) => ({
       id: row.id,
-      title: row.title ?? '',
-      category: collection === 'announcements' ? row.category : (collection === 'events' ? row.type : 'История'),
-      description: row.description ?? row.content ?? '',
-      author_name: collection === 'announcements' ? row.author_name : (collection === 'events' ? row.organizer_name : row.author?.display_name),
+      title: row.title ?? row.question ?? '',
+      category: collection === 'announcements' ? row.category : (collection === 'events' ? row.type : (collection === 'questions' ? row.category : 'История')),
+      description: row.description ?? row.body ?? row.content ?? '',
+      author_name: collection === 'announcements' ? row.author_name : (collection === 'events' ? row.organizer_name : (collection === 'questions' ? row.asked_by_name : row.author?.display_name)),
       city: row.city ?? row.author?.city ?? '',
       price_text: row.price_text ?? '',
-      images: row.images ?? [],
+      images: row.images ?? (row.image_url ? [row.image_url] : []),
       status: row.status ?? 'active',
       created_at: row.created_at,
     }));
@@ -70,11 +75,19 @@ export function AnnouncementModerationPage() {
   }, [filter, collection]);
 
   const fetchCounts = useCallback(async () => {
+    const baseQ = supabase.from(collection);
+    const getCount = (s?: Status) => {
+      let q = baseQ.select('id', { count: 'exact', head: true });
+      if (collection === 'questions') q = q.eq('type', 'article');
+      if (s && s !== 'all') q = q.eq('status', s);
+      return q;
+    };
+
     const [pendingRes, activeRes, rejectedRes, allRes] = await Promise.all([
-      supabase.from(collection).select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-      supabase.from(collection).select('id', { count: 'exact', head: true }).eq('status', 'active'),
-      supabase.from(collection).select('id', { count: 'exact', head: true }).eq('status', 'rejected'),
-      supabase.from(collection).select('id', { count: 'exact', head: true }),
+      getCount('pending'),
+      getCount('active'),
+      getCount('rejected'),
+      getCount('all'),
     ]);
 
     setCounts({
@@ -171,6 +184,13 @@ export function AnnouncementModerationPage() {
             className={`rounded-full shadow-sm font-semibold whitespace-nowrap ${collection === 'stories' ? 'bg-dusty-indigo hover:bg-dusty-indigo' : ''}`}
           >
             Истории
+          </Button>
+          <Button
+            variant={collection === 'questions' ? 'default' : 'outline'}
+            onClick={() => setCollection('questions')}
+            className={`rounded-full shadow-sm font-semibold whitespace-nowrap ${collection === 'questions' ? 'bg-amber-600 hover:bg-amber-600' : ''}`}
+          >
+            Статьи (БЗ)
           </Button>
         </div>
 
