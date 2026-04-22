@@ -116,7 +116,6 @@ const stageContent = {
 export function HomePage() {
   const { session, user, profile, refreshProfile } = useAuth();
   const [currentStage, setCurrentStage] = useState<Stage>('settling');
-  const [isUpdatingStage, setIsUpdatingStage] = useState(false);
   const [city, setCity] = useState('Дананг');
   const [nearbyPeople, setNearbyPeople] = useState<Person[]>([]);
   const [peopleLoading, setPeopleLoading] = useState(true);
@@ -253,24 +252,6 @@ export function HomePage() {
     setWriteStoryOpen(true);
   };
 
-  const handleStageUpdate = async (newStage: Stage) => {
-    if (!user || isUpdatingStage) return;
-    setIsUpdatingStage(true);
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ stage: newStage })
-        .eq('id', user.id);
-
-      if (error) throw error;
-      await refreshProfile();
-      setCurrentStage(newStage);
-    } catch (e) {
-      console.error('Error updating stage:', e);
-    } finally {
-      setIsUpdatingStage(false);
-    }
-  };
 
   return (
     <div className="bg-warm-milk pb-8 md:pb-16">
@@ -301,11 +282,7 @@ export function HomePage() {
                   
                   return (
                     <div key={stage.value} className="flex flex-col items-center">
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => handleStageUpdate(stage.value)}
-                        disabled={isUpdatingStage}
+                      <div
                         className={`
                           w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-lg sm:text-xl
                           transition-all duration-300 shadow-sm border-2
@@ -313,13 +290,12 @@ export function HomePage() {
                             ? 'bg-dusty-indigo border-dusty-indigo text-white scale-110 shadow-lg shadow-dusty-indigo/30' 
                             : isCompleted
                               ? 'bg-white border-dusty-indigo text-dusty-indigo'
-                              : 'bg-white border-border/60 text-muted-foreground hover:border-dusty-indigo/40'
+                              : 'bg-white border-border/60 text-muted-foreground'
                           }
-                          ${isUpdatingStage ? 'cursor-wait opacity-50' : 'cursor-pointer'}
                         `}
                       >
                         {stage.icon}
-                      </motion.button>
+                      </div>
                       <span className={`
                         mt-3 text-[10px] sm:text-xs font-bold uppercase tracking-tighter sm:tracking-widest whitespace-nowrap transition-colors duration-300
                         ${isActive ? 'text-dusty-indigo' : 'text-muted-foreground/60'}
