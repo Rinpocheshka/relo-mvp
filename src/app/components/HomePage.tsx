@@ -71,7 +71,15 @@ const commonQuickLinks = [
   { text: 'Почитать истории', icon: '/assets/icons/custom/stories_large.png', link: '/stories' },
 ];
 
-// ─── Stage content ─────────────────────────────────────────────────────────────
+// ─── Stage configuration ───────────────────────────────────────────────────────
+const STAGES_CONFIG: { value: Stage; label: string; icon: string }[] = [
+  { value: 'planning', label: 'Планирую', icon: '✈️' },
+  { value: 'just_arrived', label: 'Приехал', icon: '🧳' },
+  { value: 'settling', label: 'Осваиваюсь', icon: '🏠' },
+  { value: 'sharing', label: 'Делюсь', icon: '🤝' },
+  { value: 'moving_on', label: 'Дальше', icon: '🌍' },
+];
+
 const stageContent = {
   planning: {
     greeting: 'Переезд — это не про чемоданы.\nЭто про то, как создать новую жизнь.',
@@ -106,8 +114,9 @@ const stageContent = {
 };
 
 export function HomePage() {
-  const { session, user, profile } = useAuth();
+  const { session, user, profile, refreshProfile } = useAuth();
   const [currentStage, setCurrentStage] = useState<Stage>('settling');
+  const [isUpdatingStage, setIsUpdatingStage] = useState(false);
   const [city, setCity] = useState('Дананг');
   const [nearbyPeople, setNearbyPeople] = useState<Person[]>([]);
   const [peopleLoading, setPeopleLoading] = useState(true);
@@ -244,9 +253,86 @@ export function HomePage() {
     setWriteStoryOpen(true);
   };
 
+  const handleStageUpdate = async (newStage: Stage) => {
+    if (!user || isUpdatingStage) return;
+    setIsUpdatingStage(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ stage: newStage })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      await refreshProfile();
+      setCurrentStage(newStage);
+    } catch (e) {
+      console.error('Error updating stage:', e);
+    } finally {
+      setIsUpdatingStage(false);
+    }
+  };
+
   return (
     <div className="bg-warm-milk pb-8 md:pb-16">
       <div className="max-w-5xl mx-auto px-4 py-8 pb-10 md:pb-8">
+
+        {/* Relocation Stage Stepper */}
+        {user && (
+          <div className="mb-10 px-2 sm:px-6">
+            <div className="relative">
+              {/* Background Line */}
+              <div className="absolute top-1/2 left-0 w-full h-[2px] bg-border/40 -translate-y-1/2 rounded-full" />
+              
+              {/* Progress Line */}
+              <motion.div 
+                className="absolute top-1/2 left-0 h-[2.5px] bg-dusty-indigo -translate-y-1/2 rounded-full z-10"
+                initial={false}
+                animate={{ 
+                  width: `${(STAGES_CONFIG.findIndex(s => s.value === currentStage) / (STAGES_CONFIG.length - 1)) * 100}%` 
+                }}
+                transition={{ duration: 0.5, ease: 'circOut' }}
+              />
+
+              {/* Steps */}
+              <div className="relative flex justify-between items-center z-20">
+                {STAGES_CONFIG.map((stage, idx) => {
+                  const isActive = stage.value === currentStage;
+                  const isCompleted = STAGES_CONFIG.findIndex(s => s.value === currentStage) > idx;
+                  
+                  return (
+                    <div key={stage.value} className="flex flex-col items-center">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleStageUpdate(stage.value)}
+                        disabled={isUpdatingStage}
+                        className={`
+                          w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-lg sm:text-xl
+                          transition-all duration-300 shadow-sm border-2
+                          ${isActive 
+                            ? 'bg-dusty-indigo border-dusty-indigo text-white scale-110 shadow-lg shadow-dusty-indigo/30' 
+                            : isCompleted
+                              ? 'bg-white border-dusty-indigo text-dusty-indigo'
+                              : 'bg-white border-border/60 text-muted-foreground hover:border-dusty-indigo/40'
+                          }
+                          ${isUpdatingStage ? 'cursor-wait opacity-50' : 'cursor-pointer'}
+                        `}
+                      >
+                        {stage.icon}
+                      </motion.button>
+                      <span className={`
+                        mt-3 text-[10px] sm:text-xs font-bold uppercase tracking-tighter sm:tracking-widest whitespace-nowrap transition-colors duration-300
+                        ${isActive ? 'text-dusty-indigo' : 'text-muted-foreground/60'}
+                      `}>
+                        {stage.label}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
 
         <AnimatePresence mode="wait">
           <motion.div
