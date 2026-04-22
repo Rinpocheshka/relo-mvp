@@ -31,9 +31,9 @@ export function MessageComposeModal({ isOpen, onClose, recipientId, recipientNam
     if (isOpen) {
       if (context) {
         if (context.type === 'announcement') {
-          setContent(`Здравствуйте! Пишу вам по вашему объявлению "${context.title}": `);
+          setContent(`Пишу вам по вашему объявлению "${context.title}", еще актуально? `);
         } else {
-          setContent(`Здравствуйте! Пишу вам по поводу события "${context.title}": `);
+          setContent(`Пишу вам по поводу события "${context.title}": `);
         }
       } else {
         setContent('');
