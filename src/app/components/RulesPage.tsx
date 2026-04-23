@@ -52,9 +52,9 @@ export function RulesPage() {
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href="https://t.me/Relome_help" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-5 py-2.5 bg-white border border-border/40 rounded-full text-sm font-bold text-dusty-indigo hover:bg-soft-sand/20 transition-all">
-              Чат поддержки t.me/Relome_help
+              Чат поддержки
             </a>
-            <Link to="/support" className="flex items-center gap-2 px-5 py-2.5 bg-white border border-border/40 rounded-full text-sm font-bold text-warm-olive hover:bg-soft-sand/20 transition-all">
+            <Link to="/about" className="flex items-center gap-2 px-5 py-2.5 bg-white border border-border/40 rounded-full text-sm font-bold text-warm-olive hover:bg-soft-sand/20 transition-all">
               Вопросы о Relo
             </Link>
           </div>
