@@ -86,7 +86,9 @@ const STAGE_LABEL_MAP: Record<string, Stage> = {
 };
 
 const commonSections = [
+  { icon: '/assets/icons/custom/people_tab.png', title: 'Найти своих и познакомиться', subtitle: 'Люди рядом', link: '/people', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
   { icon: '/assets/icons/custom/support_tab.png', title: 'Ответы на ваши вопросы «А как проще…»', subtitle: 'База знаний', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
+  { icon: '/assets/icons/custom/stories_large.png', title: 'Опыт, который меняет жизнь', subtitle: 'Истории релокации', link: '/stories', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
 ];
 
 const commonQuickLinks = [
@@ -592,85 +594,23 @@ export function HomePage() {
               )}
             </section>
 
-            <section className="mb-12">
-              <div className="flex items-center justify-between mb-6">
-                <Link to="/people" className="flex items-center gap-4 group/header">
-                  <div className="w-12 h-12 rounded-2xl bg-warm-olive/10 flex items-center justify-center overflow-hidden group-hover/header:scale-105 transition-transform">
-                    <img src="/assets/images/community-puzzle.jpg" className="w-full h-full object-cover scale-110" alt="" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-2xl font-bold group-hover/header:text-terracotta-deep transition-colors">Люди рядом</h2>
-                    <ArrowRight className="w-5 h-5 text-terracotta-deep opacity-0 -translate-x-2 group-hover/header:opacity-100 group-hover/header:translate-x-0 transition-all" />
-                  </div>
-                </Link>
-              </div>
-
-              {peopleLoading ? (
-                <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dusty-indigo"></div></div>
-              ) : nearbyPeople.length > 0 ? (
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {nearbyPeople.map((person, i) => (
-                    <motion.div
-                      key={person.id + i}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: i * 0.1 }}
-                      className="group bg-white rounded-[32px] p-5 border border-border/40 hover:border-terracotta-deep/30 transition-all hover:shadow-xl hover:-translate-y-1 relative h-full flex flex-col"
-                    >
-                      {user ? (
-                        <Link to={person.id === user?.id ? "/profile?edit=true" : `/profile/${person.id}`} className="flex-1 flex flex-col">
-                          <CardItemContent person={person} />
-                        </Link>
-                      ) : (
-                        <div onClick={() => setAuthOpen(true)} className="cursor-pointer flex-1 flex flex-col">
-                          <CardItemContent person={person} />
-                        </div>
-                      )}
-
-                      {user && (person.id === user.id || profile?.role === 'admin') && (
-                        <Link to={person.id === user.id ? "/profile?edit=true" : `/profile/${person.id}`}>
-                           <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-white/90 hover:bg-white border border-border/50 shadow-sm">
-                              <Edit className="w-4 h-4 text-muted-foreground" />
-                           </Button>
-                        </Link>
-                      )}
-                    </motion.div>
-                  ))}
-                </div>
-              ) : (
-                <div className="bg-white rounded-[32px] border border-border/40 p-12 text-center relative overflow-hidden group">
-                  <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-terracotta-deep/5 rounded-full blur-3xl transition-transform group-hover:scale-110 duration-1000" />
-                  <h3 className="text-xl font-bold mb-2">Кто-то уже готов написать тебе</h3>
-                  <p className="text-muted-foreground mb-8 max-w-md mx-auto">Добавь профиль или открой страницу людей — начни разговор первым.</p>
-                  <Link to="/people">
-                    <Button className="bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-full px-8 h-12 font-semibold shadow-lg transition-all hover:-translate-y-0.5">
-                      Посмотреть всех <ArrowRight className="w-5 h-5 ml-2" />
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </section>
-
-            <div className="grid md:grid-cols-1 gap-5 mb-12">
+            <div className="grid md:grid-cols-3 gap-5 mb-12">
               {content.sections.map((section, i) => {
-                const Icon = section.icon;
                 return (
                   <Link key={i} to={section.link}>
                     <motion.div
                       initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.1 }}
-                      className="bg-white p-8 rounded-[32px] border border-border/40 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col md:flex-row items-center gap-8 group"
+                      className="bg-white p-6 rounded-[24px] border border-border/40 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all h-full flex flex-col"
                     >
-                      <div className={`w-20 h-20 rounded-3xl ${section.bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
-                        <img src={section.icon as string} className="w-10 h-10 object-contain" alt="" />
+                      <div className={`w-14 h-14 rounded-2xl ${section.bg} flex items-center justify-center mb-6`}>
+                        <img src={section.icon as string} className="w-8 h-8 object-contain" alt="" />
                       </div>
-                      <div className="flex-1 text-center md:text-left">
-                        <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${section.color} mb-2`}>{section.subtitle}</p>
-                        <h3 className="text-xl md:text-2xl font-bold leading-tight">{section.title}</h3>
-                      </div>
-                      <div className={`flex items-center gap-2 ${section.color} font-black uppercase tracking-widest text-xs`}>
-                        Перейти <ArrowRight className="w-5 h-5" />
+                      <p className={`text-xs font-semibold uppercase tracking-wider ${section.color} mb-2`}>{section.subtitle}</p>
+                      <h3 className="text-base font-semibold leading-snug flex-1">{section.title}</h3>
+                      <div className={`flex items-center gap-1 mt-4 ${section.color} text-sm font-medium`}>
+                        Перейти <ArrowRight className="w-4 h-4" />
                       </div>
                     </motion.div>
                   </Link>
@@ -678,83 +618,7 @@ export function HomePage() {
               })}
             </div>
 
-            {/* Relocation Stories Section */}
-            <section id="stories" className="mb-12">
-              <div className="flex items-center justify-between mb-6">
-                <Link to="/stories" className="flex items-center gap-4 group/header">
-                  <div className="w-12 h-12 rounded-2xl bg-dusty-indigo/10 flex items-center justify-center overflow-hidden group-hover/header:rotate-3 transition-transform">
-                    <img src="/assets/icons/custom/stories_large.png" className="w-full h-full object-contain p-2" alt="" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div>
-                      <h2 className="text-2xl font-bold group-hover/header:text-dusty-indigo transition-colors">Истории релокаций</h2>
-                      <p className="text-sm text-muted-foreground">Опыт, который меняет жизнь</p>
-                    </div>
-                    <ArrowRight className="w-5 h-5 text-dusty-indigo opacity-0 -translate-x-2 group-hover/header:opacity-100 group-hover/header:translate-x-0 transition-all" />
-                  </div>
-                </Link>
-                <Button 
-                  size="sm"
-                  onClick={() => user ? setWriteStoryOpen(true) : setAuthOpen(true)}
-                  className="bg-white hover:bg-white/90 text-dusty-indigo border border-border/40 rounded-full px-5 font-bold shadow-sm h-10 transition-all active:scale-95"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Написать
-                </Button>
-              </div>
-
-              {storiesLoading ? (
-                <div className="flex justify-center py-12">
-                   <Loader2 className="w-8 h-8 animate-spin text-terracotta-deep/20" />
-                </div>
-              ) : stories.length > 0 ? (
-                <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {stories.map((story, i) => (
-                      <motion.div
-                        key={story.id}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: i * 0.08 }}
-                        onClick={() => user ? setDetailsStoryId(story.id) : setAuthOpen(true)}
-                        className="bg-white rounded-[32px] p-6 border border-border/40 hover:border-terracotta-deep/30 transition-all cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 group h-full flex flex-col"
-                      >
-                        <div className="flex items-center gap-3 mb-4">
-                          <UserAvatar src={story.author_avatar} name={story.author_name || ''} size="sm" isGuide={story.author_is_guide} />
-                          <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                             {story.author_name}
-                          </div>
-                        </div>
-                        <h3 className="font-bold text-lg mb-3 leading-tight group-hover:text-terracotta-deep transition-colors line-clamp-2">
-                          {story.title}
-                        </h3>
-                        <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed mb-4">
-                          {story.content}
-                        </p>
-                        <div className="flex items-center justify-between mt-auto pt-4 border-t border-soft-sand/30">
-                            <div className="flex items-center gap-3">
-                              <span className="text-[10px] text-muted-foreground font-medium">
-                                 {formatRelativeRu(new Date(story.created_at))}
-                              </span>
-                              <div className="flex items-center gap-1 text-[10px] text-muted-foreground/60 font-bold">
-                                <MessageCircle className="w-3 h-3" />
-                                {story.comments_count}
-                              </div>
-                            </div>
-                           <div className="flex items-center gap-1 text-[10px] font-black text-terracotta-deep uppercase tracking-tighter">
-                              Читать <ArrowRight className="w-3 h-3" />
-                           </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <div className="bg-white rounded-[32px] border border-dashed border-border/50 p-12 text-center">
-                   <p className="text-muted-foreground">Тут пока пусто. Станьте первым, кто расскажет свою историю!</p>
-                </div>
-              )}
-            </section>
+            {/* Relocation Stories Section removed from Home for cleaner look, available via grid link */}
 
             <div className="bg-gradient-to-br from-dusty-indigo to-terracotta-deep rounded-[32px] p-8 md:p-10 text-white">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
