@@ -208,7 +208,7 @@ export function Announcements() {
 
         {/* Categories Carousel (Mobile) / Wrap (Desktop) */}
         <div className="mb-6 md:mb-8 -mx-4 sm:mx-0 overflow-visible sm:overflow-visible px-5 sm:px-0" ref={emblaRef}>
-          <div className="flex sm:flex-wrap sm:justify-center gap-2 sm:gap-3 py-2 scrollbar-hide">
+          <div className="flex sm:flex-wrap gap-2 sm:gap-3 py-2 scrollbar-hide">
             {categories.map((category) => {
               return (
                 <div key={category.name} className="flex-shrink-0">
