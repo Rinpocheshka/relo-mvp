@@ -149,22 +149,20 @@ export function HomePage() {
     }
   }, [storyParamId]);
 
+  }, []);
+
+  // Sync stage and city from profile when it changes
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('reloOnboarding');
-      const storedStage = localStorage.getItem('reloStage');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed.city) setCity(parsed.city);
-      }
-      if (storedStage) {
-        const mapped = STAGE_LABEL_MAP[storedStage] || 'settling';
+    if (profile) {
+      if (profile.stage) {
+        const mapped = STAGE_LABEL_MAP[profile.stage] || 'settling';
         setCurrentStage(mapped);
       }
-    } catch {
-      // ignore
+      if (profile.city) {
+        setCity(profile.city.split(',')[0]);
+      }
     }
-  }, []);
+  }, [profile]);
 
   useEffect(() => {
     async function fetchStories() {
@@ -242,7 +240,7 @@ export function HomePage() {
 
     void fetchStories();
     void fetchMainData();
-  }, [session, user, city, profile]);
+  }, [session, user, city]);
 
   const content = stageContent[currentStage];
 
