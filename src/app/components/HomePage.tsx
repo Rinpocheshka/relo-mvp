@@ -257,13 +257,22 @@ export function HomePage() {
     async function fetchEvents() {
       setEventsLoading(true);
       try {
-        const { data, error } = await supabase
+        let query = supabase
           .from('events')
           .select('*, event_participants(user_id)')
           .eq('status', 'active')
-          .order('starts_at', { ascending: true })
-          .gte('starts_at', new Date().toISOString())
-          .limit(3);
+          .order('created_at', { ascending: false });
+
+        // Personalization logic: if user has kid-related tags, show kid events
+        const isParent = profile?.interests?.some(tag => 
+          ['С детьми', 'Мама в декрете'].includes(tag)
+        );
+
+        if (isParent) {
+          query = query.eq('type', 'Для детей');
+        }
+
+        const { data, error } = await query.limit(3);
 
         if (!error && data) {
           setEvents(data.map((row: any) => {
@@ -336,7 +345,7 @@ export function HomePage() {
     void fetchAnnouncements();
     void fetchEvents();
     void fetchMainData();
-  }, [session, user, city]);
+  }, [session, user, city, profile]);
 
   const content = stageContent[currentStage];
 
