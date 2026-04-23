@@ -411,7 +411,6 @@ export function Layout() {
               <ul className="space-y-2.5">
                 <li><a href="https://t.me/relome_world" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Написать в поддержку</a></li>
                 <li><Link to="/rules" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Правила сайта</Link></li>
-                <li><Link to="/rules#privacy" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">Политика конфиденциальности</Link></li>
                 <li><a href="mailto:relome.world@gmail.com" className="text-sm text-muted-foreground hover:text-terracotta-deep transition-colors">relome.world@gmail.com</a></li>
               </ul>
             </div>
