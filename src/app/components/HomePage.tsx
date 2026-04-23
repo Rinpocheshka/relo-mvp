@@ -149,8 +149,6 @@ export function HomePage() {
     }
   }, [storyParamId]);
 
-  }, []);
-
   // Sync stage and city from profile when it changes
   useEffect(() => {
     if (profile) {
