@@ -242,7 +242,7 @@ export function HomePage() {
 
     void fetchStories();
     void fetchMainData();
-  }, [session, user, city]);
+  }, [session, user, city, profile]);
 
   const content = stageContent[currentStage];
 
