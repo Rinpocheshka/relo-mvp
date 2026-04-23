@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, MapPin, Calendar, User as UserIcon, CornerUpRight, Trash2, Loader2, Edit, MessageCircle } from 'lucide-react';
+import { X, MapPin, Calendar, User as UserIcon, CornerUpRight, Trash2, Loader2, Edit, MessageCircle, CheckCircle2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '../SupabaseAuthProvider';
 import { supabase } from '@/lib/supabaseClient';
@@ -57,10 +57,13 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
     });
   };
 
-  // Reset active image when announcement changes
+  const [isDeleted, setIsDeleted] = useState(false);
+
+  // Reset states when announcement changes
   useEffect(() => {
     setActiveImageIndex(0);
     setIsDeleting(false);
+    setIsDeleted(false);
   }, [announcement?.id]);
 
   const handleDelete = async () => {
@@ -76,13 +79,16 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
 
       if (error) throw error;
       
+      setIsDeleted(true);
       if (onDeleted) {
         onDeleted();
-      } else {
-        onClose();
-        // Fallback for pages without onDeleted handler yet
-        window.location.reload();
       }
+      
+      // Auto-close after 2 seconds
+      setTimeout(() => {
+        onClose();
+      }, 2000);
+      
     } catch (err) {
       alert('Ошибка при удалении');
       console.error(err);
@@ -125,7 +131,20 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
             </div>
 
             <div className="flex-1 overflow-y-auto min-h-0">
-              <div className="grid lg:grid-cols-2 h-full">
+              {isDeleted ? (
+                <div className="h-full flex flex-col items-center justify-center py-20 text-center px-6">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6"
+                  >
+                    <CheckCircle2 className="w-12 h-12 text-green-600" />
+                  </motion.div>
+                  <h3 className="text-3xl font-black mb-3">Удалено!</h3>
+                  <p className="text-muted-foreground text-lg">Объявление успешно удалено из системы.</p>
+                </div>
+              ) : (
+                <div className="grid lg:grid-cols-2 h-full">
                 {/* Visuals */}
                 <div className="bg-soft-sand/5 relative min-h-[350px] lg:min-h-0 border-r border-border/40 flex flex-col">
                   {images.length > 0 ? (
@@ -256,7 +275,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
                     </p>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </motion.div>
         </div>
