@@ -40,7 +40,6 @@ export function Announcements() {
   const [selectedCity, setSelectedCity] = useState('Все');
   const PAGE_SIZE = 27;
 
-
   const { user } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -64,12 +63,9 @@ export function Announcements() {
     { name: 'Услуги', icon: '/assets/icons/custom/category_services.png' },
     { name: 'Документы/визы', icon: '/assets/icons/custom/passport.png' },
     { name: 'Обмен/деньги', icon: '/assets/icons/custom/category_finance.png' },
+    { name: 'Для детей', icon: '/assets/icons/custom/events_kids.png' },
     { name: 'Бесплатно', icon: '/assets/icons/custom/category_free.png' },
   ];
-
-
-
-
 
   const [searchParams] = useSearchParams();
   const shouldCreate = searchParams.get('create') === 'true';
@@ -191,10 +187,9 @@ export function Announcements() {
     if (selectedCategory === 'Услуги') return '💼 Проверенные специалисты рядом';
     if (selectedCategory === 'Вещи') return '📦 Всё необходимое от местных';
     if (selectedCategory === 'Бесплатно') return '💝 Помогай и получай помощь';
+    if (selectedCategory === 'Для детей') return '🧸 Всё для маленьких путешественников';
     return 'Все предложения от релокантов в одном месте';
   };
-
-
 
   return (
     <div className="bg-warm-milk py-4 md:py-8 pb-12 md:pb-16 overflow-x-hidden">
@@ -239,11 +234,6 @@ export function Announcements() {
             })}
           </div>
         </div>
-
-
-
-
-
 
         {/* Sorting & Search & Add Button */}
         <div className="flex flex-col md:flex-row gap-2 md:gap-3 mb-6 md:mb-10 items-stretch">
@@ -342,6 +332,7 @@ export function Announcements() {
                     announcement.category === 'Жильё' ? 'bg-terracotta-deep/90 text-white' :
                     announcement.category === 'Вещи' ? 'bg-dusty-indigo/90 text-white' :
                     announcement.category === 'Услуги' ? 'bg-warm-olive/90 text-white' :
+                    announcement.category === 'Для детей' ? 'bg-amber-500/90 text-white' :
                     'bg-green-600/90 text-white'
                   }`}>
                     {announcement.category}
@@ -356,6 +347,7 @@ export function Announcements() {
                     announcement.category === 'Жильё' ? 'bg-terracotta-deep/10 text-terracotta-deep' :
                     announcement.category === 'Вещи' ? 'bg-dusty-indigo/10 text-dusty-indigo' :
                     announcement.category === 'Услуги' ? 'bg-warm-olive/10 text-warm-olive' :
+                    announcement.category === 'Для детей' ? 'bg-amber-100 text-amber-700' :
                     'bg-green-100 text-green-700'
                   }`}>
                     {announcement.category}

@@ -20,6 +20,7 @@ const CATEGORIES = [
   { name: 'Услуги', icon: '/assets/icons/custom/category_services.png' },
   { name: 'Документы/визы', icon: '/assets/icons/custom/passport.png' },
   { name: 'Обмен/деньги', icon: '/assets/icons/custom/category_finance.png' },
+  { name: 'Для детей', icon: '/assets/icons/custom/events_kids.png' },
   { name: 'Бесплатно', icon: '/assets/icons/custom/category_free.png' },
 ];
 
