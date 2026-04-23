@@ -38,6 +38,34 @@ interface Story {
   comments_count?: number;
 }
 
+interface Announcement {
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  price_text: string;
+  author_name: string;
+  images: string[];
+  created_at: string;
+  location_text: string;
+}
+
+interface Event {
+  id: string;
+  title: string;
+  type: string;
+  starts_at: string;
+  date: string;
+  time: string;
+  location: string;
+  organizer: string;
+  attendees: number;
+  maxAttendees?: number;
+  description: string;
+  price: string;
+  images: string[];
+}
+
 type Stage = 'planning' | 'just_arrived' | 'settling' | 'sharing' | 'moving_on';
 
 // ─── Stage label mapping (supports legacy & new values) ──────────────────────
@@ -59,8 +87,6 @@ const STAGE_LABEL_MAP: Record<string, Stage> = {
 
 const commonSections = [
   { icon: '/assets/icons/custom/support_tab.png', title: 'Ответы на ваши вопросы «А как проще…»', subtitle: 'База знаний', link: '/support', color: 'text-warm-olive', bg: 'bg-warm-olive/10' },
-  { icon: '/assets/icons/custom/category_housing.png', title: 'Актуальные объявления: Жилье, услуги, вещи', subtitle: 'Объявления', link: '/announcements', color: 'text-dusty-indigo', bg: 'bg-dusty-indigo/10' },
-  { icon: '/assets/icons/custom/events_all.png', title: 'Куда сходить в городе', subtitle: 'Афиша', link: '/events', color: 'text-terracotta-deep', bg: 'bg-terracotta-deep/10' },
 ];
 
 const commonQuickLinks = [
@@ -119,6 +145,10 @@ export function HomePage() {
   const [city, setCity] = useState('Дананг');
   const [nearbyPeople, setNearbyPeople] = useState<Person[]>([]);
   const [peopleLoading, setPeopleLoading] = useState(true);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [announcementsLoading, setAnnouncementsLoading] = useState(true);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
   const [authOpen, setAuthOpen] = useState(false);
 
   // Stories
@@ -194,6 +224,70 @@ export function HomePage() {
       }
     }
 
+    async function fetchAnnouncements() {
+      setAnnouncementsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('announcements')
+          .select('*')
+          .eq('status', 'active')
+          .order('created_at', { ascending: false })
+          .limit(3);
+
+        if (!error && data) {
+          setAnnouncements(data.map(row => ({
+            id: row.id,
+            title: row.title || '',
+            category: row.category || '',
+            description: row.description || '',
+            price_text: row.price_text || '',
+            author_name: row.author_name || 'Пользователь',
+            images: row.images || [],
+            created_at: row.created_at,
+            location_text: row.location_text || ''
+          })));
+        }
+      } finally {
+        setAnnouncementsLoading(false);
+      }
+    }
+
+    async function fetchEvents() {
+      setEventsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*, event_participants(user_id)')
+          .eq('status', 'active')
+          .order('starts_at', { ascending: true })
+          .gte('starts_at', new Date().toISOString())
+          .limit(3);
+
+        if (!error && data) {
+          setEvents(data.map((row: any) => {
+            const startsAt = row.starts_at ? new Date(row.starts_at) : new Date();
+            return {
+              id: row.id,
+              title: row.title || '',
+              type: row.type || '',
+              starts_at: row.starts_at,
+              date: startsAt.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' }),
+              time: startsAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+              location: row.location_text || '',
+              organizer: row.organizer_name || 'Организатор',
+              attendees: (row.event_participants || []).length,
+              maxAttendees: row.max_attendees,
+              description: row.description || '',
+              price: row.price_text || 'Бесплатно',
+              images: row.images || [],
+            };
+          }));
+        }
+      } finally {
+        setEventsLoading(false);
+      }
+    }
+
     async function fetchMainData() {
       setPeopleLoading(true);
       
@@ -237,6 +331,8 @@ export function HomePage() {
     }
 
     void fetchStories();
+    void fetchAnnouncements();
+    void fetchEvents();
     void fetchMainData();
   }, [session, user, city]);
 
@@ -374,6 +470,128 @@ export function HomePage() {
               </div>
             </div>
 
+            {/* Announcements Block */}
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-6">
+                <Link to="/announcements" className="flex items-center gap-4 group/header">
+                  <div className="w-12 h-12 rounded-2xl bg-dusty-indigo/10 flex items-center justify-center overflow-hidden group-hover/header:rotate-3 transition-transform">
+                    <img src="/assets/icons/custom/category_housing.png" className="w-8 h-8 object-contain" alt="" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div>
+                      <h2 className="text-2xl font-bold group-hover/header:text-dusty-indigo transition-colors">Объявления</h2>
+                      <p className="text-sm text-muted-foreground">Жилье, услуги, вещи</p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-dusty-indigo opacity-0 -translate-x-2 group-hover/header:opacity-100 group-hover/header:translate-x-0 transition-all" />
+                  </div>
+                </Link>
+                <Link to="/announcements?create=true">
+                  <Button size="sm" className="bg-white hover:bg-white/90 text-dusty-indigo border border-border/40 rounded-full px-5 font-bold shadow-sm h-10 transition-all active:scale-95">
+                    <Plus className="w-4 h-4 mr-2" /> Разместить
+                  </Button>
+                </Link>
+              </div>
+
+              {announcementsLoading ? (
+                <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-dusty-indigo/20" /></div>
+              ) : (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {announcements.map((ann, i) => (
+                    <Link key={ann.id} to={`/announcements?id=${ann.id}`}>
+                      <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="bg-white rounded-[32px] overflow-hidden border border-border/40 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all h-full flex flex-col group"
+                      >
+                        <div className="h-40 bg-soft-sand/10 relative overflow-hidden">
+                          {ann.images?.[0] ? (
+                            <img src={ann.images[0]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center"><Megaphone className="w-8 h-8 text-muted-foreground/20" /></div>
+                          )}
+                          <div className="absolute top-4 left-4">
+                            <span className="px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-[10px] font-bold text-dusty-indigo uppercase tracking-wider">{ann.category}</span>
+                          </div>
+                        </div>
+                        <div className="p-5 flex flex-col flex-1">
+                          <h3 className="font-bold text-lg mb-2 line-clamp-1 group-hover:text-dusty-indigo transition-colors">{ann.title}</h3>
+                          <p className="text-xs text-muted-foreground line-clamp-2 mb-4">{ann.description}</p>
+                          <div className="mt-auto pt-4 border-t border-soft-sand/30 flex items-center justify-between">
+                            <span className="text-sm font-black text-terracotta-deep">{ann.price_text || 'Цена не указана'}</span>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">{ann.location_text.split(',')[0]}</span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* Afisha Block */}
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-6">
+                <Link to="/events" className="flex items-center gap-4 group/header">
+                  <div className="w-12 h-12 rounded-2xl bg-terracotta-deep/10 flex items-center justify-center overflow-hidden group-hover/header:rotate-3 transition-transform">
+                    <img src="/assets/icons/custom/events_all.png" className="w-8 h-8 object-contain" alt="" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div>
+                      <h2 className="text-2xl font-bold group-hover/header:text-terracotta-deep transition-colors">Афиша</h2>
+                      <p className="text-sm text-muted-foreground">Встречи и мероприятия</p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-terracotta-deep opacity-0 -translate-x-2 group-hover/header:opacity-100 group-hover/header:translate-x-0 transition-all" />
+                  </div>
+                </Link>
+                <Link to="/events?create=true">
+                  <Button size="sm" className="bg-white hover:bg-white/90 text-terracotta-deep border border-border/40 rounded-full px-5 font-bold shadow-sm h-10 transition-all active:scale-95">
+                    <Plus className="w-4 h-4 mr-2" /> Создать
+                  </Button>
+                </Link>
+              </div>
+
+              {eventsLoading ? (
+                <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-terracotta-deep/20" /></div>
+              ) : (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {events.map((event, i) => (
+                    <Link key={event.id} to={`/events?id=${event.id}`}>
+                      <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="bg-white rounded-[32px] overflow-hidden border border-border/40 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all h-full flex flex-col group"
+                      >
+                        <div className="h-40 bg-soft-sand/10 relative overflow-hidden">
+                          {event.images?.[0] ? (
+                            <img src={event.images[0]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-terracotta-deep/10 to-dusty-indigo/10" />
+                          )}
+                          <div className="absolute top-4 left-4">
+                            <span className="px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-[10px] font-bold text-terracotta-deep uppercase tracking-wider">{event.type}</span>
+                          </div>
+                        </div>
+                        <div className="p-5 flex flex-col flex-1">
+                          <h3 className="font-bold text-lg mb-2 line-clamp-1 group-hover:text-terracotta-deep transition-colors">{event.title}</h3>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4 italic">
+                            <Calendar className="w-3.5 h-3.5" /> {event.date}, {event.time}
+                          </div>
+                          <div className="mt-auto pt-4 border-t border-soft-sand/30 flex items-center justify-between">
+                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase">
+                              <Users className="w-3.5 h-3.5" /> {event.attendees} идут
+                            </div>
+                            <span className="text-sm font-black text-terracotta-deep">{event.price}</span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </section>
+
             <section className="mb-12">
               <div className="flex items-center justify-between mb-6">
                 <Link to="/people" className="flex items-center gap-4 group/header">
@@ -433,7 +651,7 @@ export function HomePage() {
               )}
             </section>
 
-            <div className="grid md:grid-cols-3 gap-5 mb-12">
+            <div className="grid md:grid-cols-1 gap-5 mb-12">
               {content.sections.map((section, i) => {
                 const Icon = section.icon;
                 return (
@@ -442,15 +660,17 @@ export function HomePage() {
                       initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.1 }}
-                      className="bg-white p-6 rounded-[24px] border border-border/40 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all h-full flex flex-col"
+                      className="bg-white p-8 rounded-[32px] border border-border/40 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col md:flex-row items-center gap-8 group"
                     >
-                      <div className={`w-14 h-14 rounded-2xl ${section.bg} flex items-center justify-center mb-6`}>
-                        <img src={section.icon as string} className="w-8 h-8 object-contain" alt="" />
+                      <div className={`w-20 h-20 rounded-3xl ${section.bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+                        <img src={section.icon as string} className="w-10 h-10 object-contain" alt="" />
                       </div>
-                      <p className={`text-xs font-semibold uppercase tracking-wider ${section.color} mb-2`}>{section.subtitle}</p>
-                      <h3 className="text-base font-semibold leading-snug flex-1">{section.title}</h3>
-                      <div className={`flex items-center gap-1 mt-4 ${section.color} text-sm font-medium`}>
-                        Перейти <ArrowRight className="w-4 h-4" />
+                      <div className="flex-1 text-center md:text-left">
+                        <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${section.color} mb-2`}>{section.subtitle}</p>
+                        <h3 className="text-xl md:text-2xl font-bold leading-tight">{section.title}</h3>
+                      </div>
+                      <div className={`flex items-center gap-2 ${section.color} font-black uppercase tracking-widest text-xs`}>
+                        Перейти <ArrowRight className="w-5 h-5" />
                       </div>
                     </motion.div>
                   </Link>
