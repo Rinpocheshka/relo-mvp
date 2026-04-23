@@ -229,12 +229,22 @@ export function HomePage() {
     async function fetchAnnouncements() {
       setAnnouncementsLoading(true);
       try {
-        const { data, error } = await supabase
+        let query = supabase
           .from('announcements')
           .select('*')
           .eq('status', 'active')
-          .order('created_at', { ascending: false })
-          .limit(3);
+          .order('created_at', { ascending: false });
+
+        // Personalization: if parent, show kid-related items
+        const isParent = profile?.interests?.some(tag => 
+          ['kids', 'maternity', 'kids_activities'].includes(tag)
+        );
+
+        if (isParent) {
+          query = query.eq('category', 'Для детей');
+        }
+
+        const { data, error } = await query.limit(3);
 
         if (!error && data) {
           setAnnouncements(data.map(row => ({
