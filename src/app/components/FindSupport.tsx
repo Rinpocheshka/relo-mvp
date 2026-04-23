@@ -906,12 +906,12 @@ export function FindSupport() {
                 <p className="text-sm opacity-90 mb-8 leading-relaxed font-medium">
                   Помогай новичкам и получи статус эксперта сообщества
                 </p>
-                <Button
-                  variant="outline"
-                  className="w-full bg-white/10 border-white/30 text-white hover:bg-white hover:text-terracotta-deep rounded-full h-12 font-bold transition-all shadow-lg"
+                <Link
+                  to="/become-guide"
+                  className="w-full bg-white/10 border border-white/30 text-white hover:bg-white hover:text-terracotta-deep rounded-full h-12 font-bold transition-all shadow-lg flex items-center justify-center text-sm"
                 >
                   Узнать больше
-                </Button>
+                </Link>
               </div>
             </div>
           </aside>

@@ -22,6 +22,7 @@ export const router = createBrowserRouter([
       { path: 'search', lazy: () => import('./components/SearchResultsPage').then(m => ({ Component: m.SearchResultsPage })) },
       { path: 'stories', lazy: () => import('./components/StoriesPage').then(m => ({ Component: m.StoriesPage })) },
       { path: 'admin/moderation', lazy: () => import('./components/AnnouncementModerationPage').then(m => ({ Component: m.AnnouncementModerationPage })) },
+      { path: 'become-guide', lazy: () => import('./components/BecomeGuide').then(m => ({ Component: m.BecomeGuide })) },
       { path: '*', lazy: () => import('./components/NotFound').then(m => ({ Component: m.NotFound })) },
     ],
   },
