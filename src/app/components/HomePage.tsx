@@ -264,8 +264,9 @@ export function HomePage() {
           .order('created_at', { ascending: false });
 
         // Personalization logic: if user has kid-related tags, show kid events
+        // Using internal values 'kids', 'maternity', 'kids_activities' from SITUATION_TAGS/INTERESTS_TAGS
         const isParent = profile?.interests?.some(tag => 
-          ['С детьми', 'Мама в декрете'].includes(tag)
+          ['kids', 'maternity', 'kids_activities'].includes(tag)
         );
 
         if (isParent) {
