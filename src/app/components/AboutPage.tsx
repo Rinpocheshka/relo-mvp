@@ -264,7 +264,7 @@ export function AboutPage() {
           <p className="text-xl opacity-90 font-medium mb-10 max-w-2xl mx-auto relative z-10">
             Есть предложения, вопросы или хочешь открыть Relo me в своём городе? Напиши нам!
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10">
+          <div className="flex justify-center relative z-10">
             <a 
               href="https://t.me/Relome_help" 
               target="_blank" 
@@ -272,14 +272,8 @@ export function AboutPage() {
               className="flex items-center gap-3 px-10 py-5 bg-white text-terracotta-deep rounded-2xl font-black text-xl transition-all hover:scale-105 active:scale-95 shadow-xl"
             >
               <Send className="w-6 h-6" />
-              Написать в @Relome_help
+              Написать
             </a>
-            <Link 
-              to="/home"
-              className="flex items-center gap-2 text-white font-black hover:underline underline-offset-8"
-            >
-              На главную <ArrowRight className="w-5 h-5" />
-            </Link>
           </div>
         </div>
       </section>
