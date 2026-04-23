@@ -230,7 +230,12 @@ export function CreateAnnouncementModal({ isOpen, onClose, onSuccess, announceme
         setSelectedAttachments([]);
       }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Произошла ошибка при публикации');
+      const message = err instanceof Error ? err.message : 'Произошла ошибка при публикации';
+      if (message.includes('limit_reached')) {
+        setError('Вы достигли лимита в 10 объявлений в месяц. Чтобы публиковать больше, получите статус Проводника.');
+      } else {
+        setError(message);
+      }
     } finally {
       setLoading(false);
     }
