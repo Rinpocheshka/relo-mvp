@@ -16,7 +16,7 @@ interface EventFormModalProps {
 }
 
 export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: EventFormModalProps) {
-  const { user, profile } = useAuth();
+  const { user, profile, isAdmin } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -198,7 +198,7 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
         images: finalImages,
         max_attendees: formData.max_attendees ? parseInt(formData.max_attendees) : null,
         starts_at: combinedStartsAt,
-        status: 'pending',
+        status: isAdmin ? 'active' : 'pending',
       };
 
       // 3. Upsert
@@ -215,8 +215,8 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
       }
 
       if (result.error) throw result.error;
-      toast.success('Событие отправлено на модерацию', {
-        description: 'Оно появится на странице после одобрения администратором.'
+      toast.success(isAdmin ? 'Событие опубликовано!' : 'Событие отправлено на модерацию', {
+        description: isAdmin ? 'Оно уже появилось в афише.' : 'Оно появится на странице после одобрения администратором.'
       });
       onSuccess();
       onClose();
