@@ -23,6 +23,7 @@ export const router = createBrowserRouter([
       { path: 'stories', lazy: () => import('./components/StoriesPage').then(m => ({ Component: m.StoriesPage })) },
       { path: 'admin/moderation', lazy: () => import('./components/AnnouncementModerationPage').then(m => ({ Component: m.AnnouncementModerationPage })) },
       { path: 'become-guide', lazy: () => import('./components/BecomeGuide').then(m => ({ Component: m.BecomeGuide })) },
+      { path: 'promotion', lazy: () => import('./components/PromotionPage').then(m => ({ Component: m.PromotionPage })) },
       { path: '*', lazy: () => import('./components/NotFound').then(m => ({ Component: m.NotFound })) },
     ],
   },
