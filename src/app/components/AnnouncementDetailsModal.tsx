@@ -275,7 +275,8 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
                     </p>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
             </div>
           </motion.div>
         </div>
