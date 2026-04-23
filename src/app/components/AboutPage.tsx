@@ -25,10 +25,10 @@ export function AboutPage() {
   ];
 
   const howItWorks = [
-    { title: "Структурированные объявления", desc: "Автоматическое удаление через месяц, никаких завалов и хаоса.", icon: <Target className="w-5 h-5" /> },
-    { title: "Афиша от пользователей", desc: "Все встречи проходят модерацию для вашей безопасности.", icon: <Users className="w-5 h-5" /> },
-    { title: "База знаний", desc: "Ответы на вопросы, основанные на реальном опыте жителей.", icon: <ShieldCheck className="w-5 h-5" /> },
-    { title: "Удобный поиск жилья", desc: "От аренды на месяц до подселения и проверенных агентов.", icon: <Home className="w-5 h-5" /> }
+    { title: "Структурированные объявления", desc: "Автоматическое удаление через месяц, никаких завалов и хаоса.", icon: "/assets/icons/custom/luggage.png" },
+    { title: "Афиша от пользователей", desc: "Все встречи проходят модерацию для вашей безопасности.", icon: "/assets/icons/custom/afisha.png" },
+    { title: "База знаний", desc: "Ответы на вопросы, основанные на реальном опыте жителей.", icon: "/assets/icons/custom/support_tab.png" },
+    { title: "Удобный поиск жилья", desc: "От аренды на месяц до подселения и проверенных агентов.", icon: "/assets/icons/custom/category_housing.png" }
   ];
 
   const benefits = [
@@ -179,8 +179,8 @@ export function AboutPage() {
         <div className="grid md:grid-cols-2 gap-6">
           {howItWorks.map((item, i) => (
             <div key={i} className="bg-white p-10 rounded-[40px] border border-border/40 shadow-sm flex gap-6 items-start hover:border-dusty-indigo/20 transition-all">
-              <div className="w-12 h-12 bg-dusty-indigo/10 text-dusty-indigo rounded-2xl flex items-center justify-center flex-shrink-0 mt-1">
-                {item.icon}
+              <div className="w-12 h-12 bg-soft-sand/20 rounded-2xl flex items-center justify-center flex-shrink-0 mt-1 overflow-hidden p-2.5">
+                <img src={item.icon as string} alt="" className="w-full h-full object-contain" />
               </div>
               <div>
                 <h3 className="text-xl font-black mb-3">{item.title}</h3>
