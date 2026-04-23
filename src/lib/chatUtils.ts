@@ -13,12 +13,12 @@ export async function getOrCreateChat(userAId: string, userBId: string): Promise
 
     if (error) {
       console.error('Error in get_or_create_chat RPC:', error);
-      return null;
+      throw error;
     }
 
     return data as string;
   } catch (err) {
     console.error('Unexpected error creating chat:', err);
-    return null;
+    throw err;
   }
 }

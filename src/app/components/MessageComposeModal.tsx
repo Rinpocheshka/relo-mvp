@@ -98,7 +98,12 @@ export function MessageComposeModal({ isOpen, onClose, recipientId, recipientNam
       
     } catch (err: any) {
       console.error('Error sending first message:', err);
-      setErrorMsg('Возникла ошибка при отправке сообщения. ' + (err.message || ''));
+      const message = err.message || '';
+      if (message.includes('chat_limit_reached')) {
+        setErrorMsg('Вы можете написать только 10 пользователям в день. Пожалуйста, подождите до завтра.');
+      } else {
+        setErrorMsg('Возникла ошибка при отправке сообщения. ' + message);
+      }
     } finally {
       setLoading(false);
     }
