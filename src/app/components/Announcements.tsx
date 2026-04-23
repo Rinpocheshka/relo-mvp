@@ -65,7 +65,7 @@ export function Announcements() {
     { name: 'Обмен/деньги', icon: '/assets/icons/custom/category_finance.png' },
     { name: 'Для детей', icon: '/assets/icons/custom/events_kids.png' },
     { name: 'Бесплатно', icon: '/assets/icons/custom/category_free.png' },
-  ];
+  ]; // Updated categories list
 
   const [searchParams] = useSearchParams();
   const shouldCreate = searchParams.get('create') === 'true';
