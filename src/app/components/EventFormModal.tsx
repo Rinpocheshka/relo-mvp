@@ -222,7 +222,12 @@ export function EventFormModal({ isOpen, onClose, eventToEdit, onSuccess }: Even
       onClose();
     } catch (err) {
       console.error('Error saving event:', err);
-      setError(err instanceof Error ? err.message : 'Не удалось сохранить событие');
+      const message = err instanceof Error ? err.message : 'Не удалось сохранить событие';
+      if (message.includes('event_limit_reached')) {
+        setError('К сожалению, вы можете создать только 4 события в месяц.');
+      } else {
+        setError(message);
+      }
     } finally {
       setLoading(false);
     }
