@@ -143,6 +143,7 @@ const stageContent = {
 
 export function HomePage() {
   const { session, user, profile, refreshProfile } = useAuth();
+  const navigate = useNavigate();
   const [currentStage, setCurrentStage] = useState<Stage>('settling');
   const [city, setCity] = useState('Дананг');
   const [nearbyPeople, setNearbyPeople] = useState<Person[]>([]);
