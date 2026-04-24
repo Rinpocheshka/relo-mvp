@@ -35,6 +35,7 @@ export function Events() {
   const [selectedType, setSelectedType] = useState('Все');
   const [selectedCity, setSelectedCity] = useState('Все');
   const [timeFilter, setTimeFilter] = useState('Все');
+  const [onlyAttending, setOnlyAttending] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -175,11 +176,17 @@ export function Events() {
     try {
       let query = supabase
         .from('events')
-        .select(`
-          *,
-          event_participants(user_id)
-        `, { count: 'exact' })
+        .select(
+          onlyAttending && user 
+            ? '*, event_participants!inner(user_id)' 
+            : '*, event_participants(user_id)', 
+          { count: 'exact' }
+        )
         .eq('status', 'active');
+
+      if (onlyAttending && user) {
+        query = query.eq('event_participants.user_id', user.id);
+      }
 
       // Apply search query
       if (debouncedSearch.trim()) {
@@ -265,7 +272,7 @@ export function Events() {
   // Reset page on filter change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedType, selectedCity, timeFilter]);
+  }, [selectedType, selectedCity, timeFilter, onlyAttending]);
 
   const handleCreate = () => {
     if (!user) {
@@ -384,6 +391,24 @@ export function Events() {
             </div>
 
             <div className="flex items-center gap-3 self-end md:mb-4">
+              <button
+                onClick={() => {
+                  if (!user) {
+                    setIsAuthModalOpen(true);
+                    return;
+                  }
+                  setOnlyAttending(!onlyAttending);
+                }}
+                className={`h-[52px] md:h-[58px] px-6 rounded-[20px] transition-all font-bold border shadow-sm flex items-center gap-2 whitespace-nowrap ${
+                  onlyAttending
+                    ? 'bg-terracotta-deep text-white border-terracotta-deep shadow-md shadow-terracotta-deep/10'
+                    : 'bg-white text-muted-foreground hover:bg-soft-sand/40 border-border/60 hover:text-foreground'
+                }`}
+              >
+                <CheckCircle className={`w-4 h-4 ${onlyAttending ? 'text-white' : 'text-muted-foreground'}`} />
+                <span className="text-sm">Я иду</span>
+              </button>
+
               <div className="relative group">
                 <select
                   value={selectedCity}
