@@ -152,6 +152,14 @@ export function HomePage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [authOpen, setAuthOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Handle search with 50 char limit
+  const handleSearchChange = (val: string) => {
+    if (val.length <= 50) {
+      setSearchQuery(val);
+    }
+  };
 
   // Stories
   const [stories, setStories] = useState<Story[]>([]);
@@ -444,23 +452,27 @@ export function HomePage() {
                 <input
                   type="text"
                   placeholder="ищи что угодно"
+                  value={searchQuery}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                   className="w-full pl-14 pr-32 py-4 md:py-5 bg-white border border-border/60 rounded-[24px] shadow-sm focus:outline-none focus:ring-4 focus:ring-dusty-indigo/10 focus:border-dusty-indigo/50 transition-all text-base md:text-lg"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
-                      const query = (e.target as HTMLInputElement).value;
-                      if (query.trim()) {
-                        navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+                      const val = (e.target as HTMLInputElement).value;
+                      if (val.trim()) {
+                        navigate(`/search?q=${encodeURIComponent(val.trim())}`);
                       }
                     }
                   }}
                 />
+                <div className="absolute right-24 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/30 uppercase tracking-widest hidden md:block mr-2">
+                  {searchQuery.length}/50
+                </div>
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
                   <Button 
                     className="bg-dusty-indigo hover:bg-dusty-indigo/90 text-white rounded-xl h-10 md:h-12 px-6 font-bold shadow-lg shadow-dusty-indigo/20 transition-all active:scale-95"
-                    onClick={(e) => {
-                      const input = e.currentTarget.parentElement?.previousElementSibling as HTMLInputElement;
-                      if (input.value.trim()) {
-                        navigate(`/search?q=${encodeURIComponent(input.value.trim())}`);
+                    onClick={() => {
+                      if (searchQuery.trim()) {
+                        navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
                       }
                     }}
                   >

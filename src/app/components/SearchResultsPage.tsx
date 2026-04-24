@@ -36,6 +36,13 @@ export function SearchResultsPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Handle search with 50 char limit
+  const handleSearchChange = (val: string) => {
+    if (val.length <= 50) {
+      setSearchInput(val);
+    }
+  };
+
   const performSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim()) {
       setResults([]);
@@ -54,11 +61,11 @@ export function SearchResultsPage() {
         resources,
         profiles
       ] = await Promise.all([
-        supabase.from('announcements').select('id, title, description, category, image_url').or(`title.ilike.${term},description.ilike.${term}`).limit(5),
-        supabase.from('events').select('id, title, description, location_text, type').or(`title.ilike.${term},description.ilike.${term}`).limit(5),
-        supabase.from('questions').select('id, question, category').ilike('question', term).limit(5),
-        supabase.from('resources').select('id, name, description, category').or(`name.ilike.${term},description.ilike.${term}`).limit(5),
-        supabase.from('profiles').select('id, display_name, bio, city').or(`display_name.ilike.${term},bio.ilike.${term}`).limit(5)
+        supabase.from('announcements').select('id, title, description, category, image_url').or(`title.ilike.${term},description.ilike.${term}`).limit(10),
+        supabase.from('events').select('id, title, description, location_text, type').or(`title.ilike.${term},description.ilike.${term}`).limit(10),
+        supabase.from('questions').select('id, question, body, category').or(`question.ilike.${term},body.ilike.${term}`).limit(10),
+        supabase.from('resources').select('id, name, description, category').or(`name.ilike.${term},description.ilike.${term}`).limit(10),
+        supabase.from('profiles').select('id, display_name, bio, city').or(`display_name.ilike.${term},bio.ilike.${term}`).limit(10)
       ]);
 
       const mergedResults: SearchResult[] = [
@@ -148,11 +155,14 @@ export function SearchResultsPage() {
             <input
               type="text"
               value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="ищи что угодно"
-              className="w-full pl-14 pr-4 py-3.5 bg-white border border-border/60 rounded-[20px] shadow-sm focus:outline-none focus:ring-4 focus:ring-dusty-indigo/10 focus:border-dusty-indigo/50 transition-all text-base md:text-lg"
+              className="w-full pl-14 pr-16 py-3.5 bg-white border border-border/60 rounded-[20px] shadow-sm focus:outline-none focus:ring-4 focus:ring-dusty-indigo/10 focus:border-dusty-indigo/50 transition-all text-base md:text-lg"
               autoFocus
             />
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/30 uppercase tracking-widest">
+              {searchInput.length}/50
+            </div>
           </form>
         </div>
 
