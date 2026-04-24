@@ -312,6 +312,11 @@ export function Profile() {
       
       
       let fileToProcess = event.target.files[0];
+
+      // Check size (9MB limit)
+      if (fileToProcess.size > 9 * 1024 * 1024) {
+        throw new Error('Файл слишком большой. Максимальный размер — 9 Мб.');
+      }
       
       // Check for HEIC/HEIF
       const isHeic = fileToProcess.name.toLowerCase().endsWith('.heic') || fileToProcess.name.toLowerCase().endsWith('.heif');
