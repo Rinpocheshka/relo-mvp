@@ -150,6 +150,14 @@ export function FindSupport() {
   const [selectedCategory, setSelectedCategory] = useState('Все');
   const [searchInput, setSearchInput] = useState('');
   const [sortMode, setSortMode] = useState<SortMode>('new');
+  
+  // Handle search input with 50 char limit
+  const handleSearchInputChange = (val: string) => {
+    if (val.length <= 50) {
+      setSearchInput(val);
+    }
+  };
+
   const searchQuery = useDebounce(searchInput, 300);
 
   // Questions data
@@ -214,7 +222,9 @@ export function FindSupport() {
 
       // Server-side filtering
       if (selectedCategory !== 'Все') q = q.eq('category', selectedCategory);
-      if (searchQuery.trim()) q = q.ilike('question', `%${searchQuery}%`);
+      if (searchQuery.trim()) {
+        q = q.or(`question.ilike.%${searchQuery}%,body.ilike.%${searchQuery}%`);
+      }
 
       if (sortMode === 'new') q = q.order('created_at', { ascending: false });
       if (sortMode === 'unanswered') q = q.order('created_at', { ascending: false });
@@ -528,7 +538,10 @@ export function FindSupport() {
     if (selectedCategory !== 'Все') list = list.filter((q) => q.category === selectedCategory);
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      list = list.filter((item) => item.question.toLowerCase().includes(q));
+      list = list.filter((item) => 
+        item.question.toLowerCase().includes(q) || 
+        (item.body ?? '').toLowerCase().includes(q)
+      );
     }
     return list;
   }, [questions, selectedCategory, searchQuery]);
@@ -640,10 +653,13 @@ export function FindSupport() {
               <input
                 type="text"
                 value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
+                onChange={(e) => handleSearchInputChange(e.target.value)}
                 placeholder={activeTab === 'questions' ? 'Что узнаем про жизнь здесь сегодня?' : 'Поиск по ресурсам...'}
-                className="w-full pl-12 pr-4 py-3.5 md:py-4 bg-white border border-border/50 rounded-[16px] md:rounded-[20px] focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20 shadow-sm text-sm md:text-base"
+                className="w-full pl-12 pr-16 py-3.5 md:py-4 bg-white border border-border/50 rounded-[16px] md:rounded-[20px] focus:outline-none focus:ring-2 focus:ring-dusty-indigo/20 shadow-sm text-sm md:text-base"
               />
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/30 uppercase tracking-widest">
+                {searchInput.length}/50
+              </div>
             </div>
             {activeTab === 'questions' && (
               <>
