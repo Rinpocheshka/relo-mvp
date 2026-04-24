@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import { useSearchParams } from 'react-router';
+import { useSearchParams, Link } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { Calendar, Search, Plus, Users, MapPin, Clock, Filter, CheckCircle, ChevronDown as ChevronDownIcon } from 'lucide-react';
 import useEmblaCarousel from 'embla-carousel-react';
@@ -279,6 +279,14 @@ export function Events() {
           <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
             Находи интересные мероприятия и знакомься с новыми людьми
           </p>
+          <div className="mt-4">
+            <Link 
+              to="/guide-event" 
+              className="text-sm font-bold text-terracotta-deep hover:text-terracotta-deep/80 underline underline-offset-4 transition-colors"
+            >
+              О том, как создать и провести событие
+            </Link>
+          </div>
         </motion.div>
 
 
