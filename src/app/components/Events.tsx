@@ -263,11 +263,11 @@ export function Events() {
     } finally {
       setLoading(false);
     }
-  }, [user, currentPage, selectedType, selectedCity, timeFilter, debouncedSearch, PAGE_SIZE]);
+  }, [user, currentPage, selectedType, selectedCity, timeFilter, onlyAttending, debouncedSearch, PAGE_SIZE]);
 
   useEffect(() => {
     fetchData();
-  }, [fetchData, currentPage, selectedType, selectedCity, timeFilter, debouncedSearch]);
+  }, [fetchData, currentPage, selectedType, selectedCity, timeFilter, onlyAttending, debouncedSearch]);
 
   // Reset page on filter change
   useEffect(() => {
