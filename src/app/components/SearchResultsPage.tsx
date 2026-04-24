@@ -61,7 +61,7 @@ export function SearchResultsPage() {
         resources,
         profiles
       ] = await Promise.all([
-        supabase.from('announcements').select('id, title, description, category, image_url').or(`title.ilike.${term},description.ilike.${term}`).limit(10),
+        supabase.from('announcements').select('id, title, description, category, images').or(`title.ilike.${term},description.ilike.${term}`).limit(10),
         supabase.from('events').select('id, title, description, location_text, type').or(`title.ilike.${term},description.ilike.${term}`).limit(10),
         supabase.from('questions').select('id, question, body, category').or(`question.ilike.${term},body.ilike.${term}`).limit(10),
         supabase.from('resources').select('id, name, description, category').or(`name.ilike.${term},description.ilike.${term}`).limit(10),
@@ -75,7 +75,7 @@ export function SearchResultsPage() {
           subtitle: item.description,
           type: 'announcement' as const,
           category: item.category,
-          image: item.image_url,
+          image: (item as any).images?.[0],
           link: `/announcements?id=${item.id}`
         })),
         ...(events.data || []).map(item => ({
