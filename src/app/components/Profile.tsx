@@ -14,6 +14,7 @@ import { CreateAnnouncementModal } from './CreateAnnouncementModal';
 import { UserAvatar } from './UserAvatar';
 import { useMessageModal } from '../hooks/useMessageModal';
 import { formatRelativeRu } from '@/lib/date';
+declare const heic2any: any;
 
 interface Event {
   id: string;
@@ -309,12 +310,34 @@ export function Profile() {
         throw new Error('Вы не выбрали изображение');
       }
       
-      const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
+      
+      let fileToProcess = event.target.files[0];
+      
+      // Check for HEIC/HEIF
+      const isHeic = fileToProcess.name.toLowerCase().endsWith('.heic') || fileToProcess.name.toLowerCase().endsWith('.heif');
+      
+      if (isHeic) {
+        try {
+          const convertedBlob = await heic2any({
+            blob: fileToProcess,
+            toType: 'image/jpeg',
+            quality: 0.8
+          });
+          const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+          fileToProcess = new File([blob], fileToProcess.name.replace(/\.(heic|heif)$/i, '.jpg'), {
+            type: 'image/jpeg'
+          });
+        } catch (err) {
+          console.error('HEIC conversion failed:', err);
+          throw new Error('Не удалось обработать HEIC фото. Попробуйте другой формат.');
+        }
+      }
+
+      const fileExt = fileToProcess.name.split('.').pop();
       const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      let { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file);
+      let { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, fileToProcess);
 
       if (uploadError) throw uploadError;
 
@@ -487,7 +510,13 @@ export function Profile() {
                 <label className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white cursor-pointer hover:bg-black/50 transition-colors">
                   {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Camera className="w-6 h-6" />}
                   <span className="text-[10px] font-medium mt-1">Изменить</span>
-                  <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={uploadAvatar} />
+                  <input 
+                    type="file" 
+                    accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif" 
+                    className="hidden" 
+                    disabled={uploading} 
+                    onChange={uploadAvatar} 
+                  />
                 </label>
               )}
             </UserAvatar>
