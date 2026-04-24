@@ -150,6 +150,7 @@ export function FindSupport() {
   const [selectedCategory, setSelectedCategory] = useState('Все');
   const [searchInput, setSearchInput] = useState('');
   const [sortMode, setSortMode] = useState<SortMode>('new');
+  const [isSearchHelpOpen, setIsSearchHelpOpen] = useState(false);
   
   // Handle search input with 50 char limit
   const handleSearchInputChange = (val: string) => {
@@ -660,6 +661,44 @@ export function FindSupport() {
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/30 uppercase tracking-widest">
                 {searchInput.length}/50
               </div>
+            </div>
+
+            {/* How to search help toggle */}
+            <div className="mt-2 px-1">
+              <button
+                onClick={() => setIsSearchHelpOpen(!isSearchHelpOpen)}
+                className="flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground/60 hover:text-dusty-indigo transition-colors group"
+              >
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isSearchHelpOpen ? 'rotate-180 text-dusty-indigo' : ''}`} />
+                <span className="uppercase tracking-wider">Как тут искать информацию?</span>
+              </button>
+              
+              <AnimatePresence>
+                {isSearchHelpOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: 'circOut' }}
+                    className="overflow-hidden"
+                  >
+                    <div className="pt-3 pb-2 px-2 space-y-2 border-l-2 border-dusty-indigo/10 ml-1.5 mt-1">
+                      {[
+                        "Проверь свой вопрос через «поиск»",
+                        "Если вопрос есть, но есть что добавить — оставь комментарий или напиши напрямую тем, кто уже отвечал на него",
+                        "Введи тот же запрос во вкладке «Ресурсы»",
+                        "Если вопроса нет — добавь новый",
+                        "Мы сообщим когда поступит ответ"
+                      ].map((text, idx) => (
+                        <div key={idx} className="flex gap-3 text-xs md:text-sm text-muted-foreground leading-relaxed">
+                          <span className="font-bold text-dusty-indigo/40 shrink-0">{idx + 1}.</span>
+                          <span>{text}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
             {activeTab === 'questions' && (
               <>
