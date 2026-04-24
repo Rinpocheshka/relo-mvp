@@ -114,6 +114,22 @@ export function Announcements() {
     }
   }, [announcementId]);
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  // Handle search with 50 char limit
+  const handleSearchChange = (val: string) => {
+    if (val.length <= 50) {
+      setSearchQuery(val);
+    }
+  };
+
+  // Debounce search to avoid too many requests
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 400);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   const fetchData = async () => {
     setLoading(true);
     setLoadError(null);
@@ -122,6 +138,11 @@ export function Announcements() {
         .from('announcements')
         .select('*', { count: 'exact' })
         .eq('status', 'active');
+
+      // Apply search query
+      if (debouncedSearch.trim()) {
+        query = query.or(`title.ilike.%${debouncedSearch}%,description.ilike.%${debouncedSearch}%`);
+      }
 
       if (selectedCity !== 'Все') {
         if (selectedCity === 'Вьетнам') {
@@ -175,7 +196,7 @@ export function Announcements() {
 
   useEffect(() => {
     void fetchData();
-  }, [page, sortBy, selectedCity]);
+  }, [page, sortBy, selectedCity, debouncedSearch]);
 
   const filteredAnnouncements = useMemo(() => {
     if (selectedCategory === 'Все') return announcements;
@@ -243,8 +264,13 @@ export function Announcements() {
             <input
               type="text"
               placeholder="ищи что угодно в объявлениях..."
-              className="w-full pl-11 pr-4 h-11 md:h-12 bg-white border border-border/60 rounded-2xl focus:outline-none focus:ring-4 focus:ring-terracotta-deep/5 focus:border-terracotta-deep/40 shadow-sm text-sm transition-all"
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="w-full pl-11 pr-16 h-11 md:h-12 bg-white border border-border/60 rounded-2xl focus:outline-none focus:ring-4 focus:ring-terracotta-deep/5 focus:border-terracotta-deep/40 shadow-sm text-sm transition-all"
             />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/30 uppercase tracking-widest">
+              {searchQuery.length}/50
+            </div>
           </div>
           
           <div className="flex gap-2 items-stretch h-11 md:h-12">

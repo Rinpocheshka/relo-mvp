@@ -152,6 +152,22 @@ export function Events() {
       void fetchSingle();
     }
   }, [eventId, user]);
+  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  // Handle search with 50 char limit
+  const handleSearchChange = (val: string) => {
+    if (val.length <= 50) {
+      setSearchQuery(val);
+    }
+  };
+
+  // Debounce search to avoid too many requests
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 400);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -164,6 +180,11 @@ export function Events() {
           event_participants(user_id)
         `, { count: 'exact' })
         .eq('status', 'active');
+
+      // Apply search query
+      if (debouncedSearch.trim()) {
+        query = query.or(`title.ilike.%${debouncedSearch}%,description.ilike.%${debouncedSearch}%`);
+      }
 
       // Apply filters
       if (selectedType !== 'Все') {
@@ -235,11 +256,11 @@ export function Events() {
     } finally {
       setLoading(false);
     }
-  }, [user, currentPage, selectedType, selectedCity, timeFilter, PAGE_SIZE]);
+  }, [user, currentPage, selectedType, selectedCity, timeFilter, debouncedSearch, PAGE_SIZE]);
 
   useEffect(() => {
     fetchData();
-  }, [fetchData, currentPage, selectedType, selectedCity, timeFilter]);
+  }, [fetchData, currentPage, selectedType, selectedCity, timeFilter, debouncedSearch]);
 
   // Reset page on filter change
   useEffect(() => {
@@ -289,7 +310,20 @@ export function Events() {
           </div>
         </motion.div>
 
-
+        {/* Search Bar */}
+        <div className="mb-8 relative group max-w-2xl mx-auto">
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-terracotta-deep transition-colors" />
+          <input
+            type="text"
+            placeholder="поиск событий (напр. прогулка, нетворкинг)..."
+            value={searchQuery}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            className="w-full pl-13 pr-4 h-14 bg-white border border-border/60 rounded-[24px] focus:outline-none focus:ring-4 focus:ring-terracotta-deep/5 focus:border-terracotta-deep/40 shadow-sm text-base transition-all font-medium"
+          />
+          <div className="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">
+            {searchQuery.length}/50
+          </div>
+        </div>
 
         {/* Filters */}
         <div className="mb-6 md:mb-10 space-y-6 md:space-y-8">
