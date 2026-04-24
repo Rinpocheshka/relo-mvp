@@ -26,6 +26,7 @@ export const router = createBrowserRouter([
       { path: 'promotion', lazy: () => import('./components/PromotionPage').then(m => ({ Component: m.PromotionPage })) },
       { path: 'rules', lazy: () => import('./components/RulesPage').then(m => ({ Component: m.RulesPage })) },
       { path: 'about', lazy: () => import('./components/AboutPage').then(m => ({ Component: m.AboutPage })) },
+      { path: 'guide-event', lazy: () => import('./components/HowToEventPage').then(m => ({ Component: m.HowToEventPage })) },
       { path: '*', lazy: () => import('./components/NotFound').then(m => ({ Component: m.NotFound })) },
     ],
   },
