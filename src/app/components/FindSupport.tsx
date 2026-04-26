@@ -487,9 +487,21 @@ export function FindSupport() {
     } else {
       // Add upvote — DB trigger will increment helpfulness_count on the author's profile
       await supabase.from('answer_upvotes').insert({ answer_id: answerId, user_id: user.id });
-      const { data: ans } = await supabase.from('answers').select('upvotes_count').eq('id', answerId).single();
+      const { data: ans } = await supabase.from('answers').select('upvotes_count, author_id, body').eq('id', answerId).single();
       if (ans) {
         await supabase.from('answers').update({ upvotes_count: (ans.upvotes_count ?? 0) + 1 }).eq('id', answerId);
+        // Notify the answer author (if it's not the same user liking their own answer)
+        if (ans.author_id && ans.author_id !== user.id) {
+          const likerName = profile?.display_name || 'Кто-то';
+          const preview = (ans.body ?? '').slice(0, 60) + ((ans.body ?? '').length > 60 ? '…' : '');
+          await supabase.from('user_activities').insert({
+            user_id: ans.author_id,
+            type: 'answer_liked',
+            title: `${likerName} отметил ваш ответ полезным`,
+            subtitle: preview,
+            entity_id: answerId,
+          });
+        }
       }
     }
   };

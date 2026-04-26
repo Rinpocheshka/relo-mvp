@@ -560,13 +560,6 @@ export function Profile() {
                           <Calendar className="w-4 h-4" />
                           <span>На платформе с {new Date(profile?.created_at || user?.created_at || Date.now()).toLocaleDateString('ru-RU')}</span>
                         </div>
-                        {(profile?.helpfulness_count ?? 0) > 0 && (
-                          <div className="flex items-center gap-2 bg-terracotta-deep/5 px-3 py-1 rounded-full" title="Количество полезных ответов по мнению сообщества">
-                            <Heart className="w-4 h-4 fill-terracotta-deep/60 text-terracotta-deep/60" />
-                            <span className="font-bold text-terracotta-deep/80">{profile.helpfulness_count}</span>
-                            <span className="text-xs text-muted-foreground">полезн.</span>
-                          </div>
-                        )}
                       </div>
 
                       <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mt-4">
@@ -900,8 +893,8 @@ export function Profile() {
             <div className="w-14 h-14 bg-warm-olive/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Heart className="w-7 h-7 text-warm-olive" />
             </div>
-            <div className="text-4xl font-extrabold text-warm-olive mb-1">-</div>
-            <p className="text-sm font-medium text-muted-foreground">Рейтинг</p>
+            <div className="text-4xl font-extrabold text-warm-olive mb-1">{profile?.helpfulness_count ?? 0}</div>
+            <p className="text-sm font-medium text-muted-foreground">Полезности</p>
           </motion.div>
         </div>
 
@@ -929,6 +922,7 @@ export function Profile() {
                     case 'announcement': return `/announcements?id=${activity.entity_id}`;
                     case 'event': return `/events?id=${activity.entity_id}`;
                     case 'help': return `/support?id=${activity.entity_id}`;
+                    case 'answer_liked': return `/support`;
                     case 'story': return `/home?story=${activity.entity_id}`;
                     case 'review': return `/profile/${activity.entity_id}`;
                     default: return null;
@@ -946,6 +940,7 @@ export function Profile() {
                       activity.type === 'announcement' ? 'bg-terracotta-deep/10' :
                       activity.type === 'event' ? 'bg-dusty-indigo/10' :
                       activity.type === 'help' ? 'bg-warm-olive/10' :
+                      activity.type === 'answer_liked' ? 'bg-warm-olive/10' :
                       activity.type === 'story' ? 'bg-orange-100' :
                       activity.type === 'review' ? 'bg-yellow-50' :
                       'bg-soft-sand/50'
@@ -953,6 +948,7 @@ export function Profile() {
                       {activity.type === 'announcement' && <MessageCircle className="w-5 h-5 text-terracotta-deep" />}
                       {activity.type === 'event' && <Calendar className="w-5 h-5 text-dusty-indigo" />}
                       {activity.type === 'help' && <Heart className="w-5 h-5 text-warm-olive" />}
+                      {activity.type === 'answer_liked' && <Heart className="w-5 h-5 fill-warm-olive text-warm-olive" />}
                       {activity.type === 'story' && <Users className="w-5 h-5 text-orange-600" />}
                       {activity.type === 'review' && <Star className="w-5 h-5 text-yellow-500" />}
                     </div>
