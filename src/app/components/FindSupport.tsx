@@ -469,7 +469,7 @@ export function FindSupport() {
       for (const [qid, list] of Object.entries(prev)) {
         updated[qid] = list.map((a) =>
           a.id === answerId
-            ? { ...a, upvotesCount: a.upvotesCount + (already ? -1 : 1) }
+            ? { ...a, upvotesCount: Math.max(0, a.upvotesCount + (already ? -1 : 1)) }
             : a
         );
       }
@@ -477,11 +477,20 @@ export function FindSupport() {
     });
 
     if (already) {
+      // Remove upvote — DB trigger will decrement helpfulness_count on the author's profile
       await supabase.from('answer_upvotes').delete().match({ answer_id: answerId, user_id: user.id });
-      await supabase.from('answers').update({ upvotes_count: supabase.rpc('decrement' as any) }).eq('id', answerId);
+      // Sync counter in answers table
+      const { data: ans } = await supabase.from('answers').select('upvotes_count').eq('id', answerId).single();
+      if (ans) {
+        await supabase.from('answers').update({ upvotes_count: Math.max(0, (ans.upvotes_count ?? 1) - 1) }).eq('id', answerId);
+      }
     } else {
+      // Add upvote — DB trigger will increment helpfulness_count on the author's profile
       await supabase.from('answer_upvotes').insert({ answer_id: answerId, user_id: user.id });
-      await supabase.rpc('increment_question_views' as any, { question_id: answerId });
+      const { data: ans } = await supabase.from('answers').select('upvotes_count').eq('id', answerId).single();
+      if (ans) {
+        await supabase.from('answers').update({ upvotes_count: (ans.upvotes_count ?? 0) + 1 }).eq('id', answerId);
+      }
     }
   };
 

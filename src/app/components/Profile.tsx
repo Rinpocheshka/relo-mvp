@@ -42,6 +42,7 @@ interface UserData {
   interests: string[];
   is_guide: boolean;
   rating?: number;
+  helpfulness_count?: number;
   created_at: string;
   avatar_url?: string;
   contact_telegram?: string;
@@ -559,10 +560,11 @@ export function Profile() {
                           <Calendar className="w-4 h-4" />
                           <span>На платформе с {new Date(profile?.created_at || user?.created_at || Date.now()).toLocaleDateString('ru-RU')}</span>
                         </div>
-                        {profile?.is_guide && (
-                          <div className="flex items-center gap-2">
-                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span className="font-medium">{profile?.rating || '5.0'}</span>
+                        {(profile?.helpfulness_count ?? 0) > 0 && (
+                          <div className="flex items-center gap-2 bg-terracotta-deep/5 px-3 py-1 rounded-full" title="Количество полезных ответов по мнению сообщества">
+                            <Heart className="w-4 h-4 fill-terracotta-deep/60 text-terracotta-deep/60" />
+                            <span className="font-bold text-terracotta-deep/80">{profile.helpfulness_count}</span>
+                            <span className="text-xs text-muted-foreground">полезн.</span>
                           </div>
                         )}
                       </div>
