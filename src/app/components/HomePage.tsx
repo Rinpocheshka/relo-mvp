@@ -124,6 +124,30 @@ const justArrivedQuickLinks = [
   { text: 'Успокоиться что это проходили все', icon: '/assets/icons/custom/stories_large.png', link: '/stories' },
 ];
 
+const settlingQuickLinks = [
+  { text: 'Докупить необходимое', icon: '/assets/icons/custom/category_housing.png', link: '/announcements?category=housing' },
+  { text: 'Хорошо провести вечер', icon: '/assets/icons/custom/events_all.png', link: '/events' },
+  { text: 'Найти новых друзей', icon: '/assets/icons/custom/people_tab.png', link: '/people' },
+  { text: 'Решить бытовые вопросы', icon: '/assets/icons/custom/support_tab.png', link: '/support' },
+  { text: 'Узнать как это бывает', icon: '/assets/icons/custom/stories_large.png', link: '/stories' },
+];
+
+const sharingQuickLinks = [
+  { text: 'Обновить гардероб', icon: '/assets/icons/custom/category_housing.png', link: '/announcements?category=housing' },
+  { text: 'Организовать встречу', icon: '/assets/icons/custom/events_all.png', link: '/events' },
+  { text: 'Найти единомышленников', icon: '/assets/icons/custom/people_tab.png', link: '/people' },
+  { text: 'Помочь новичкам', icon: '/assets/icons/custom/support_tab.png', link: '/support' },
+  { text: 'Поделиться своим опытом', icon: '/assets/icons/custom/stories_large.png', link: '/stories' },
+];
+
+const movingOnQuickLinks = [
+  { text: 'Продать лишнее', icon: '/assets/icons/custom/category_housing.png', link: '/announcements?category=housing' },
+  { text: 'Устроить отвальную', icon: '/assets/icons/custom/events_all.png', link: '/events' },
+  { text: 'Сохранить контакты', icon: '/assets/icons/custom/people_tab.png', link: '/people' },
+  { text: 'Поделиться лайф-хаками', icon: '/assets/icons/custom/support_tab.png', link: '/support' },
+  { text: 'Описать свой путь', icon: '/assets/icons/custom/stories_large.png', link: '/stories' },
+];
+
 const stageContent = {
   planning: {
     greeting: 'Переезд — это не про чемоданы.\nЭто про то, как создать новую жизнь.',
@@ -138,21 +162,21 @@ const stageContent = {
     sections: commonSections,
   },
   settling: {
-    greeting: 'Здесь есть люди, которые проходят тот же путь.',
-    warmth: 'Первые дни в новом городе — давай разберёмся вместе.',
-    quickLinks: commonQuickLinks,
+    greeting: 'Поздравляем, ты уже почти свой! Пора вливаться!',
+    warmth: 'Найди куда сходить или организуй любую встречу сам',
+    quickLinks: settlingQuickLinks,
     sections: commonSections,
   },
   sharing: {
-    greeting: 'Ты уже часть этого города —\nтебе есть чем поделиться 🌿',
-    warmth: 'Активные пользователи видны лучше и помогают сообществу расти. Спасибо, что ты здесь!',
-    quickLinks: commonQuickLinks,
+    greeting: 'Ты уже часть этого города — тебе есть чем поделиться 🌿',
+    warmth: 'Делись опытом, создавай события, открывай проекты - расширяй возможности! Спасибо, что ты здесь!',
+    quickLinks: sharingQuickLinks,
     sections: commonSections,
   },
   moving_on: {
-    greeting: 'Освободи место\nдля нового опыта 👋',
-    warmth: 'Уезжать — это тоже начало. Продай ненужное, сохрани контакты и передай эстафету.',
-    quickLinks: commonQuickLinks,
+    greeting: 'Освободи место для нового опыта 👋',
+    warmth: 'Уезжать — это тоже начало. Продай ненужное, сохрани контакты и перейди на новый уровень',
+    quickLinks: movingOnQuickLinks,
     sections: commonSections,
   },
 };
