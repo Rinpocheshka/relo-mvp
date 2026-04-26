@@ -1071,13 +1071,6 @@ export function FindSupport() {
 
           {/* ── Sidebar ── */}
           <aside className="lg:col-span-4 space-y-6 h-fit sticky top-24">
-            <GuidesPanel 
-              guides={guides} 
-              user={user} 
-              onMessage={(id, name) => openMessageModal(id, name)} 
-              onAuth={() => setIsAuthModalOpen(true)} 
-            />
-
             {/* Search Help Card */}
             <div className="bg-white border border-border/40 p-6 rounded-[32px] shadow-sm">
               <h3 className="text-sm font-black text-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -1099,6 +1092,12 @@ export function FindSupport() {
                 ))}
               </div>
             </div>
+            <GuidesPanel 
+              guides={guides} 
+              user={user} 
+              onMessage={(id, name) => openMessageModal(id, name)} 
+              onAuth={() => setIsAuthModalOpen(true)} 
+            />
 
             {/* CTA cards */}
             <div className="relative overflow-hidden bg-gradient-to-br from-[#CD7F67] to-[#8E78B2] p-8 rounded-[32px] text-white shadow-xl shadow-terracotta-deep/10 group">
