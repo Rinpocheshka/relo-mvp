@@ -44,6 +44,7 @@ interface Question {
   createdAt?: string;
   answers: number;
   isAnswered: boolean;
+  upvotesCount: number;
   viewsCount?: number;
   isAnonymous?: boolean;
   authorIsGuide?: boolean;
@@ -173,6 +174,7 @@ export function FindSupport() {
   const [answersHasMore, setAnswersHasMore] = useState<Record<string, boolean>>({});
   const [answersPage, setAnswersPage] = useState<Record<string, number>>({});
   const [upvotedIds, setUpvotedIds] = useState<Set<string>>(new Set());
+  const [upvotedQuestionIds, setUpvotedQuestionIds] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const [totalQuestions, setTotalQuestions] = useState(0);
   const ITEMS_PER_PAGE = 20;
@@ -218,7 +220,7 @@ export function FindSupport() {
     try {
       let q = supabase
         .from('questions')
-        .select('id, question, body, type, image_url, category, asked_by, asked_by_name, created_at, views_count, is_anonymous, status, answers(count), profiles:asked_by(is_guide)', { count: 'exact' })
+        .select('id, question, body, type, image_url, category, asked_by, asked_by_name, created_at, views_count, is_anonymous, status, upvotes_count, answers(count), profiles:asked_by(is_guide)', { count: 'exact' })
         .eq('status', 'active');
 
       // Server-side filtering
@@ -255,6 +257,7 @@ export function FindSupport() {
           askedBy: ((row as any).asked_by_name ?? 'Пользователь') as string,
           answers: Number(cnt) || 0,
           isAnswered: (Number(cnt) || 0) > 0,
+          upvotesCount: (row as any).upvotes_count ?? 0,
           createdAt: row.created_at ? formatRelativeRu(new Date(row.created_at as string)) : undefined,
           viewsCount: (row as any).views_count ?? 0,
           isAnonymous: !!(row as any).is_anonymous,
@@ -387,6 +390,12 @@ export function FindSupport() {
         .select('answer_id')
         .eq('user_id', user.id);
       if (data) setUpvotedIds(new Set(data.map((r) => r.answer_id)));
+
+      const { data: qData } = await supabase
+        .from('question_upvotes')
+        .select('question_id')
+        .eq('user_id', user.id);
+      if (qData) setUpvotedQuestionIds(new Set(qData.map((r) => r.question_id)));
     };
     void fetchUpvotes();
   }, [user]);
@@ -494,10 +503,10 @@ export function FindSupport() {
         if (ans.author_id && ans.author_id !== user.id) {
           const upvotesCount = (ans.upvotes_count ?? 0) + 1;
           const likerName = profile?.display_name || 'Кто-то';
-          let title = `${likerName} отметил ваш ответ полезным`;
+          let title = `${likerName} считает ваш ответ полезным`;
           
           if (upvotesCount > 1) {
-            title = `${upvotesCount} пользователей отметили ваш ответ полезным`;
+            title = `${upvotesCount} пользователей считают ваш ответ полезным`;
           }
           
           // Check if a notification for this answer already exists
@@ -522,6 +531,77 @@ export function FindSupport() {
               title,
               subtitle: null, // Removed as requested
               entity_id: ans.question_id,
+            });
+          }
+        }
+      }
+    }
+  };
+
+  const handleArticleUpvote = async (questionId: string) => {
+    if (!user) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+    const already = upvotedQuestionIds.has(questionId);
+
+    // Optimistic UI update
+    setUpvotedQuestionIds((prev) => {
+      const next = new Set(prev);
+      if (already) next.delete(questionId);
+      else next.add(questionId);
+      return next;
+    });
+
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q.id === questionId
+          ? { ...q, upvotesCount: Math.max(0, q.upvotesCount + (already ? -1 : 1)) }
+          : q
+      )
+    );
+
+    if (already) {
+      await supabase.from('question_upvotes').delete().match({ question_id: questionId, user_id: user.id });
+      const { data: qData } = await supabase.from('questions').select('upvotes_count').eq('id', questionId).single();
+      if (qData) {
+        await supabase.from('questions').update({ upvotes_count: Math.max(0, (qData.upvotes_count ?? 1) - 1) }).eq('id', questionId);
+      }
+    } else {
+      await supabase.from('question_upvotes').insert({ question_id: questionId, user_id: user.id });
+      const { data: qData } = await supabase.from('questions').select('upvotes_count, asked_by, question').eq('id', questionId).single();
+      if (qData) {
+        await supabase.from('questions').update({ upvotes_count: (qData.upvotes_count ?? 0) + 1 }).eq('id', questionId);
+        
+        if (qData.asked_by && qData.asked_by !== user.id) {
+          const upvotesCount = (qData.upvotes_count ?? 0) + 1;
+          const likerName = profile?.display_name || 'Кто-то';
+          let title = `${likerName} считает вашу статью полезной`;
+          
+          if (upvotesCount > 1) {
+            title = `${upvotesCount} пользователей считают вашу статью полезной`;
+          }
+          
+          const { data: existingNotif } = await supabase
+            .from('user_activities')
+            .select('id')
+            .eq('type', 'article_liked')
+            .eq('entity_id', questionId)
+            .single();
+
+          if (existingNotif) {
+            await supabase.from('user_activities').update({ 
+              title, 
+              is_read: false, 
+              created_at: new Date().toISOString() 
+            }).eq('id', existingNotif.id);
+          } else {
+            await supabase.from('user_activities').insert({
+              user_id: qData.asked_by,
+              type: 'article_liked',
+              title,
+              subtitle: null,
+              entity_id: questionId,
             });
           }
         }
@@ -893,6 +973,8 @@ export function FindSupport() {
                             onEdit={() => handleEditQuestion(q)}
                             onDelete={() => handleDeleteQuestion(q.id, q.question)}
                             onSubmitAnswer={(body) => handleAnswerSubmit(q.id, body)}
+                            isUpvoted={upvotedQuestionIds.has(q.id)}
+                            onArticleUpvote={handleArticleUpvote}
                           />
                         ))}
                       </div>
@@ -1112,6 +1194,8 @@ interface QuestionCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onSubmitAnswer: (body: string) => Promise<boolean>;
+  isUpvoted?: boolean;
+  onArticleUpvote?: (id: string) => void;
 }
 
 function QuestionCard({
@@ -1129,6 +1213,8 @@ function QuestionCard({
   onEdit,
   onDelete,
   onSubmitAnswer,
+  isUpvoted,
+  onArticleUpvote,
 }: QuestionCardProps) {
   const [answerDraft, setAnswerDraft] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -1247,6 +1333,20 @@ function QuestionCard({
                       ? <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-dusty-indigo underline break-all">{part}</a>
                       : <span key={i}>{part}</span>
                   )}
+                </div>
+              )}
+              {q.type === 'article' && (
+                <div className="flex justify-end border-b border-border/40 pb-4 mb-4">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onArticleUpvote?.(q.id); }}
+                    className={`flex items-center gap-1.5 text-sm font-semibold transition-colors ${
+                      isUpvoted ? 'text-dusty-indigo' : 'text-muted-foreground hover:text-dusty-indigo'
+                    }`}
+                  >
+                    <ThumbsUp className={`w-4 h-4 ${isUpvoted ? 'fill-dusty-indigo' : ''}`} />
+                    {q.upvotesCount > 0 && <span>{q.upvotesCount}</span>}
+                    <span>{isUpvoted ? 'Полезно!' : 'Полезно'}</span>
+                  </button>
                 </div>
               )}
               {q.type === 'article' && (
