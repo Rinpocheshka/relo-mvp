@@ -143,7 +143,10 @@ export function FindSupport() {
 
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab === 'questions' || tab === 'resources') {
+    const id = searchParams.get('id');
+    if (id) {
+      setActiveTab('questions');
+    } else if (tab === 'questions' || tab === 'resources') {
       setActiveTab(tab);
     }
   }, [searchParams]);

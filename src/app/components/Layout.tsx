@@ -123,7 +123,7 @@ function HeaderAuth({ unreadCount, isAdmin, pendingCount }: { unreadCount: numbe
                       }
                     }
                   }}
-                  className="w-full flex items-center justify-between px-3 py-1.5 rounded-[12px] hover:bg-soft-sand/30 font-medium text-sm transition-colors"
+                  className="w-full flex items-center justify-between px-2 py-1.5 rounded-[12px] hover:bg-soft-sand/30 font-medium text-sm transition-colors"
                 >
                   <div className="flex items-center gap-2">
                     <Heart className="w-4 h-4" />
@@ -144,7 +144,7 @@ function HeaderAuth({ unreadCount, isAdmin, pendingCount }: { unreadCount: numbe
                         {notifications.map(n => (
                           <Link
                             key={n.id}
-                            to={`/support?id=${n.entity_id}`}
+                            to={`/support?tab=questions&id=${n.entity_id}`}
                             onClick={() => setNotifOpen(false)}
                             className="flex items-start gap-2 px-3 py-2.5 hover:bg-soft-sand/30 transition-colors block"
                           >
