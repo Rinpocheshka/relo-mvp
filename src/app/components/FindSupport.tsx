@@ -290,8 +290,11 @@ export function FindSupport() {
           return deepLinkId;
         });
         setTimeout(() => {
-          document.getElementById(`question-${deepLinkId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 100);
+          const el = document.getElementById(`question-${deepLinkId}`);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 200);
       } else {
         // If not in list, we could fetch it, but usually the first page contains recent ones
         // For now, let's just set the expanded state and hope the fetchAnswers logic handles it
@@ -1231,7 +1234,10 @@ function QuestionCard({
   const [answerDraft, setAnswerDraft] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   return (
-    <div id={`question-${q.id}`} className={`group rounded-[28px] border transition-all duration-300 shadow-sm hover:shadow-md overflow-hidden ${
+    <div 
+      id={`question-${q.id}`} 
+      style={{ scrollMarginTop: '80px' }}
+      className={`group rounded-[28px] border transition-all duration-300 shadow-sm hover:shadow-md overflow-hidden ${
       q.type === 'article'
         ? 'bg-[#F3F1F9] border-dusty-indigo/40 hover:border-dusty-indigo/60 hover:shadow-dusty-indigo/10'
         : 'bg-white border-border/60 hover:border-dusty-indigo/20'
