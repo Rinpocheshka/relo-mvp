@@ -546,6 +546,24 @@ export function FindSupport() {
         )
       );
 
+      // Notify the question author about the new answer
+      const { data: qData } = await supabase
+        .from('questions')
+        .select('asked_by, question')
+        .eq('id', questionId)
+        .single();
+      if (qData?.asked_by && qData.asked_by !== user.id) {
+        const answererName = profile?.display_name || 'Кто-то';
+        const qPreview = (qData.question ?? '').slice(0, 60) + ((qData.question ?? '').length > 60 ? '…' : '');
+        await supabase.from('user_activities').insert({
+          user_id: qData.asked_by,
+          type: 'new_answer',
+          title: `${answererName} ответил на ваш вопрос`,
+          subtitle: qPreview,
+          entity_id: data.id,
+        });
+      }
+
       return true;
     } catch (e) {
       console.error('Error submitting answer:', e);

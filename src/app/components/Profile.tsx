@@ -255,12 +255,13 @@ export function Profile() {
         setIsEditing(true);
       }
 
-      // Fetch User Activities
+      // Fetch User Activities (exclude notification types — they live in the header dropdown)
       setActivitiesLoading(true);
       const { data: activityData, error: activityError } = await supabase
         .from('user_activities')
         .select('*')
         .eq('user_id', targetId)
+        .not('type', 'in', '("answer_liked","new_answer")')
         .order('created_at', { ascending: false })
         .limit(10);
       
@@ -922,7 +923,6 @@ export function Profile() {
                     case 'announcement': return `/announcements?id=${activity.entity_id}`;
                     case 'event': return `/events?id=${activity.entity_id}`;
                     case 'help': return `/support?id=${activity.entity_id}`;
-                    case 'answer_liked': return `/support`;
                     case 'story': return `/home?story=${activity.entity_id}`;
                     case 'review': return `/profile/${activity.entity_id}`;
                     default: return null;
@@ -940,7 +940,6 @@ export function Profile() {
                       activity.type === 'announcement' ? 'bg-terracotta-deep/10' :
                       activity.type === 'event' ? 'bg-dusty-indigo/10' :
                       activity.type === 'help' ? 'bg-warm-olive/10' :
-                      activity.type === 'answer_liked' ? 'bg-warm-olive/10' :
                       activity.type === 'story' ? 'bg-orange-100' :
                       activity.type === 'review' ? 'bg-yellow-50' :
                       'bg-soft-sand/50'
@@ -948,7 +947,6 @@ export function Profile() {
                       {activity.type === 'announcement' && <MessageCircle className="w-5 h-5 text-terracotta-deep" />}
                       {activity.type === 'event' && <Calendar className="w-5 h-5 text-dusty-indigo" />}
                       {activity.type === 'help' && <Heart className="w-5 h-5 text-warm-olive" />}
-                      {activity.type === 'answer_liked' && <Heart className="w-5 h-5 fill-warm-olive text-warm-olive" />}
                       {activity.type === 'story' && <Users className="w-5 h-5 text-orange-600" />}
                       {activity.type === 'review' && <Star className="w-5 h-5 text-yellow-500" />}
                     </div>

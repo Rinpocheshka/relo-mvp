@@ -31,6 +31,38 @@ function HeaderAuth({ unreadCount, isAdmin, pendingCount }: { unreadCount: numbe
   const { user, profile, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [authOpen, setAuthOpen] = useState(false);
+  const [notifications, setNotifications] = useState<{ id: string; title: string; subtitle: string | null; created_at: string; type: string }[]>([]);
+  const [notifCount, setNotifCount] = useState(0);
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  useEffect(() => {
+    if (!user) { setNotifications([]); setNotifCount(0); return; }
+    const fetch = async () => {
+      const { data } = await supabase
+        .from('user_activities')
+        .select('id, title, subtitle, created_at, type')
+        .eq('user_id', user.id)
+        .in('type', ['answer_liked', 'new_answer'])
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (data) {
+        setNotifications(data);
+        // Count notifications from last 7 days as "new"
+        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        setNotifCount(data.filter(n => new Date(n.created_at) > weekAgo).length);
+      }
+    };
+    void fetch();
+
+    // Realtime: update when new activity is added
+    const ch = supabase.channel('notif_' + user.id)
+      .on('postgres_changes', {
+        event: 'INSERT', schema: 'public', table: 'user_activities',
+        filter: `user_id=eq.${user.id}`,
+      }, () => void fetch())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [user]);
 
   if (loading) return <div className="w-20 h-9 bg-soft-sand/30 rounded-full animate-pulse" />;
 
@@ -48,16 +80,16 @@ function HeaderAuth({ unreadCount, isAdmin, pendingCount }: { unreadCount: numbe
                 isGuide={!!profile?.is_guide} 
                 size="sm" 
               />
-              {unreadCount > 0 && (
+              {(unreadCount > 0 || notifCount > 0) && (
                 <span className="absolute top-1 left-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
-                  {unreadCount > 9 ? '9+' : unreadCount}
+                  {(unreadCount + notifCount) > 9 ? '9+' : unreadCount + notifCount}
                 </span>
               )}
               <span className="hidden lg:block text-sm font-medium max-w-[120px] truncate">{displayName}</span>
               <ChevronDown className="w-3.5 h-3.5 text-muted-foreground hidden lg:block" />
             </button>
           </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[180px] rounded-[20px] p-2 mt-2 shadow-xl border-soft-sand/20 z-[70]">
+            <DropdownMenuContent align="end" className="w-[220px] rounded-[20px] p-2 mt-2 shadow-xl border-soft-sand/20 z-[70]">
               <DropdownMenuItem asChild className="rounded-[12px] cursor-pointer hover:bg-soft-sand/30 font-medium">
                 <Link to="/profile" className="flex items-center gap-2 w-full px-2 py-1.5">
                   <UserIcon className="w-4 h-4" /> Мой профиль
@@ -75,6 +107,52 @@ function HeaderAuth({ unreadCount, isAdmin, pendingCount }: { unreadCount: numbe
                   )}
                 </Link>
               </DropdownMenuItem>
+
+              {/* Notifications "Новое" */}
+              <div className="relative">
+                <button
+                  onClick={() => setNotifOpen(v => !v)}
+                  className="w-full flex items-center justify-between px-3 py-1.5 rounded-[12px] hover:bg-soft-sand/30 font-medium text-sm transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Heart className="w-4 h-4" />
+                    <span>Новое</span>
+                  </div>
+                  {notifCount > 0 && (
+                    <span className="flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-warm-olive text-[10px] font-bold text-white">
+                      {notifCount}
+                    </span>
+                  )}
+                </button>
+                {notifOpen && (
+                  <div className="mt-1 bg-soft-sand/10 rounded-[14px] border border-border/30 overflow-hidden">
+                    {notifications.length === 0 ? (
+                      <p className="text-xs text-muted-foreground text-center py-4 px-3">Уведомлений пока нет</p>
+                    ) : (
+                      <div className="max-h-[260px] overflow-y-auto divide-y divide-border/20">
+                        {notifications.map(n => (
+                          <Link
+                            key={n.id}
+                            to="/support"
+                            onClick={() => setNotifOpen(false)}
+                            className="flex items-start gap-2 px-3 py-2.5 hover:bg-soft-sand/30 transition-colors block"
+                          >
+                            <span className="mt-0.5 flex-shrink-0">
+                              {n.type === 'answer_liked' ? '❤️' : '💬'}
+                            </span>
+                            <div className="min-w-0">
+                              <p className="text-xs font-semibold text-foreground leading-snug">{n.title}</p>
+                              {n.subtitle && (
+                                <p className="text-[11px] text-muted-foreground truncate mt-0.5">{n.subtitle}</p>
+                              )}
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
 
               {isAdmin && (
                 <DropdownMenuItem asChild className="rounded-[12px] cursor-pointer hover:bg-soft-sand/30 font-medium">
