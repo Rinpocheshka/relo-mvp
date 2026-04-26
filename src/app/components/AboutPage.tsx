@@ -135,11 +135,12 @@ export function AboutPage() {
           </div>
           <div className="grid md:grid-cols-12 gap-12 items-center relative z-10">
             <div className="md:col-span-4">
-              <div className="aspect-[4/5] bg-soft-sand/30 rounded-[40px] overflow-hidden relative group">
-                {/* Placeholder for founder photo */}
-                <div className="absolute inset-0 flex items-center justify-center text-soft-sand/50">
-                  <Users className="w-20 h-20" />
-                </div>
+              <div className="aspect-[4/5] bg-soft-sand/30 rounded-[40px] overflow-hidden relative group shadow-lg">
+                <img 
+                  src="/assets/images/founder.jpg" 
+                  alt="Founder" 
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
               </div>
               <div className="mt-6 text-center">
