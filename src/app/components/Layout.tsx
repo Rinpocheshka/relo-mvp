@@ -43,13 +43,12 @@ function HeaderAuth({ unreadCount, isAdmin, pendingCount }: { unreadCount: numbe
         .select('id, title, subtitle, created_at, type')
         .eq('user_id', user.id)
         .in('type', ['answer_liked', 'new_answer'])
+        .eq('is_read', false)
         .order('created_at', { ascending: false })
         .limit(10);
       if (data) {
         setNotifications(data);
-        // Count notifications from last 7 days as "new"
-        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-        setNotifCount(data.filter(n => new Date(n.created_at) > weekAgo).length);
+        setNotifCount(data.length);
       }
     };
     void fetch();
@@ -111,7 +110,19 @@ function HeaderAuth({ unreadCount, isAdmin, pendingCount }: { unreadCount: numbe
               {/* Notifications "Новое" */}
               <div className="relative">
                 <button
-                  onClick={() => setNotifOpen(v => !v)}
+                  onClick={() => {
+                    if (notifOpen) {
+                      setNotifOpen(false);
+                      setNotifications([]);
+                    } else {
+                      setNotifOpen(true);
+                      if (notifications.length > 0) {
+                        supabase.from('user_activities').update({ is_read: true }).in('id', notifications.map(n => n.id)).then(() => {
+                          setNotifCount(0);
+                        });
+                      }
+                    }
+                  }}
                   className="w-full flex items-center justify-between px-3 py-1.5 rounded-[12px] hover:bg-soft-sand/30 font-medium text-sm transition-colors"
                 >
                   <div className="flex items-center gap-2">

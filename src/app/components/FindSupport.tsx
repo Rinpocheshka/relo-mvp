@@ -492,15 +492,39 @@ export function FindSupport() {
         await supabase.from('answers').update({ upvotes_count: (ans.upvotes_count ?? 0) + 1 }).eq('id', answerId);
         // Notify the answer author (if it's not the same user liking their own answer)
         if (ans.author_id && ans.author_id !== user.id) {
+          const upvotesCount = (ans.upvotes_count ?? 0) + 1;
           const likerName = profile?.display_name || 'Кто-то';
+          let title = `${likerName} отметил ваш ответ полезным`;
+          
+          if (upvotesCount > 1) {
+            title = `${upvotesCount} пользователей отметили ваш ответ полезным`;
+          }
+
           const preview = (ans.body ?? '').slice(0, 60) + ((ans.body ?? '').length > 60 ? '…' : '');
-          await supabase.from('user_activities').insert({
-            user_id: ans.author_id,
-            type: 'answer_liked',
-            title: `${likerName} отметил ваш ответ полезным`,
-            subtitle: preview,
-            entity_id: answerId,
-          });
+          
+          // Check if a notification for this answer already exists
+          const { data: existingNotif } = await supabase
+            .from('user_activities')
+            .select('id')
+            .eq('type', 'answer_liked')
+            .eq('entity_id', answerId)
+            .single();
+
+          if (existingNotif) {
+            await supabase.from('user_activities').update({ 
+              title, 
+              is_read: false, 
+              created_at: new Date().toISOString() 
+            }).eq('id', existingNotif.id);
+          } else {
+            await supabase.from('user_activities').insert({
+              user_id: ans.author_id,
+              type: 'answer_liked',
+              title,
+              subtitle: preview,
+              entity_id: answerId,
+            });
+          }
         }
       }
     }
