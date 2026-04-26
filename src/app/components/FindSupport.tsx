@@ -68,6 +68,7 @@ interface Guide {
   rating: number | null;
   expertise: string[];
   answeredCount: number;
+  helpfulnessCount: number;
   avatarUrl: string | null;
   isGuide: boolean;
   avatarColor: string;
@@ -380,9 +381,9 @@ export function FindSupport() {
     const fetchGuides = async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('id, display_name, rating, expertise, answered_count, avatar_url, contact_telegram, contact_whatsapp, is_guide')
+        .select('id, display_name, rating, expertise, answered_count, avatar_url, contact_telegram, contact_whatsapp, is_guide, helpfulness_count')
         .eq('is_guide', true)
-        .order('rating', { ascending: false })
+        .order('helpfulness_count', { ascending: false })
         .limit(3);
 
       if (data) {
@@ -392,6 +393,7 @@ export function FindSupport() {
           rating: (p as any).rating,
           expertise: (p as any).expertise ?? [],
           answeredCount: (p as any).answered_count ?? 0,
+          helpfulnessCount: (p as any).helpfulness_count ?? 0,
           avatarUrl: (p as any).avatar_url,
           isGuide: (p as any).is_guide ?? true,
           avatarColor: GUIDE_COLORS[i % GUIDE_COLORS.length],
@@ -2008,30 +2010,12 @@ function GuidesPanel({
                   </h3>
                 </Link>
                 <p className="text-xs font-bold text-warm-olive/70 uppercase tracking-tighter mb-1.5">Проводник города</p>
-                {guide.rating && (
-                  <div className="flex items-center gap-1">
-                    <Star className="w-3.5 h-3.5 fill-yellow-500 text-yellow-500" />
-                    <span className="text-sm font-black text-foreground">{guide.rating}</span>
-                  </div>
-                )}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm font-medium text-muted-foreground">Полезностей</span>
+                  <span className="text-sm font-black text-foreground">{guide.helpfulnessCount}</span>
+                </div>
               </div>
             </div>
-
-            {guide.expertise.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-3">
-                {guide.expertise.map((exp) => (
-                  <span key={exp} className="px-2.5 py-1 bg-soft-sand/30 text-[10px] font-bold text-muted-foreground uppercase tracking-tight rounded-md">
-                    {exp}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {guide.answeredCount > 0 && (
-              <p className="text-[11px] font-medium text-muted-foreground/60 mb-4 px-1">
-                Ответил на <span className="text-foreground font-bold">{guide.answeredCount}</span> вопросов
-              </p>
-            )}
 
             <Button
               className="w-full bg-terracotta-deep text-white hover:bg-terracotta-deep/90 rounded-full h-11 font-bold shadow-sm transition-all"
