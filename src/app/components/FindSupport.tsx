@@ -281,6 +281,9 @@ export function FindSupport() {
       // If question is already in list, expand it
       if (questions.some(q => q.id === deepLinkId)) {
         setExpandedQuestion(deepLinkId);
+        setTimeout(() => {
+          document.getElementById(`question-${deepLinkId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
       } else {
         // If not in list, we could fetch it, but usually the first page contains recent ones
         // For now, let's just set the expanded state and hope the fetchAnswers logic handles it
@@ -288,7 +291,7 @@ export function FindSupport() {
         const fetchAndExpand = async () => {
           const { data, error } = await supabase
             .from('questions')
-            .select('id, question, category, asked_by, asked_by_name, created_at, views_count, status, answers(count), profiles:asked_by(is_guide)')
+            .select('id, question, body, type, image_url, category, asked_by, asked_by_name, created_at, views_count, is_anonymous, status, upvotes_count, answers(count), profiles:asked_by(is_guide)', { count: 'exact' })
             .eq('id', deepLinkId)
             .eq('status', 'active')
             .single();
@@ -300,10 +303,14 @@ export function FindSupport() {
             const q: Question = {
               id: data.id,
               question: data.question || '',
+              body: data.body,
+              type: data.type || 'question',
+              image_url: data.image_url,
               category: data.category || 'Другое',
               askedBy: (data as any).asked_by_name || 'Пользователь',
               answers: Number(cnt) || 0,
               isAnswered: (Number(cnt) || 0) > 0,
+              upvotesCount: data.upvotes_count ?? 0,
               createdAt: data.created_at ? formatRelativeRu(new Date(data.created_at as string)) : undefined,
               viewsCount: (data as any).views_count ?? 0,
               isAnonymous: (data as any).is_anonymous as boolean,
@@ -1219,7 +1226,7 @@ function QuestionCard({
   const [answerDraft, setAnswerDraft] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   return (
-    <div className={`group rounded-[28px] border transition-all duration-300 shadow-sm hover:shadow-md overflow-hidden ${
+    <div id={`question-${q.id}`} className={`group rounded-[28px] border transition-all duration-300 shadow-sm hover:shadow-md overflow-hidden ${
       q.type === 'article'
         ? 'bg-[#F3F1F9] border-dusty-indigo/40 hover:border-dusty-indigo/60 hover:shadow-dusty-indigo/10'
         : 'bg-white border-border/60 hover:border-dusty-indigo/20'
