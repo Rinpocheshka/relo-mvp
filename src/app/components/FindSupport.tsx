@@ -508,17 +508,13 @@ export function FindSupport() {
     if (already) {
       // Remove upvote — DB trigger will decrement helpfulness_count on the author's profile
       await supabase.from('answer_upvotes').delete().match({ answer_id: answerId, user_id: user.id });
-      // Sync counter in answers table
+      // Sync counter in answers table (handled by DB trigger now)
       const { data: ans } = await supabase.from('answers').select('upvotes_count').eq('id', answerId).single();
-      if (ans) {
-        await supabase.from('answers').update({ upvotes_count: Math.max(0, (ans.upvotes_count ?? 1) - 1) }).eq('id', answerId);
-      }
     } else {
-      // Add upvote — DB trigger will increment helpfulness_count on the author's profile
+      // Add upvote — DB trigger will increment helpfulness_count on the author's profile and upvotes_count on the answer
       await supabase.from('answer_upvotes').insert({ answer_id: answerId, user_id: user.id });
       const { data: ans } = await supabase.from('answers').select('upvotes_count, author_id, body, question_id').eq('id', answerId).single();
       if (ans) {
-        await supabase.from('answers').update({ upvotes_count: (ans.upvotes_count ?? 0) + 1 }).eq('id', answerId);
         // Notify the answer author (if it's not the same user liking their own answer)
         if (ans.author_id && ans.author_id !== user.id) {
           const upvotesCount = (ans.upvotes_count ?? 0) + 1;
@@ -584,14 +580,10 @@ export function FindSupport() {
     if (already) {
       await supabase.from('question_upvotes').delete().match({ question_id: questionId, user_id: user.id });
       const { data: qData } = await supabase.from('questions').select('upvotes_count').eq('id', questionId).single();
-      if (qData) {
-        await supabase.from('questions').update({ upvotes_count: Math.max(0, (qData.upvotes_count ?? 1) - 1) }).eq('id', questionId);
-      }
     } else {
       await supabase.from('question_upvotes').insert({ question_id: questionId, user_id: user.id });
       const { data: qData } = await supabase.from('questions').select('upvotes_count, asked_by, question').eq('id', questionId).single();
       if (qData) {
-        await supabase.from('questions').update({ upvotes_count: (qData.upvotes_count ?? 0) + 1 }).eq('id', questionId);
         
         if (qData.asked_by && qData.asked_by !== user.id) {
           const upvotesCount = (qData.upvotes_count ?? 0) + 1;
