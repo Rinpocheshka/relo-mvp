@@ -70,7 +70,7 @@ function HeaderAuth({ unreadCount, isAdmin, pendingCount }: { unreadCount: numbe
     const displayName = profile?.display_name || googleName || user.email?.split('@')[0] || 'Пользователь';
     return (
       <>
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-soft-sand/40 transition-colors relative">
               <UserAvatar 
