@@ -31,7 +31,7 @@ function HeaderAuth({ unreadCount, isAdmin, pendingCount }: { unreadCount: numbe
   const { user, profile, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [authOpen, setAuthOpen] = useState(false);
-  const [notifications, setNotifications] = useState<{ id: string; title: string; subtitle: string | null; created_at: string; type: string; entity_id: string | null }[]>([]);
+  const [notifications, setNotifications] = useState<{ id: string; title: string; subtitle: string | null; created_at: string; type: string; entity_id: string | null; is_read: boolean }[]>([]);
   const [notifCount, setNotifCount] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
 
@@ -40,16 +40,16 @@ function HeaderAuth({ unreadCount, isAdmin, pendingCount }: { unreadCount: numbe
     const fetch = async () => {
       const { data } = await supabase
         .from('user_activities')
-        .select('id, title, subtitle, created_at, type, entity_id')
+        .select('id, title, subtitle, created_at, type, entity_id, is_read')
         .eq('user_id', user.id)
-        .in('type', ['answer_liked', 'new_answer'])
-        .eq('is_read', false)
+        .in('type', ['answer_liked', 'article_liked', 'new_answer'])
         .order('created_at', { ascending: false })
-        .limit(10);
+        .limit(5);
       if (data) {
         setNotifications(data);
-        setNotifCount(data.length);
+        setNotifCount(data.filter(n => !n.is_read).length);
       }
+
     };
     void fetch();
 
@@ -113,11 +113,11 @@ function HeaderAuth({ unreadCount, isAdmin, pendingCount }: { unreadCount: numbe
                   onClick={() => {
                     if (notifOpen) {
                       setNotifOpen(false);
-                      setNotifications([]);
                     } else {
                       setNotifOpen(true);
-                      if (notifications.length > 0) {
-                        supabase.from('user_activities').update({ is_read: true }).in('id', notifications.map(n => n.id)).then(() => {
+                      const unreadIds = notifications.filter(n => !n.is_read).map(n => n.id);
+                      if (unreadIds.length > 0) {
+                        supabase.from('user_activities').update({ is_read: true }).in('id', unreadIds).then(() => {
                           setNotifCount(0);
                         });
                       }
