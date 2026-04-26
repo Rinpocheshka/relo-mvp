@@ -108,17 +108,33 @@ const STAGES_CONFIG: { value: Stage; label: string; icon: string }[] = [
   { value: 'moving_on', label: 'Дальше', icon: '🌍' },
 ];
 
+const planningQuickLinks = [
+  { text: 'Посмотреть жилье', icon: '/assets/icons/custom/category_housing.png', link: '/announcements?category=housing' },
+  { text: 'Понять куда тут ходят', icon: '/assets/icons/custom/events_all.png', link: '/events' },
+  { text: 'Найти своих', icon: '/assets/icons/custom/people_tab.png', link: '/people' },
+  { text: 'Собрать информацию', icon: '/assets/icons/custom/support_tab.png', link: '/support' },
+  { text: 'Почитать как это было у других', icon: '/assets/icons/custom/stories_large.png', link: '/stories' },
+];
+
+const justArrivedQuickLinks = [
+  { text: 'Найти жилье', icon: '/assets/icons/custom/category_housing.png', link: '/announcements?category=housing' },
+  { text: 'Войти в сообщество', icon: '/assets/icons/custom/events_all.png', link: '/events' },
+  { text: 'Написать тем кто поможет', icon: '/assets/icons/custom/people_tab.png', link: '/people' },
+  { text: 'Быстро найти ответы', icon: '/assets/icons/custom/support_tab.png', link: '/support' },
+  { text: 'Успокоиться что это проходили все', icon: '/assets/icons/custom/stories_large.png', link: '/stories' },
+];
+
 const stageContent = {
   planning: {
     greeting: 'Переезд — это не про чемоданы.\nЭто про то, как создать новую жизнь.',
     warmth: 'Ты выбираешь куда переехать. Посмотри, что происходит в городе, пообщайся с теми, кто уже там.',
-    quickLinks: commonQuickLinks,
+    quickLinks: planningQuickLinks,
     sections: commonSections,
   },
   just_arrived: {
     greeting: 'Здесь есть люди, которые проходят тот же путь.',
-    warmth: 'Первые дни в новом городе — давай разберёмся вместе.',
-    quickLinks: commonQuickLinks,
+    warmth: 'Чтобы первые дни прошли легче — давай разберёмся вместе. Тут принято писать первым :)',
+    quickLinks: justArrivedQuickLinks,
     sections: commonSections,
   },
   settling: {
