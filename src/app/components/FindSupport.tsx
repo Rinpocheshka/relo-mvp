@@ -283,7 +283,12 @@ export function FindSupport() {
     if (deepLinkId) {
       // If question is already in list, expand it
       if (questions.some(q => q.id === deepLinkId)) {
-        setExpandedQuestion(deepLinkId);
+        setExpandedQuestion(prev => {
+          if (prev !== deepLinkId) {
+            void loadAnswers(deepLinkId, 0);
+          }
+          return deepLinkId;
+        });
         setTimeout(() => {
           document.getElementById(`question-${deepLinkId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 100);
@@ -320,7 +325,12 @@ export function FindSupport() {
               authorIsGuide: (data as any).profiles?.is_guide as boolean,
             };
             setQuestions(prev => [q, ...prev.filter(x => x.id !== q.id)]);
-            setExpandedQuestion(q.id);
+            setExpandedQuestion(prev => {
+              if (prev !== q.id) {
+                void loadAnswers(q.id, 0);
+              }
+              return q.id;
+            });
           }
         };
         void fetchAndExpand();
