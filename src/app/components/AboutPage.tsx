@@ -106,10 +106,10 @@ export function AboutPage() {
         <div className="flex flex-wrap justify-center gap-4 mb-10">
           <span className="px-6 py-3 bg-terracotta-deep text-white rounded-full font-bold shadow-lg shadow-terracotta-deep/20">🚀 Дананг, Вьетнам — Первый запуск</span>
           <span className="px-6 py-3 bg-white border border-border/40 rounded-full font-bold text-muted-foreground">Далее — ключевые города мира</span>
-          <span className="px-6 py-3 bg-white border border-border/40 rounded-full font-bold text-muted-foreground">Английский язык для всех</span>
+          <span className="px-6 py-3 bg-white border border-border/40 rounded-full font-bold text-muted-foreground">Система открыта для всех</span>
         </div>
         <div className="bg-soft-sand/20 p-8 rounded-[32px] border border-soft-sand/40 italic text-muted-foreground font-medium text-lg">
-          «Вся система основана на доверии: всё понятно и собрано в одном месте — в отличие от десятков хаотичных чатов в Telegram и Facebook.»
+          «Вся система основана на доверии: всё понятно и собрано в одном месте — в отличие от десятков хаотичных чатов в Telegram и Facebook»
         </div>
       </section>
 
@@ -160,7 +160,7 @@ export function AboutPage() {
                   Пытаясь найти активности для детей среди множества чатов, я снова вспомнила свою идею 2022 года. И поняла: <span className="text-dusty-indigo font-bold italic">сейчас это важно. Это необходимо.</span>
                 </p>
                 <div className="p-6 bg-amber-50 rounded-2xl border border-amber-100 text-amber-900/80 italic font-bold">
-                  «У меня есть для этого весь нужный опыт — и личный, и профессиональный.»
+                  «У меня есть для этого весь нужный опыт — и личный, и профессиональный»
                 </div>
               </div>
             </div>
@@ -229,7 +229,7 @@ export function AboutPage() {
           </div>
           <div className="p-8 bg-red-50 text-center">
             <p className="text-red-700 font-black italic">
-              «Если пользователь ведёт себя недобросовестно — он блокируется без возможности вернуться.»
+              «Если пользователь ведёт себя недобросовестно — он блокируется без возможности вернуться»
             </p>
           </div>
         </div>
