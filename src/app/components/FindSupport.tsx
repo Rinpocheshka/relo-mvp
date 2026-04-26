@@ -822,43 +822,7 @@ export function FindSupport() {
               </div>
             </div>
 
-            {/* How to search help toggle */}
-            <div className="mt-2 px-1">
-              <button
-                onClick={() => setIsSearchHelpOpen(!isSearchHelpOpen)}
-                className="flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground/60 hover:text-dusty-indigo transition-colors group"
-              >
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isSearchHelpOpen ? 'rotate-180 text-dusty-indigo' : ''}`} />
-                <span className="uppercase tracking-wider">Как тут искать информацию?</span>
-              </button>
-              
-              <AnimatePresence>
-                {isSearchHelpOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: 'circOut' }}
-                    className="overflow-hidden"
-                  >
-                    <div className="pt-3 pb-2 px-2 space-y-2 border-l-2 border-dusty-indigo/10 ml-1.5 mt-1">
-                      {[
-                        "Проверь свой вопрос через «поиск»",
-                        "Если вопрос есть, но есть что добавить — оставь комментарий или напиши напрямую тем, кто уже отвечал на него",
-                        "Введи тот же запрос во вкладке «Ресурсы»",
-                        "Если вопроса нет — добавь новый",
-                        "Мы сообщим когда поступит ответ"
-                      ].map((text, idx) => (
-                        <div key={idx} className="flex gap-3 text-xs md:text-sm text-muted-foreground leading-relaxed">
-                          <span className="font-bold text-dusty-indigo/40 shrink-0">{idx + 1}.</span>
-                          <span>{text}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+
             {activeTab === 'questions' && (
               <>
                 <Button
@@ -1113,6 +1077,28 @@ export function FindSupport() {
               onMessage={(id, name) => openMessageModal(id, name)} 
               onAuth={() => setIsAuthModalOpen(true)} 
             />
+
+            {/* Search Help Card */}
+            <div className="bg-white border border-border/40 p-6 rounded-[32px] shadow-sm">
+              <h3 className="text-sm font-black text-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                <Search className="w-4 h-4 text-dusty-indigo" />
+                Как тут искать информацию?
+              </h3>
+              <div className="space-y-3">
+                {[
+                  "Проверь свой вопрос через «поиск»",
+                  "Если вопрос есть, но есть что добавить — оставь комментарий или напиши напрямую тем, кто уже отвечал на него",
+                  "Введи тот же запрос во вкладке «Ресурсы»",
+                  "Если вопроса нет — добавь новый",
+                  "Мы сообщим когда поступит ответ"
+                ].map((text, idx) => (
+                  <div key={idx} className="flex gap-3 text-xs text-muted-foreground leading-relaxed">
+                    <span className="font-bold text-dusty-indigo/40 shrink-0">{idx + 1}.</span>
+                    <span>{text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {/* CTA cards */}
             <div className="relative overflow-hidden bg-gradient-to-br from-[#CD7F67] to-[#8E78B2] p-8 rounded-[32px] text-white shadow-xl shadow-terracotta-deep/10 group">
