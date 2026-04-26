@@ -31,7 +31,7 @@ function HeaderAuth({ unreadCount, isAdmin, pendingCount }: { unreadCount: numbe
   const { user, profile, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [authOpen, setAuthOpen] = useState(false);
-  const [notifications, setNotifications] = useState<{ id: string; title: string; subtitle: string | null; created_at: string; type: string }[]>([]);
+  const [notifications, setNotifications] = useState<{ id: string; title: string; subtitle: string | null; created_at: string; type: string; entity_id: string | null }[]>([]);
   const [notifCount, setNotifCount] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
 
@@ -40,7 +40,7 @@ function HeaderAuth({ unreadCount, isAdmin, pendingCount }: { unreadCount: numbe
     const fetch = async () => {
       const { data } = await supabase
         .from('user_activities')
-        .select('id, title, subtitle, created_at, type')
+        .select('id, title, subtitle, created_at, type, entity_id')
         .eq('user_id', user.id)
         .in('type', ['answer_liked', 'new_answer'])
         .eq('is_read', false)
@@ -144,7 +144,7 @@ function HeaderAuth({ unreadCount, isAdmin, pendingCount }: { unreadCount: numbe
                         {notifications.map(n => (
                           <Link
                             key={n.id}
-                            to="/support"
+                            to={`/support?id=${n.entity_id}`}
                             onClick={() => setNotifOpen(false)}
                             className="flex items-start gap-2 px-3 py-2.5 hover:bg-soft-sand/30 transition-colors block"
                           >

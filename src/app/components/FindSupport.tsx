@@ -487,7 +487,7 @@ export function FindSupport() {
     } else {
       // Add upvote — DB trigger will increment helpfulness_count on the author's profile
       await supabase.from('answer_upvotes').insert({ answer_id: answerId, user_id: user.id });
-      const { data: ans } = await supabase.from('answers').select('upvotes_count, author_id, body').eq('id', answerId).single();
+      const { data: ans } = await supabase.from('answers').select('upvotes_count, author_id, body, question_id').eq('id', answerId).single();
       if (ans) {
         await supabase.from('answers').update({ upvotes_count: (ans.upvotes_count ?? 0) + 1 }).eq('id', answerId);
         // Notify the answer author (if it's not the same user liking their own answer)
@@ -499,15 +499,14 @@ export function FindSupport() {
           if (upvotesCount > 1) {
             title = `${upvotesCount} пользователей отметили ваш ответ полезным`;
           }
-
-          const preview = (ans.body ?? '').slice(0, 60) + ((ans.body ?? '').length > 60 ? '…' : '');
           
           // Check if a notification for this answer already exists
+          // For grouping/clickability, we use entity_id = question_id
           const { data: existingNotif } = await supabase
             .from('user_activities')
             .select('id')
             .eq('type', 'answer_liked')
-            .eq('entity_id', answerId)
+            .eq('entity_id', ans.question_id)
             .single();
 
           if (existingNotif) {
@@ -521,8 +520,8 @@ export function FindSupport() {
               user_id: ans.author_id,
               type: 'answer_liked',
               title,
-              subtitle: preview,
-              entity_id: answerId,
+              subtitle: null, // Removed as requested
+              entity_id: ans.question_id,
             });
           }
         }
@@ -584,7 +583,7 @@ export function FindSupport() {
           type: 'new_answer',
           title: `${answererName} ответил на ваш вопрос`,
           subtitle: qPreview,
-          entity_id: data.id,
+          entity_id: questionId,
         });
       }
 
