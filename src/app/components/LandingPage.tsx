@@ -413,7 +413,7 @@ export function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-2 md:mb-3 leading-tight">Мы собрали всё в одном месте</h2>
-            <p className="text-lg md:text-xl text-muted-foreground">чтобы пройти этот путь проще</p>
+            <p className="text-lg md:text-xl text-muted-foreground">чтобы тебе на этом пути было проще</p>
           </div>
           <div className="grid md:grid-cols-2 gap-4 md:gap-5">
             {[
