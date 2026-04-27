@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
 import { X, ArrowRight, MapPin, ChevronDown, ChevronUp, CheckCircle2, Search, Zap } from 'lucide-react';
 import { AuthModal } from './AuthWidget';
 import { AlertCircle, Download, CheckCircle, Navigation, Info } from 'lucide-react';
+import { supabase } from '../../lib/supabaseClient';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -220,6 +221,44 @@ export function LandingPage() {
   const [completedItems, setCompletedItems] = useState<Set<string>>(new Set());
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [progress] = useState(10);
+  const [stats, setStats] = useState({
+    users: 140,
+    housing: 15,
+    guides: 8,
+    announcements: 30
+  });
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+        
+        const [uRes, hRes, gRes, aRes] = await Promise.all([
+          supabase.from('profiles').select('id', { count: 'exact', head: true }),
+          supabase.from('profiles').select('id', { count: 'exact', head: true }).in('stage', ['planning', 'just_arrived', 'Планирую переезд', 'Только приехал']),
+          supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('is_guide', true),
+          supabase.from('announcements').select('id', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo)
+        ]);
+
+        setStats({
+          users: uRes.count || 0,
+          housing: hRes.count || 0,
+          guides: gRes.count || 0,
+          announcements: aRes.count || 0,
+        });
+      } catch (e) {
+        console.error('Error fetching stats:', e);
+      }
+    }
+    void fetchStats();
+  }, []);
+
+  const statsItems = useMemo(() => [
+    { num: `${stats.users}${stats.users > 50 ? '+' : ''}`, label: 'участников', color: 'text-terracotta-deep' },
+    { num: stats.housing.toString(), label: 'Ищут жильё', color: 'text-dusty-indigo' },
+    { num: stats.guides.toString(), label: 'предлагают помощь', color: 'text-warm-olive' },
+    { num: `${stats.announcements}${stats.announcements > 20 ? '+' : ''}`, label: 'объявлений за месяц', color: 'text-terracotta-deep' },
+  ], [stats]);
 
   const startOnboarding = () => {
     setFlowStage('onboarding');
@@ -340,12 +379,7 @@ export function LandingPage() {
       <section className="px-4 py-6 md:py-8">
         <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-[32px] border border-border/40 shadow-sm px-6 py-8 md:px-8 md:py-6 grid grid-cols-2 md:flex md:flex-wrap gap-8 md:gap-6 items-center justify-around">
-            {[
-              { num: '140+', label: 'участников', color: 'text-terracotta-deep' },
-              { num: '15', label: 'Ищут жильё', color: 'text-dusty-indigo' },
-              { num: '8', label: 'предлагают помощь', color: 'text-warm-olive' },
-              { num: '30+', label: 'объявлений за месяц', color: 'text-terracotta-deep' },
-            ].map((s, i) => (
+            {statsItems.map((s, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="text-center">
                 <div className="text-2xl md:text-3xl font-extrabold mb-1 whitespace-nowrap">
                    <span className={s.color}>{s.num}</span>
