@@ -362,7 +362,7 @@ export function LandingPage() {
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
               Relo me — система для удобной жизни релокантов<br />
-              Удобно когда жильё, события, вещи и поддержка в одном месте.
+              Удобно когда жильё, события, вещи и поддержка в одном месте
             </p>
           </motion.div>
         </div>
