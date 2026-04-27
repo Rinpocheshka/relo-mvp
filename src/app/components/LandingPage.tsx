@@ -389,7 +389,9 @@ export function LandingPage() {
       <section className="px-4 py-10 md:py-16">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">Жизнь релоканта<br className="md:hidden" /> часто выглядит так</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">
+              Жизнь в новой стране<br className="md:hidden" /> часто выглядит так
+            </h2>
           </div>
           <div className="grid md:grid-cols-3 gap-4 md:gap-6">
             {[
