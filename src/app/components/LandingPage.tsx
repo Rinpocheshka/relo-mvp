@@ -222,26 +222,24 @@ export function LandingPage() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [progress] = useState(10);
   const [stats, setStats] = useState({
-    newUsers: 0,
-    newAnnouncements: 0,
-    newEvents: 0
+    totalUsers: 0,
+    totalAnnouncements: 0,
+    totalEvents: 0
   });
 
   useEffect(() => {
     async function fetchStats() {
       try {
-        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-        
         const [uRes, aRes, eRes] = await Promise.all([
-          supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo),
-          supabase.from('announcements').select('id', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo),
-          supabase.from('events').select('id', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo)
+          supabase.from('profiles').select('id', { count: 'exact', head: true }),
+          supabase.from('announcements').select('id', { count: 'exact', head: true }),
+          supabase.from('events').select('id', { count: 'exact', head: true })
         ]);
 
         setStats({
-          newUsers: uRes.count || 0,
-          newAnnouncements: aRes.count || 0,
-          newEvents: eRes.count || 0,
+          totalUsers: uRes.count || 0,
+          totalAnnouncements: aRes.count || 0,
+          totalEvents: eRes.count || 0,
         });
       } catch (e) {
         console.error('Error fetching stats:', e);
@@ -251,9 +249,9 @@ export function LandingPage() {
   }, []);
 
   const statsItems = useMemo(() => [
-    { num: stats.newUsers.toString(), label: 'Новых участников', color: 'text-terracotta-deep' },
-    { num: stats.newAnnouncements.toString(), label: 'Новых объявлений', color: 'text-dusty-indigo' },
-    { num: stats.newEvents.toString(), label: 'Новых событий', color: 'text-warm-olive' },
+    { num: stats.totalUsers.toString(), label: 'участников', color: 'text-terracotta-deep' },
+    { num: stats.totalAnnouncements.toString(), label: 'объявлений', color: 'text-dusty-indigo' },
+    { num: stats.totalEvents.toString(), label: 'событий', color: 'text-warm-olive' },
   ], [stats]);
 
   const startOnboarding = () => {
