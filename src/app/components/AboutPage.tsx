@@ -77,23 +77,23 @@ export function AboutPage() {
       </section>
 
       {/* Mission & Vision */}
-      <section className="max-w-7xl mx-auto px-6 mb-32">
-        <div className="grid md:grid-cols-2 gap-12 items-stretch">
-          <div className="bg-white p-10 md:p-14 rounded-[48px] border border-border/40 shadow-xl flex flex-col justify-center">
-            <h2 className="text-3xl font-black mb-6 flex items-center gap-3">
-              <Globe className="w-8 h-8 text-dusty-indigo" /> Наша цель
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-20 md:mb-32">
+        <div className="grid md:grid-cols-2 gap-6 md:gap-12 items-stretch">
+          <div className="bg-white p-6 md:p-10 lg:p-14 rounded-[32px] md:rounded-[48px] border border-border/40 shadow-xl flex flex-col justify-center">
+            <h2 className="text-2xl md:text-3xl font-black mb-4 md:mb-6 flex items-center gap-3">
+              <Globe className="w-7 h-7 md:w-8 md:h-8 text-dusty-indigo" /> Наша цель
             </h2>
-            <p className="text-lg text-muted-foreground font-medium leading-relaxed mb-6">
+            <p className="text-base md:text-lg text-muted-foreground font-medium leading-relaxed mb-4 md:mb-6">
               К 2028 году создать эффективную международную систему из <span className="text-foreground font-bold">10+ городов по всему миру</span> для людей, выбирающих жить в других странах.
             </p>
-            <p className="text-lg text-muted-foreground font-medium leading-relaxed">
+            <p className="text-base md:text-lg text-muted-foreground font-medium leading-relaxed">
               Место, где экспаты обмениваются товарами, услугами, жильём, опытом и полезными контактами на всех этапах жизни за границей.
             </p>
           </div>
-          <div className="bg-dusty-indigo text-white p-10 md:p-14 rounded-[48px] shadow-2xl relative overflow-hidden flex flex-col justify-center">
+          <div className="bg-dusty-indigo text-white p-6 md:p-10 lg:p-14 rounded-[32px] md:rounded-[48px] shadow-2xl relative overflow-hidden flex flex-col justify-center">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
-            <h2 className="text-3xl font-black mb-6 relative z-10">Наша миссия</h2>
-            <p className="text-xl font-medium leading-relaxed relative z-10">
+            <h2 className="text-2xl md:text-3xl font-black mb-4 md:mb-6 relative z-10">Наша миссия</h2>
+            <p className="text-base md:text-xl font-medium leading-relaxed relative z-10">
               Чтобы люди, выбравшие путь релокации, чувствовали себя среди своих, «как дома». Мы упрощаем быт, поиск друзей и поддержку развития местного бизнеса.
             </p>
           </div>
@@ -128,12 +128,12 @@ export function AboutPage() {
       </section>
 
       {/* Founder Story */}
-      <section className="max-w-6xl mx-auto px-6 mb-32">
-        <div className="bg-white rounded-[60px] p-8 md:p-20 border border-border/30 shadow-2xl relative overflow-hidden">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 mb-20 md:mb-32">
+        <div className="bg-white rounded-[32px] md:rounded-[60px] p-6 sm:p-8 md:p-20 border border-border/30 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 p-10 opacity-5">
             <Quote className="w-40 h-40" />
           </div>
-          <div className="grid md:grid-cols-12 gap-12 items-center relative z-10">
+          <div className="grid md:grid-cols-12 gap-6 md:gap-12 items-center relative z-10">
             <div className="md:col-span-4">
               <div className="aspect-[4/5] bg-soft-sand/30 rounded-[40px] overflow-hidden relative group shadow-lg">
                 <img 
@@ -242,7 +242,7 @@ export function AboutPage() {
           <h2 className="text-3xl font-black mb-4">Чем мне поможет Relo me?</h2>
           <p className="text-muted-foreground font-bold">10 причин стать частью нашего сообщества</p>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
           {benefits.map((b) => (
             <motion.div
               key={b.id}

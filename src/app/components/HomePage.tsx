@@ -156,8 +156,8 @@ const stageContent = {
     sections: commonSections,
   },
   just_arrived: {
-    greeting: 'Здесь есть люди, которые проходят тот же путь.',
-    warmth: 'Чтобы первые дни прошли легче — давай разберёмся вместе. Тут принято писать первым :)',
+    greeting: 'Здесь есть люди, которые проходят тот же путь',
+    warmth: 'Чтобы первые дни прошли легче — давай разберёмся вместе\nТут принято писать первым',
     quickLinks: justArrivedQuickLinks,
     sections: commonSections,
   },
@@ -485,7 +485,7 @@ export function HomePage() {
               <h1 className="text-4xl font-bold mb-4 whitespace-pre-line">{content.greeting.split('\n').map((line, i) => (
                 <span key={i} className="block">{line}</span>
               ))}</h1>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{content.warmth}</p>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto whitespace-pre-line">{content.warmth}</p>
 
               {/* Global Search Bar */}
               <div className="mt-8 max-w-2xl mx-auto relative group">
