@@ -251,7 +251,7 @@ export function LandingPage() {
   }, []);
 
   const statsItems = useMemo(() => [
-    { num: stats.newUsers.toString(), label: 'Новых пользователей', color: 'text-terracotta-deep' },
+    { num: stats.newUsers.toString(), label: 'Новых участников', color: 'text-terracotta-deep' },
     { num: stats.newAnnouncements.toString(), label: 'Новых объявлений', color: 'text-dusty-indigo' },
     { num: stats.newEvents.toString(), label: 'Новых событий', color: 'text-warm-olive' },
   ], [stats]);
