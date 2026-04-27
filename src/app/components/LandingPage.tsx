@@ -222,10 +222,9 @@ export function LandingPage() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [progress] = useState(10);
   const [stats, setStats] = useState({
-    users: 140,
-    housing: 15,
-    guides: 8,
-    announcements: 30
+    newUsers: 0,
+    newAnnouncements: 0,
+    newEvents: 0
   });
 
   useEffect(() => {
@@ -233,18 +232,16 @@ export function LandingPage() {
       try {
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
         
-        const [uRes, hRes, gRes, aRes] = await Promise.all([
-          supabase.from('profiles').select('id', { count: 'exact', head: true }),
-          supabase.from('profiles').select('id', { count: 'exact', head: true }).in('stage', ['planning', 'just_arrived', 'Планирую переезд', 'Только приехал']),
-          supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('is_guide', true),
-          supabase.from('announcements').select('id', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo)
+        const [uRes, aRes, eRes] = await Promise.all([
+          supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo),
+          supabase.from('announcements').select('id', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo),
+          supabase.from('events').select('id', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo)
         ]);
 
         setStats({
-          users: uRes.count || 0,
-          housing: hRes.count || 0,
-          guides: gRes.count || 0,
-          announcements: aRes.count || 0,
+          newUsers: uRes.count || 0,
+          newAnnouncements: aRes.count || 0,
+          newEvents: eRes.count || 0,
         });
       } catch (e) {
         console.error('Error fetching stats:', e);
@@ -254,10 +251,9 @@ export function LandingPage() {
   }, []);
 
   const statsItems = useMemo(() => [
-    { num: `${stats.users}${stats.users > 50 ? '+' : ''}`, label: 'участников', color: 'text-terracotta-deep' },
-    { num: stats.housing.toString(), label: 'Ищут жильё', color: 'text-dusty-indigo' },
-    { num: stats.guides.toString(), label: 'предлагают помощь', color: 'text-warm-olive' },
-    { num: `${stats.announcements}${stats.announcements > 20 ? '+' : ''}`, label: 'объявлений за месяц', color: 'text-terracotta-deep' },
+    { num: stats.newUsers.toString(), label: 'Новых пользователей', color: 'text-terracotta-deep' },
+    { num: stats.newAnnouncements.toString(), label: 'Новых объявлений', color: 'text-dusty-indigo' },
+    { num: stats.newEvents.toString(), label: 'Новых событий', color: 'text-warm-olive' },
   ], [stats]);
 
   const startOnboarding = () => {
