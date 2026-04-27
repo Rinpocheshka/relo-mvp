@@ -301,8 +301,8 @@ export function LandingPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-warm-milk/90 backdrop-blur-md border-b border-border/30 px-4 py-3">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="text-xl font-bold text-terracotta-deep" style={{ fontFamily: "'Manrope', sans-serif" }}>
-            Relo.me
+          <div className="flex items-center gap-2">
+            <img src="/assets/logo/Relo_me.png" alt="Relo.me" className="h-7 w-auto object-contain" />
           </div>
           <div className="flex items-center gap-3">
             <button onClick={skipToHome} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -567,12 +567,15 @@ function OnboardingFlow({
 
       {/* Top bar */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-border/30 flex-shrink-0">
-        <div className="flex items-center gap-2">
-          {step > 0 && (
+        <div className="flex items-center gap-3">
+          {step > 0 ? (
             <button onClick={onBack} className="p-1 -ml-1 text-muted-foreground hover:text-foreground transition-colors" aria-label="Назад">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="m15 18-6-6 6-6" /></svg>
             </button>
+          ) : (
+            <img src="/assets/logo/Relo_me.png" alt="Relo.me" className="h-6 w-auto object-contain" />
           )}
+          <div className="h-4 w-[1px] bg-border/30 mx-1" />
           <span className="text-sm font-medium text-muted-foreground">
             Шаг {step + 1} из 4
           </span>
