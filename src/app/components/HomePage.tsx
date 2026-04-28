@@ -328,7 +328,6 @@ export function HomePage() {
           created_at: row.created_at,
           location_text: row.location_text || ''
         })));
-        }
       } finally {
         setAnnouncementsLoading(false);
       }
@@ -394,7 +393,6 @@ export function HomePage() {
             images: row.images || [],
           };
         }));
-        }
       } finally {
         setEventsLoading(false);
       }
