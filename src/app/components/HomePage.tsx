@@ -278,35 +278,56 @@ export function HomePage() {
     async function fetchAnnouncements() {
       setAnnouncementsLoading(true);
       try {
-        let query = supabase
-          .from('announcements')
-          .select('*')
-          .eq('status', 'active')
-          .order('created_at', { ascending: false });
-
-        // Personalization: if parent, show kid-related items
         const isParent = profile?.interests?.some(tag => 
           ['kids', 'maternity', 'kids_activities'].includes(tag)
         );
 
+        let finalData: any[] = [];
+
         if (isParent) {
-          query = query.eq('category', 'Для детей');
+          const { data: kidData } = await supabase
+            .from('announcements')
+            .select('*')
+            .eq('status', 'active')
+            .eq('category', 'Для детей')
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+          const { data: generalData } = await supabase
+            .from('announcements')
+            .select('*')
+            .eq('status', 'active')
+            .order('created_at', { ascending: false })
+            .limit(3);
+
+          if (kidData && kidData.length > 0) {
+            const kidItem = kidData[0];
+            const otherItems = (generalData || []).filter(item => item.id !== kidItem.id).slice(0, 2);
+            finalData = [kidItem, ...otherItems];
+          } else {
+            finalData = (generalData || []).slice(0, 3);
+          }
+        } else {
+          const { data } = await supabase
+            .from('announcements')
+            .select('*')
+            .eq('status', 'active')
+            .order('created_at', { ascending: false })
+            .limit(3);
+          finalData = data || [];
         }
 
-        const { data, error } = await query.limit(3);
-
-        if (!error && data) {
-          setAnnouncements(data.map(row => ({
-            id: row.id,
-            title: row.title || '',
-            category: row.category || '',
-            description: row.description || '',
-            price_text: row.price_text || '',
-            author_name: row.author_name || 'Пользователь',
-            images: row.images || [],
-            created_at: row.created_at,
-            location_text: row.location_text || ''
-          })));
+        setAnnouncements(finalData.map(row => ({
+          id: row.id,
+          title: row.title || '',
+          category: row.category || '',
+          description: row.description || '',
+          price_text: row.price_text || '',
+          author_name: row.author_name || 'Пользователь',
+          images: row.images || [],
+          created_at: row.created_at,
+          location_text: row.location_text || ''
+        })));
         }
       } finally {
         setAnnouncementsLoading(false);
@@ -316,43 +337,63 @@ export function HomePage() {
     async function fetchEvents() {
       setEventsLoading(true);
       try {
-        let query = supabase
-          .from('events')
-          .select('*, event_participants(user_id)')
-          .eq('status', 'active')
-          .order('created_at', { ascending: false });
-
-        // Personalization logic: if user has kid-related tags, show kid events
-        // Using internal values 'kids', 'maternity', 'kids_activities' from SITUATION_TAGS/INTERESTS_TAGS
         const isParent = profile?.interests?.some(tag => 
           ['kids', 'maternity', 'kids_activities'].includes(tag)
         );
 
+        let finalData: any[] = [];
+
         if (isParent) {
-          query = query.eq('type', 'Для детей');
+          const { data: kidData } = await supabase
+            .from('events')
+            .select('*, event_participants(user_id)')
+            .eq('status', 'active')
+            .eq('type', 'Для детей')
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+          const { data: generalData } = await supabase
+            .from('events')
+            .select('*, event_participants(user_id)')
+            .eq('status', 'active')
+            .order('created_at', { ascending: false })
+            .limit(3);
+
+          if (kidData && kidData.length > 0) {
+            const kidItem = kidData[0];
+            const otherItems = (generalData || []).filter(item => item.id !== kidItem.id).slice(0, 2);
+            finalData = [kidItem, ...otherItems];
+          } else {
+            finalData = (generalData || []).slice(0, 3);
+          }
+        } else {
+          const { data } = await supabase
+            .from('events')
+            .select('*, event_participants(user_id)')
+            .eq('status', 'active')
+            .order('created_at', { ascending: false })
+            .limit(3);
+          finalData = data || [];
         }
 
-        const { data, error } = await query.limit(3);
-
-        if (!error && data) {
-          setEvents(data.map((row: any) => {
-            const startsAt = row.starts_at ? new Date(row.starts_at) : new Date();
-            return {
-              id: row.id,
-              title: row.title || '',
-              type: row.type || '',
-              starts_at: row.starts_at,
-              date: startsAt.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' }),
-              time: startsAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
-              location: row.location_text || '',
-              organizer: row.organizer_name || 'Организатор',
-              attendees: (row.event_participants || []).length,
-              maxAttendees: row.max_attendees,
-              description: row.description || '',
-              price: row.price_text || 'Бесплатно',
-              images: row.images || [],
-            };
-          }));
+        setEvents(finalData.map((row: any) => {
+          const startsAt = row.starts_at ? new Date(row.starts_at) : new Date();
+          return {
+            id: row.id,
+            title: row.title || '',
+            type: row.type || '',
+            starts_at: row.starts_at,
+            date: startsAt.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' }),
+            time: startsAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+            location: row.location_text || '',
+            organizer: row.organizer_name || 'Организатор',
+            attendees: (row.event_participants || []).length,
+            maxAttendees: row.max_attendees,
+            description: row.description || '',
+            price: row.price_text || 'Бесплатно',
+            images: row.images || [],
+          };
+        }));
         }
       } finally {
         setEventsLoading(false);
