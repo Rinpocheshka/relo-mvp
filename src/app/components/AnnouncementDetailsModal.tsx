@@ -128,8 +128,17 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
             exit={{ opacity: 0, scale: 0.9, y: 40 }}
             className="relative bg-white w-full max-w-4xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] mb-6 sm:mb-8"
           >
-            {/* Close Button */}
-            <div className="absolute top-6 right-6 z-20">
+            {/* Top Actions (Share & Close) */}
+            <div className="absolute top-6 right-6 z-20 flex gap-2">
+              <button 
+                onClick={handleShare}
+                className={`w-12 h-12 ${isCopied ? 'bg-green-500 text-white' : 'bg-white/90 text-foreground'} backdrop-blur-sm hover:opacity-90 rounded-full flex items-center justify-center shadow-lg transition-all active:scale-95`}
+                aria-label="Поделиться"
+                title={isCopied ? 'Ссылка скопирована!' : 'Поделиться объявлением'}
+              >
+                {isCopied ? <CheckCircle2 className="w-6 h-6" /> : <Share2 className="w-6 h-6" />}
+              </button>
+
               <button 
                 onClick={onClose}
                 className="w-12 h-12 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all active:scale-95"
@@ -255,41 +264,29 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
                       </button>
                     )}
                     
-                    <div className="flex gap-2 mt-4">
-                      <button
-                        onClick={handleShare}
-                        className={`flex-1 flex items-center justify-center gap-2 font-bold py-3 rounded-2xl transition-all ${
-                          isCopied ? 'bg-green-50 text-green-600' : 'bg-soft-sand hover:bg-soft-sand/80 text-foreground'
-                        }`}
-                      >
-                        {isCopied ? <CheckCircle2 className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
-                        {isCopied ? 'Скопировано' : 'Поделиться'}
-                      </button>
-
-                      {canManage && (
-                        <>
-                          <button
-                            onClick={() => {
-                              if (announcement && onEdited) {
-                                onEdited(announcement);
-                              }
-                            }}
-                            className="flex-1 flex items-center justify-center gap-2 bg-soft-sand hover:bg-soft-sand/80 text-foreground font-bold py-3 rounded-2xl transition-colors"
-                          >
-                            <Edit className="w-4 h-4" />
-                            Изменить
-                          </button>
-                          <button
-                            onClick={handleDelete}
-                            disabled={isDeleting}
-                            className="flex-1 flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-2xl transition-colors disabled:opacity-50"
-                          >
-                            {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                            Удалить
-                          </button>
-                        </>
-                      )}
-                    </div>
+                    {canManage && (
+                      <div className="flex gap-2 mt-4">
+                        <button
+                          onClick={() => {
+                            if (announcement && onEdited) {
+                              onEdited(announcement);
+                            }
+                          }}
+                          className="flex-1 flex items-center justify-center gap-2 bg-soft-sand hover:bg-soft-sand/80 text-foreground font-bold py-3 rounded-2xl transition-colors"
+                        >
+                          <Edit className="w-4 h-4" />
+                          Изменить
+                        </button>
+                        <button
+                          onClick={handleDelete}
+                          disabled={isDeleting}
+                          className="flex-1 flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-2xl transition-colors disabled:opacity-50"
+                        >
+                          {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                          Удалить
+                        </button>
+                      </div>
+                    )}
 
                     <p className="text-center text-[10px] text-muted-foreground mt-4 uppercase tracking-widest font-bold">
                       Скажите, что нашли это объявление на Relo.me 🤍
