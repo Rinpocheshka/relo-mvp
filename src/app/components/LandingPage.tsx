@@ -75,7 +75,7 @@ const SURVIVAL_CARDS_HERE: SurvivalCard[] = [
         
         <div className="space-y-4">
           <p className="font-semibold text-foreground/90">Для связи с местными настоятельно рекомендуем скачать Zalo:</p>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap justify-center gap-3">
             <a 
               href="https://apps.apple.com/us/app/zalo/id579523206?l=ru" 
               target="_blank" 
