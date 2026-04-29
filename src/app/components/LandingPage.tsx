@@ -72,6 +72,11 @@ const SURVIVAL_CARDS_HERE: SurvivalCard[] = [
         <p>Наличную валюту можно обменять в банках или ювелирных магазинах.</p>
         <p>Снять деньги с карты МИР можно в банкоматах VRB банка.</p>
         <p>А в некоторых магазинах и кафе можно расплатиться по QR-коду со Сбера.</p>
+        <div className="pt-3 mt-3 border-t border-border/30">
+          <p className="text-[13px] font-bold text-foreground/90 leading-snug">
+            Обменять безналичные рубли и криптовалюту по лучшему курсу можно у наших друзей:
+          </p>
+        </div>
       </div>
     ),
     apps: [
