@@ -242,9 +242,9 @@ const SURVIVAL_CARDS_SHOPPING: SurvivalCard[] = [
       </div>
     ),
     apps: [
-      { name: 'Bachhoaxanh', desc: 'Доставка продуктов из бюджетной сети', color: 'bg-[#008B45]', icon: 'BX', link: { web: 'https://www.bachhoaxanh.com/' } },
+      { name: 'Bachhoaxanh', desc: 'Доставка продуктов и товаров из бюджетной сети супермаркетов', color: 'bg-[#008B45]', icon: 'BX', link: { web: 'https://www.bachhoaxanh.com/' } },
       { name: 'ChoTot', desc: 'Местное Авито (на вьетнамском)', color: 'bg-[#FFBA00]', icon: 'CT', link: { web: 'https://www.chotot.com/' } },
-      { name: 'bTaskee', desc: 'Уборка, клининг, мелкий ремонт', color: 'bg-[#FF8C00]', icon: 'BT', link: { web: 'https://www.btaskee.com/en/' } },
+      { name: 'bTaskee', desc: 'Уборка, клининг, мелкий ремонт, дешевле чем от русскоязычных, проверено', color: 'bg-[#FF8C00]', icon: 'BT', link: { web: 'https://www.btaskee.com/en/' } },
     ],
     color: 'bg-dusty-indigo/10 text-dusty-indigo',
     border: 'border-dusty-indigo/20',
