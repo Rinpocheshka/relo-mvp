@@ -1056,7 +1056,7 @@ function OnboardingFlow({
               <div className="flex flex-col items-center px-4 sm:px-5 py-6 sm:py-10 max-w-xl mx-auto w-full">
                 <div className="text-center mb-8">
                    <h2 className="text-3xl font-extrabold tracking-tight mb-2">Расскажи о себе</h2>
-                   <p className="text-muted-foreground">Твой профиль будет полезнее для других</p>
+                   <p className="text-muted-foreground text-lg">Так легче найти своих</p>
                 </div>
 
                 <div className="w-full space-y-10">
@@ -1106,8 +1106,11 @@ function OnboardingFlow({
 
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-[32px] p-8 border border-border/40 shadow-xl w-full text-center">
                   <div className="w-16 h-16 bg-soft-sand rounded-[24px] flex items-center justify-center mx-auto mb-6 text-3xl">🌿</div>
-                  <h3 className="text-2xl font-black mb-3">Сохрани свой путь</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-8">Без аккаунта твои интересы и настройки не сохранятся.</p>
+                  <h3 className="text-2xl font-black mb-3 text-terracotta-deep">Остался один шаг</h3>
+                  <p className="text-muted-foreground text-[13px] leading-relaxed mb-8 px-2">
+                    Заверши вход, чтобы: <br className="hidden sm:block" />
+                    👉 получать ответы, создавать события и объявления и общаться со своими
+                  </p>
                   
                   <div className="space-y-3">
                     <Button 
