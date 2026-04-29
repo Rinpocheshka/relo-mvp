@@ -29,8 +29,9 @@ interface SurvivalCard {
   detail: string | React.ReactNode;
   color: string;
   border: string;
-  warning?: string;
+  warning?: string | React.ReactNode;
   apps?: AppInfo[];
+  footer?: string | React.ReactNode;
 }
 
 // ─── Static data ──────────────────────────────────────────────────────────────
@@ -64,13 +65,35 @@ const SURVIVAL_CARDS_HERE: SurvivalCard[] = [
     apps: [
       { name: 'Viettel', desc: 'Самый крупный оператор', color: 'bg-[#E30019]', icon: 'V', link: { web: 'https://viettel.vn/' } },
       { name: 'Vinaphone', desc: 'Хороший охват', color: 'bg-[#0066CC]', icon: 'VP', link: { web: 'https://vinaphone.com.vn/' } },
-      { name: 'Zalo', desc: 'Местный WhatsApp (рекомендуем)', color: 'bg-[#0068FF]', icon: 'Z', link: { ios: 'https://apps.apple.com/app/zalo/id546230618', android: 'https://play.google.com/store/apps/details?id=com.zing.zalo', web: 'https://zalo.me/pc' } },
     ],
-    warning: (
-      <div className="space-y-4">
-        <p>Во Вьетнаме Wi-Fi есть повсюду, начиная от сетевых магазинов, заканчивая маленькими уличными кофейнями. Не стесняйтесь спрашивать пароль от Wi-Fi у персонала, и без связи точно не останетесь.</p>
-        <div className="h-px bg-amber-200/40 w-full" />
-        <p>Для связи с местными настоятельно рекомендуем скачать <b>Zalo</b>. Установить и войти в приложение лучше сразу в офисе, где покупали сим-карту, так как могут возникнуть трудности при первоначальной регистрации.</p>
+    footer: (
+      <div className="space-y-5 pt-3">
+        <div className="bg-blue-50/50 border border-blue-200/60 rounded-2xl p-4 flex gap-3 text-sm text-blue-900/80">
+          <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+          <p>Во Вьетнаме Wi-Fi есть повсюду, начиная от сетевых магазинов, заканчивая маленькими уличными кофейнями. Не стесняйтесь спрашивать пароль от Wi-Fi у персонала, и без связи точно не останетесь.</p>
+        </div>
+        
+        <div className="space-y-4">
+          <p className="font-semibold text-foreground/90">Для связи с местными настоятельно рекомендуем скачать Zalo:</p>
+          <div className="grid grid-cols-1 gap-3">
+            <div 
+              onClick={() => window.open('https://zalo.me/pc', '_blank')} 
+              className="flex items-center justify-between p-3 rounded-2xl border border-border/60 hover:bg-muted/50 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#0068FF] rounded-[12px] flex items-center justify-center font-black text-xs text-white text-white">Z</div>
+                <div>
+                  <div className="font-semibold text-[13px]">Zalo</div>
+                  <div className="text-[11px] text-muted-foreground leading-tight">Местный WhatsApp (рекомендуем)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="bg-amber-50/50 border border-amber-200/60 rounded-2xl p-4 flex gap-3 text-[13px] text-amber-900/80">
+            <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+            <p>Установить и войти в приложение лучше сразу в офисе где покупали сим-карту, так как могут возникнуть трудности при первоначальной регистрации.</p>
+          </div>
+        </div>
       </div>
     ),
     color: 'bg-dusty-indigo/10 text-dusty-indigo',
@@ -918,6 +941,11 @@ function OnboardingFlow({
                                       </div>
                                     ))}
                                   </div>
+                                </div>
+                              )}
+                              {card.footer && (
+                                <div className="text-foreground/90 leading-relaxed text-sm pt-2">
+                                  {card.footer}
                                 </div>
                               )}
                               <div className="pt-2">
