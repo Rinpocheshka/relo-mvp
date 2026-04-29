@@ -1017,7 +1017,7 @@ function OnboardingFlow({
                                         className="flex items-center justify-between p-3 rounded-2xl border border-border/60 hover:bg-muted/50 transition-colors cursor-pointer"
                                       >
                                         <div className="flex items-center gap-3">
-                                          <div className={`w-10 h-10 ${app.color} rounded-[12px] flex items-center justify-center font-black text-xs ${app.textDark ? 'text-black/80' : 'text-white'}`}>{app.icon}</div>
+                                          <div className={`w-10 h-10 ${app.color} rounded-[12px] flex items-center justify-center font-black text-xs flex-shrink-0 ${app.textDark ? 'text-black/80' : 'text-white'}`}>{app.icon}</div>
                                           <div>
                                             <div className="font-semibold text-[13px]">{app.name}</div>
                                             <div className="text-[11px] text-muted-foreground leading-tight">{app.desc}</div>
