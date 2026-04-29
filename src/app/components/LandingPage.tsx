@@ -264,14 +264,11 @@ const SURVIVAL_CARDS_SHOPPING: SurvivalCard[] = [
           </h5>
           <p className="text-[13px] text-muted-foreground leading-relaxed">
             По большинству QR-кодов можно перевести со <b>Сбербанк Онлайн</b>, но курс не выгодный. Зато быстро.<br />
-            Еще можно использовать для оплаты по QR ваши кошельки на крипто-биржах. Например, <b>Bybit Pay</b>.
+            Еще можно использовать для оплаты по QR ваши кошельки на крипто-биржах. Например, <a href="https://t.me/Bybitglobal_Official_Bot/referral?startapp=L0VR6J" target="_blank" rel="noopener noreferrer" className="text-terracotta-deep font-bold underline decoration-terracotta-deep/30 hover:decoration-terracotta-deep transition-all">Bybit Pay</a>.
           </p>
         </div>
       </div>
     ),
-    apps: [
-      { name: 'Bybit Pay', desc: 'Оплата QR через крипто-кошелек', color: 'bg-[#F7A600]', icon: 'B', link: { web: 'https://t.me/Bybitglobal_Official_Bot/referral?startapp=L0VR6J' } },
-    ],
     color: 'bg-warm-olive/10 text-warm-olive',
     border: 'border-warm-olive/20',
   },
