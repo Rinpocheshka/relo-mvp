@@ -75,35 +75,31 @@ const SURVIVAL_CARDS_HERE: SurvivalCard[] = [
         
         <div className="space-y-4">
           <p className="font-semibold text-foreground/90">Для связи с местными настоятельно рекомендуем скачать Zalo:</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div 
-              onClick={() => window.open('https://apps.apple.com/app/zalo/id546230618', '_blank')} 
-              className="flex items-center justify-between p-3 rounded-2xl border border-border/60 hover:bg-muted/50 transition-colors cursor-pointer"
+          <div className="flex flex-wrap gap-3">
+            <a 
+              href="https://apps.apple.com/us/app/zalo/id579523206?l=ru" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="h-[40px] transition-transform active:scale-95"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-black rounded-[12px] flex items-center justify-center text-white">
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M17.05 20.28c-.96.95-2.23 1.5-3.5 1.5-2.07 0-3.5-1.15-5.07-1.15-1.57 0-3.14 1.15-5.07 1.15-1.27 0-2.54-.55-3.5-1.5-2.12-2.12-2.12-5.54 0-7.66 1.12-1.12 2.64-1.74 4.23-1.74 1.5 0 2.8.85 3.84.85 1.04 0 2.34-.85 3.84-.85 1.59 0 3.11.62 4.23 1.74 2.12 2.12 2.12 5.54 0 7.66zM12.03 7.25c-.15-2.23 1.66-4.07 3.9-4.22.15 2.23-1.66 4.07-3.9 4.22z"/></svg>
-                </div>
-                <div>
-                  <div className="font-semibold text-[13px]">Zalo (iOS)</div>
-                  <div className="text-[11px] text-muted-foreground leading-tight">Скачать в App Store</div>
-                </div>
-              </div>
-            </div>
-            <div 
-              onClick={() => window.open('https://play.google.com/store/apps/details?id=com.zing.zalo', '_blank')} 
-              className="flex items-center justify-between p-3 rounded-2xl border border-border/60 hover:bg-muted/50 transition-colors cursor-pointer"
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" 
+                alt="Download on the App Store" 
+                className="h-full w-auto"
+              />
+            </a>
+            <a 
+              href="https://play.google.com/store/apps/details?id=com.zing.zalo" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="h-[40px] transition-transform active:scale-95"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#00A2EE] rounded-[12px] flex items-center justify-center text-white">
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.61 3 21.09 3 20.5M16.81 15.12L18.05 16.36C18.44 16.75 18.44 17.38 18.05 17.77C17.66 18.16 17.03 18.16 16.64 17.77L15.39 16.52L16.81 15.12M16.81 8.88L15.39 7.48L16.64 6.23C17.03 5.84 17.66 5.84 18.05 6.23C18.44 6.62 18.44 7.25 18.05 7.64L16.81 8.88M14.5 12.81L4.65 22.66C4.84 22.88 5.14 23 5.5 23C5.81 23 6.1 22.92 6.34 22.78L18.44 15.86C19.12 15.47 19.5 14.77 19.5 14C19.5 13.23 19.12 12.53 18.44 12.14L6.34 5.22C6.1 5.08 5.81 5 5.5 5C5.14 5 4.84 5.12 4.65 5.34L14.5 11.19V12.81Z"/></svg>
-                </div>
-                <div>
-                  <div className="font-semibold text-[13px]">Zalo (Android)</div>
-                  <div className="text-[11px] text-muted-foreground leading-tight">Скачать в Play Market</div>
-                </div>
-              </div>
-            </div>
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" 
+                alt="Get it on Google Play" 
+                className="h-full w-auto"
+              />
+            </a>
           </div>
           <div className="bg-amber-50/50 border border-amber-200/60 rounded-2xl p-4 flex gap-3 text-[13px] text-amber-900/80">
             <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
