@@ -40,7 +40,7 @@ const SURVIVAL_CARDS_HERE: SurvivalCard[] = [
     emoji: <img src="/assets/icons/custom/bus.png" alt="" className="w-8 h-8 object-contain" />,
     title: 'Как добраться',
     short: 'Такси, автобусы, поезда',
-    detail: 'Стойка официального такси находится у выхода из таможни, но дешевле вызвать машину через приложение.',
+    detail: 'Во многих крупных городах Вьетнама можно воспользоваться общественным транспортом. Просто откройте карты, и найдите ближайшую автобусную остановку.',
     warning: 'Осторожно: фейковые таксисты. В зоне прилета к вам будут подходить люди и предлагать такси. Игнорируйте их, они завышают цены в 3-5 раз.',
     apps: [
       { name: 'Grab', desc: 'Самое популярное такси', color: 'bg-[#00B14F]', icon: 'G', link: { ios: 'https://apps.apple.com/app/grab/id647268330', android: 'https://play.google.com/store/apps/details?id=com.grabtaxi.passenger', web: 'https://www.grab.com/vn/en/' } },
@@ -67,8 +67,22 @@ const SURVIVAL_CARDS_HERE: SurvivalCard[] = [
     emoji: <img src="/assets/icons/custom/category_finance.png" alt="" className="w-8 h-8 object-contain" />,
     title: 'Деньги — где снять и обменять',
     short: 'Банкоматы, обменники, какие карты работают',
-    detail: 'Лучший курс обычно в ювелирных магазинах в туристических местах. Карту Мир можно использовать в банкоматах VRB банка. В некоторых магазинах и кафе можно расплатиться по QR-коду Сбербанка.',
-    warning: 'Банкоматы берут комиссию. Ищите банкоматы VRB — принимают карту Мир, или TPBank / VPBank — без местной комиссии.',
+    detail: (
+      <div className="space-y-3">
+        <p>Наличную валюту можно обменять в банках или ювелирных магазинах.</p>
+        <p>Снять деньги с карты МИР можно в банкоматах VRB банка.</p>
+        <p>А в некоторых магазинах и кафе можно расплатиться по QR-коду со Сбера.</p>
+      </div>
+    ),
+    apps: [
+      { 
+        name: 'HappyVietExchange', 
+        desc: 'Обмен рубли/крипто (код: Relome)', 
+        color: 'bg-[#24A1DE]', 
+        icon: 'HV', 
+        link: { web: 'https://t.me/HappyVietExchange' } 
+      }
+    ],
     color: 'bg-warm-olive/10 text-warm-olive',
     border: 'border-warm-olive/20',
   },
