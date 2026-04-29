@@ -55,11 +55,24 @@ const SURVIVAL_CARDS_HERE: SurvivalCard[] = [
     emoji: '🌐',
     title: 'Связь и интернет',
     short: 'Симка за 5 минут прямо в аэропорту',
-    detail: 'В аэропорту обычно есть стойки операторов. Симка стоит около 200 ₽, пакет данных на месяц ~300 ₽.',
+    detail: (
+      <div className="space-y-4">
+        <p>Для покупки SIM-карты потребуется паспорт. Сами "симки" во Вьетнаме не бесплатные и стоят обычно в районе 50 000 донгов. Приобрести их можно прямо в аэропорту (чуть дороже) или в любом из сотен магазинов и салонов в городе (чуть дешевле).</p>
+        <p>Также рекомендуем заранее выбрать себе подходящий тариф на сайте мобильного оператора:</p>
+      </div>
+    ),
     apps: [
       { name: 'Viettel', desc: 'Самый крупный оператор', color: 'bg-[#E30019]', icon: 'V', link: { web: 'https://viettel.vn/' } },
       { name: 'Vinaphone', desc: 'Хороший охват', color: 'bg-[#0066CC]', icon: 'VP', link: { web: 'https://vinaphone.com.vn/' } },
+      { name: 'Zalo', desc: 'Местный WhatsApp (рекомендуем)', color: 'bg-[#0068FF]', icon: 'Z', link: { ios: 'https://apps.apple.com/app/zalo/id546230618', android: 'https://play.google.com/store/apps/details?id=com.zing.zalo', web: 'https://zalo.me/pc' } },
     ],
+    warning: (
+      <div className="space-y-4">
+        <p>Во Вьетнаме Wi-Fi есть повсюду, начиная от сетевых магазинов, заканчивая маленькими уличными кофейнями. Не стесняйтесь спрашивать пароль от Wi-Fi у персонала, и без связи точно не останетесь.</p>
+        <div className="h-px bg-amber-200/40 w-full" />
+        <p>Для связи с местными настоятельно рекомендуем скачать <b>Zalo</b>. Установить и войти в приложение лучше сразу в офисе, где покупали сим-карту, так как могут возникнуть трудности при первоначальной регистрации.</p>
+      </div>
+    ),
     color: 'bg-dusty-indigo/10 text-dusty-indigo',
     border: 'border-dusty-indigo/20',
   },
@@ -875,11 +888,11 @@ function OnboardingFlow({
                         {openCard === i && (
                           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
                             <div className="px-6 pb-6 pt-2 space-y-5 border-t border-border/40 mt-1">
-                              <p className="text-foreground/90 leading-relaxed text-sm">{card.detail}</p>
+                              <div className="text-foreground/90 leading-relaxed text-sm">{card.detail}</div>
                               {card.warning && (
                                 <div className="bg-amber-50/50 border border-amber-200/60 rounded-2xl p-4 flex gap-3 text-sm text-amber-900/80">
                                   <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                                  <p>{card.warning}</p>
+                                  <div className="flex-1">{card.warning}</div>
                                 </div>
                               )}
                               {card.apps && (
