@@ -115,38 +115,23 @@ const SURVIVAL_CARDS_PLANNING: SurvivalCard[] = [
     emoji: <img src="/assets/icons/custom/category_finance.png" alt="" className="w-8 h-8 object-contain" />,
     title: 'Варианты оформления международной карты в РФ',
     short: 'Union Pay и заказ карт через посредников',
-    detail: (
-      <div className="space-y-4">
-        <div>
-          <p className="font-bold mb-1">Union Pay</p>
-          <p className="text-sm">
-            Тарифы везде разные, в Россельхоз банк условия самые выгодные —{' '}
-            <a 
-              href="https://www.rshb.ru/natural/referal-programm/unionpay?utm_source=referal_sf&refererCode=RSAFEZQE7S&productId=DEBITCARD06&referalCode=NJUT4O9WU0" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-terracotta-deep font-bold underline underline-offset-2 decoration-terracotta-deep/30 hover:decoration-terracotta-deep"
-            >
-              перейти на сайт
-            </a>
-          </p>
-        </div>
-        <div>
-          <p className="font-bold mb-1">Карта с доставкой через посредников</p>
-          <p className="text-sm">
-            Стоит от 10 тыс руб. —{' '}
-            <a 
-              href="https://t.me/relocanto_card_bot?start=relome" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-terracotta-deep font-bold underline underline-offset-2 decoration-terracotta-deep/30 hover:decoration-terracotta-deep"
-            >
-              оформить в боте
-            </a>
-          </p>
-        </div>
-      </div>
-    ),
+    detail: 'Эти сервисы помогут оформить карту для оплаты за границей, находясь в РФ.',
+    apps: [
+      { 
+        name: 'Union Pay', 
+        desc: 'Выгодные условия в Россельхоз банке', 
+        color: 'bg-[#007F3E]', 
+        icon: 'UP', 
+        link: { web: 'https://www.rshb.ru/natural/referal-programm/unionpay?utm_source=referal_sf&refererCode=RSAFEZQE7S&productId=DEBITCARD06&referalCode=NJUT4O9WU0' } 
+      },
+      { 
+        name: 'Карта через посредников', 
+        desc: 'Стоит от 10 тыс руб.', 
+        color: 'bg-[#24A1DE]', 
+        icon: 'RC', 
+        link: { web: 'https://t.me/relocanto_card_bot?start=relome' } 
+      },
+    ],
     color: 'bg-warm-olive/10 text-warm-olive',
     border: 'border-warm-olive/20',
   },
