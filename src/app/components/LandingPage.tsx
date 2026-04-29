@@ -231,6 +231,25 @@ const SURVIVAL_CARDS_SHOPPING: SurvivalCard[] = [
     border: 'border-terracotta-deep/20',
   },
   {
+    emoji: '🤝',
+    title: 'Взаимодействуем с местными',
+    short: 'Супермаркеты, услуги и товары от вьетнамцев',
+    detail: (
+      <div className="space-y-4">
+        <p className="text-[13px] text-muted-foreground leading-relaxed">
+          Часто услуги и товары от местных жителей стоят значительно дешевле. Не бойтесь пользоваться локальными сервисами!
+        </p>
+      </div>
+    ),
+    apps: [
+      { name: 'Bachhoaxanh', desc: 'Доставка продуктов из бюджетной сети', color: 'bg-[#008B45]', icon: 'BX', link: { web: 'https://www.bachhoaxanh.com/' } },
+      { name: 'ChoTot', desc: 'Местное Авито (на вьетнамском)', color: 'bg-[#FFBA00]', icon: 'CT', link: { web: 'https://www.chotot.com/' } },
+      { name: 'bTaskee', desc: 'Уборка, клининг, мелкий ремонт', color: 'bg-[#FF8C00]', icon: 'BT', link: { web: 'https://www.btaskee.com/en/' } },
+    ],
+    color: 'bg-dusty-indigo/10 text-dusty-indigo',
+    border: 'border-dusty-indigo/20',
+  },
+  {
     emoji: <img src="/assets/icons/custom/category_finance.png" alt="" className="w-8 h-8 object-contain" />,
     title: 'Оплата картой и QR',
     short: 'Оплатить по QR-коду можно почти везде, картой - в большинстве магазинов.',
