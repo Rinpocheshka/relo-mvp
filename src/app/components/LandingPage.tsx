@@ -845,12 +845,12 @@ function OnboardingFlow({
 
                   <div className="bg-white/50 rounded-2xl p-5 border border-border/40 shadow-sm">
                     <h4 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-                      Нет твоего города? <span className="animate-pulse">💛</span>
+                      Нет твоего города?
                     </h4>
                     
                     <div className="space-y-4">
                       <p className="text-[13px] text-muted-foreground leading-relaxed">
-                        У тебя есть шанс попасть в самое 💛
+                        У тебя есть шанс попасть в самое <span className="inline-block animate-pulse">💛</span>
                       </p>
                       
                       <ul className="space-y-2.5 text-[13px] text-foreground/70">
@@ -860,7 +860,7 @@ function OnboardingFlow({
                         </li>
                         <li className="flex items-start gap-3">
                           <span className="text-terracotta-deep font-bold">—</span>
-                          почувствуй, подходит тебе этот формат
+                          почувствуй, насколько подходит тебе этот формат
                         </li>
                         <li className="flex items-start gap-3">
                           <span className="text-terracotta-deep font-bold">—</span>
@@ -872,7 +872,7 @@ function OnboardingFlow({
                               className="text-terracotta-deep font-bold underline underline-offset-4 decoration-terracotta-deep/30 hover:decoration-terracotta-deep transition-all"
                             >
                               оставь заявку
-                            </a> на запуск у себя
+                            </a> на запуск Relome у себя
                           </span>
                         </li>
                       </ul>
