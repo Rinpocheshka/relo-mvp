@@ -739,6 +739,59 @@ function OnboardingFlow({
                 >
                   Пока думаю
                 </motion.button>
+
+                {/* Additional info for other cities */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                  className="mt-12 pt-8 border-t border-border/30 w-full max-w-sm mx-auto text-left"
+                >
+                  <p className="text-[13px] text-foreground/80 leading-relaxed mb-6 font-medium">
+                    Relome — глобальная платформа для жизни и связей в новой стране.<br />
+                    Мы запускаем города поэтапно — сейчас первым открыт Дананг.
+                  </p>
+
+                  <div className="bg-white/50 rounded-2xl p-5 border border-border/40 shadow-sm">
+                    <h4 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+                      Нет твоего города? <span className="animate-pulse">💛</span>
+                    </h4>
+                    
+                    <div className="space-y-4">
+                      <p className="text-[13px] text-muted-foreground leading-relaxed">
+                        У тебя есть шанс попасть в самое 💛
+                      </p>
+                      
+                      <ul className="space-y-2.5 text-[13px] text-foreground/70">
+                        <li className="flex items-start gap-3">
+                          <span className="text-terracotta-deep font-bold">—</span>
+                          посмотри, как всё устроено
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <span className="text-terracotta-deep font-bold">—</span>
+                          почувствуй, подходит тебе этот формат
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <span className="text-terracotta-deep font-bold">—</span>
+                          <span>
+                            <a 
+                              href="https://tally.so/r/VL106N" 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-terracotta-deep font-bold underline underline-offset-4 decoration-terracotta-deep/30 hover:decoration-terracotta-deep transition-all"
+                            >
+                              оставь заявку
+                            </a> на запуск у себя
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <p className="mt-6 text-[12px] text-muted-foreground leading-relaxed font-medium">
+                      Мы пригласим тебя одним из первых, когда откроем твой город.
+                    </p>
+                  </div>
+                </motion.div>
               </div>
             )}
 
