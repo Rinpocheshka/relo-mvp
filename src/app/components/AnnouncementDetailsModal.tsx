@@ -37,7 +37,9 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  const canManage = user && (user.id === announcement?.author_id || profile?.role === 'admin');
+  const isAuthor = user && announcement && user.id === announcement.author_id;
+  const isAdmin = profile?.role === 'admin';
+  const canManage = isAuthor || isAdmin;
 
   const handleMessageClick = async (e?: React.MouseEvent) => {
     if (e) {
@@ -236,38 +238,61 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
 
                   {/* Actions */}
                   <div className="mt-12 pt-8 border-t border-border/40 pb-10 sm:pb-12 safe-area-bottom relative z-50">
-                    {(!user || user.id !== 'DUMMY_NEVER_MATCH') && (
+                    
+                    {/* Primary Button: Message Author or Share (for author) */}
+                    {isAuthor ? (
+                      <button 
+                        onClick={handleShare}
+                        className={`w-full ${isCopied ? 'bg-green-500' : 'bg-terracotta-deep'} text-white rounded-2xl h-14 font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all flex items-center justify-center cursor-pointer`}
+                      >
+                        {isCopied ? <CheckCircle2 className="w-5 h-5 mr-2" /> : <Share2 className="w-5 h-5 mr-2" />}
+                        {isCopied ? 'Ссылка скопирована' : 'Поделиться'}
+                      </button>
+                    ) : (
                       <button 
                         onClick={handleMessageClick}
-                        className="w-full bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-2xl h-14 font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all flex items-center justify-center cursor-pointer mt-4"
+                        className="w-full bg-terracotta-deep hover:bg-terracotta-deep/90 text-white rounded-2xl h-14 font-black text-lg shadow-xl shadow-terracotta-deep/10 transition-all flex items-center justify-center cursor-pointer"
                       >
                         <MessageCircle className="w-5 h-5 mr-2" />
                         Написать автору
                       </button>
                     )}
-                    
-                    {canManage && (
-                      <div className="flex gap-2 mt-4">
-                        <button
-                          onClick={() => {
-                            if (announcement && onEdited) {
-                              onEdited(announcement);
-                            }
-                          }}
-                          className="flex-1 flex items-center justify-center gap-2 bg-soft-sand hover:bg-soft-sand/80 text-foreground font-bold py-3 rounded-2xl transition-colors"
-                        >
-                          <Edit className="w-4 h-4" />
-                          Изменить
-                        </button>
-                        <button
-                          onClick={handleDelete}
-                          disabled={isDeleting}
-                          className="flex-1 flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-2xl transition-colors disabled:opacity-50"
-                        >
-                          {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                          Удалить
-                        </button>
-                      </div>
+
+                    {/* Secondary Row: Share (for non-authors) or Manage (for author/admin) */}
+                    {!isAuthor && !isAdmin ? (
+                      <button
+                        onClick={handleShare}
+                        className={`w-full flex items-center justify-center gap-2 font-bold py-3 rounded-2xl transition-all mt-4 ${
+                          isCopied ? 'bg-green-50 text-green-600' : 'bg-soft-sand hover:bg-soft-sand/80 text-foreground'
+                        }`}
+                      >
+                        {isCopied ? <CheckCircle2 className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
+                        {isCopied ? 'Скопировано' : 'Поделиться объявлением'}
+                      </button>
+                    ) : (
+                      canManage && (
+                        <div className="flex gap-2 mt-4">
+                          <button
+                            onClick={() => {
+                              if (announcement && onEdited) {
+                                onEdited(announcement);
+                              }
+                            }}
+                            className="flex-1 flex items-center justify-center gap-2 bg-soft-sand hover:bg-soft-sand/80 text-foreground font-bold py-3 rounded-2xl transition-colors"
+                          >
+                            <Edit className="w-4 h-4" />
+                            Изменить
+                          </button>
+                          <button
+                            onClick={handleDelete}
+                            disabled={isDeleting}
+                            className="flex-1 flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-2xl transition-colors disabled:opacity-50"
+                          >
+                            {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                            Удалить
+                          </button>
+                        </div>
+                      )
                     )}
 
                     <p className="text-center text-[10px] text-muted-foreground mt-4 uppercase tracking-widest font-bold">
@@ -279,17 +304,8 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
             )}
             </div>
 
-            {/* Top Actions (Share & Close) - Placed last to be on top */}
+            {/* Top Actions (Close Only) */}
             <div className="absolute top-6 right-6 z-[100] flex gap-2">
-              <button 
-                onClick={handleShare}
-                className={`w-12 h-12 ${isCopied ? 'bg-green-500 text-white' : 'bg-white/90 text-foreground'} backdrop-blur-sm hover:opacity-90 rounded-full flex items-center justify-center shadow-lg transition-all active:scale-95`}
-                aria-label="Поделиться"
-                title={isCopied ? 'Ссылка скопирована!' : 'Поделиться объявлением'}
-              >
-                {isCopied ? <CheckCircle2 className="w-6 h-6" /> : <CornerUpRight className="w-6 h-6" />}
-              </button>
-
               <button 
                 onClick={onClose}
                 className="w-12 h-12 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all active:scale-95"
