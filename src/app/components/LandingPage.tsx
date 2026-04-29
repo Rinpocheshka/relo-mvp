@@ -865,7 +865,6 @@ function OnboardingFlow({
                               )}
                               {card.apps && (
                                 <div className="space-y-3">
-                                  <p className="font-bold text-sm">Скачайте приложения:</p>
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     {card.apps.map((app, appIdx) => (
                                       <div 
