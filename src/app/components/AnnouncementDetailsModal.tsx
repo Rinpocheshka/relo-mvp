@@ -128,25 +128,7 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
             exit={{ opacity: 0, scale: 0.9, y: 40 }}
             className="relative bg-white w-full max-w-4xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] mb-6 sm:mb-8"
           >
-            {/* Top Actions (Share & Close) */}
-            <div className="absolute top-6 right-6 z-20 flex gap-2">
-              <button 
-                onClick={handleShare}
-                className={`w-12 h-12 ${isCopied ? 'bg-green-500 text-white' : 'bg-white/90 text-foreground'} backdrop-blur-sm hover:opacity-90 rounded-full flex items-center justify-center shadow-lg transition-all active:scale-95`}
-                aria-label="Поделиться"
-                title={isCopied ? 'Ссылка скопирована!' : 'Поделиться объявлением'}
-              >
-                {isCopied ? <CheckCircle2 className="w-6 h-6" /> : <Share2 className="w-6 h-6" />}
-              </button>
 
-              <button 
-                onClick={onClose}
-                className="w-12 h-12 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all active:scale-95"
-                aria-label="Закрыть"
-              >
-                <X className="w-6 h-6 text-foreground" />
-              </button>
-            </div>
 
             <div className="flex-1 overflow-y-auto min-h-0">
               {isDeleted ? (
@@ -295,6 +277,26 @@ export function AnnouncementDetailsModal({ announcement, isOpen, onClose, onDele
                 </div>
               </div>
             )}
+            </div>
+
+            {/* Top Actions (Share & Close) - Placed last to be on top */}
+            <div className="absolute top-6 right-6 z-[100] flex gap-2">
+              <button 
+                onClick={handleShare}
+                className={`w-12 h-12 ${isCopied ? 'bg-green-500 text-white' : 'bg-white/90 text-foreground'} backdrop-blur-sm hover:opacity-90 rounded-full flex items-center justify-center shadow-lg transition-all active:scale-95`}
+                aria-label="Поделиться"
+                title={isCopied ? 'Ссылка скопирована!' : 'Поделиться объявлением'}
+              >
+                {isCopied ? <CheckCircle2 className="w-6 h-6" /> : <CornerUpRight className="w-6 h-6" />}
+              </button>
+
+              <button 
+                onClick={onClose}
+                className="w-12 h-12 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all active:scale-95"
+                aria-label="Закрыть"
+              >
+                <X className="w-6 h-6 text-foreground" />
+              </button>
             </div>
           </motion.div>
         </div>
