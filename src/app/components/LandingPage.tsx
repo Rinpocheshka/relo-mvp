@@ -218,6 +218,63 @@ const SURVIVAL_CARDS_SHOPPING: SurvivalCard[] = [
     color: 'bg-warm-olive/10 text-warm-olive',
     border: 'border-warm-olive/20',
   },
+  {
+    emoji: '🍱',
+    title: 'Доставка еды',
+    short: 'Доставка до подъезда за считанные минуты',
+    detail: 'Во Вьетнаме доставка еды развита невероятно. Заказать можно всё: от уличного фо-бо до ресторанных блюд.',
+    apps: [
+      { name: 'Grab', desc: 'GrabFood — самая быстрая доставка', color: 'bg-[#00B14F]', icon: 'G', link: { web: 'https://www.grab.com/vn/en/food/' } },
+      { name: 'ShopeeFood', desc: 'Частые скидки и акции', color: 'bg-[#EE4D2D]', icon: 'SF', link: { web: 'https://shopeefood.vn/' } },
+    ],
+    color: 'bg-terracotta-deep/10 text-terracotta-deep',
+    border: 'border-terracotta-deep/20',
+  },
+  {
+    emoji: <img src="/assets/icons/custom/category_finance.png" alt="" className="w-8 h-8 object-contain" />,
+    title: 'Оплата картой и QR',
+    short: 'Оплатить по QR-коду можно почти везде, картой - в большинстве магазинов.',
+    detail: (
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <h5 className="font-bold text-foreground flex items-center gap-2">
+            💰 Открыть счёт в банке (без карты)
+          </h5>
+          <p className="text-[13px] text-muted-foreground leading-relaxed">
+            Нужен для оплаты по QR. Самый надежный вариант — <b>BIDV</b>, также можно обратиться в Vietcombank, Agribank, Timo.<br />
+            Потребуется загранпаспорт и местный номер телефона, оформленный на вас.<br />
+            Подробнее об открытии в разделе «База знаний».
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <h5 className="font-bold text-foreground flex items-center gap-2 text-amber-600">
+            💳 Банковская карта
+          </h5>
+          <p className="text-[13px] text-muted-foreground leading-relaxed">
+            ⚠️ Выпуск карты доступен только при наличии долгосрочной визы (не туристической).<br />
+            ❌ То есть туристу карту не дают. Но, по последним данным, некоторым счастливчикам это удается сделать в <b>BIDV</b> банке.<br />
+            Также во Вьетнаме можно использовать любую международную карту.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <h5 className="font-bold text-foreground flex items-center gap-2 text-blue-600">
+            📱 Оплата через Сбербанк и крипто
+          </h5>
+          <p className="text-[13px] text-muted-foreground leading-relaxed">
+            По большинству QR-кодов можно перевести со <b>Сбербанк Онлайн</b>, но курс не выгодный. Зато быстро.<br />
+            Еще можно использовать для оплаты по QR ваши кошельки на крипто-биржах. Например, <b>Bybit Pay</b>.
+          </p>
+        </div>
+      </div>
+    ),
+    apps: [
+      { name: 'Bybit Pay', desc: 'Оплата QR через крипто-кошелек', color: 'bg-[#F7A600]', icon: 'B', link: { web: 'https://t.me/Bybitglobal_Official_Bot/referral?startapp=L0VR6J' } },
+    ],
+    color: 'bg-warm-olive/10 text-warm-olive',
+    border: 'border-warm-olive/20',
+  },
 ];
 
 const SURVIVAL_CARDS_WHY_RELO: SurvivalCard[] = [
